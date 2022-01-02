@@ -1,4 +1,5 @@
 import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client"
+import "src/styles/index.css"
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),

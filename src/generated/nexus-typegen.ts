@@ -258,7 +258,7 @@ export interface NexusGenArgTypes {
     }
     signupUser: { // args
       email: string; // String!
-      name?: string | null; // String
+      user_name?: string | null; // String
     }
   }
   Query: {
