@@ -11,7 +11,8 @@ import {
 } from "nexus"
 import path from "path"
 import cors from "micro-cors"
-import prisma from "lib/prisma"
+import prisma from "src/lib/prisma"
+import supabase from "src/lib/supabase"
 
 export const GQLDate = asNexusMethod(DateTimeResolver, "date")
 
@@ -285,16 +286,26 @@ const Mutation = objectType({
     t.field("signupUser", {
       type: "User",
       args: {
-        name: stringArg(),
+        user_name: stringArg(),
         email: nonNull(stringArg()),
       },
-      resolve: (_, { name, email }, ctx) => {
-        return prisma.user.create({
-          data: {
-            name,
+      resolve: async (_, { user_name, email }, ctx) => {
+        return await supabase.auth
+          .signUp({
             email,
-          },
-        })
+            password: "password",
+          })
+          .then(res => {
+            return prisma.user.create({
+              data: {
+                id: res.user.id,
+                user_name,
+              },
+            })
+          })
+          .catch(error => {
+            throw new Error(error)
+          })
       },
     })
 
@@ -359,8 +370,8 @@ export const schema = makeSchema({
     GQLDate,
   ],
   outputs: {
-    typegen: path.join(process.cwd(), "generated/nexus-typegen.ts"),
-    schema: path.join(process.cwd(), "generated/schema.graphql"),
+    typegen: path.join(process.cwd(), "src/generated/nexus-typegen.ts"),
+    schema: path.join(process.cwd(), "src/generated/schema.graphql"),
   },
 })
 

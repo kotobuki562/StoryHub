@@ -1,23 +1,11 @@
 import React, { useState } from "react"
 import Layout from "../components/Layout"
 import Router, { useRouter } from "next/router"
-import gql from "graphql-tag"
-import { useMutation } from "@apollo/client"
+import supabase from "src/lib/supabase"
 
-const SignupMutation = gql`
-  mutation Mutation($email: String!, $userName: String) {
-    signupUser(email: $email, user_name: $userName) {
-      id
-      user_name
-    }
-  }
-`
-
-function Signup(props) {
-  const [name, setName] = useState("")
+function Signin(props) {
+  const [password, setPassword] = useState("")
   const [email, setEmail] = useState("")
-
-  const [signup] = useMutation(SignupMutation)
 
   return (
     <Layout>
@@ -25,22 +13,24 @@ function Signup(props) {
         <form
           onSubmit={async e => {
             e.preventDefault()
-            await signup({
-              variables: {
+            await supabase.auth
+              .signIn({
                 email,
-                user_name: name,
-              },
-            })
+                password,
+              })
+              .then(res => {
+                console.log(res)
+              })
             Router.push("/")
           }}
         >
           <h1>Signup user</h1>
           <input
             autoFocus
-            onChange={e => setName(e.target.value)}
-            placeholder="Name"
-            type="text"
-            value={name}
+            onChange={e => setPassword(e.target.value)}
+            placeholder="Password"
+            type="password"
+            value={password}
           />
           <input
             onChange={e => setEmail(e.target.value)}
@@ -48,7 +38,7 @@ function Signup(props) {
             type="text"
             value={email}
           />
-          <input disabled={!name || !email} type="submit" value="Signup" />
+          <input disabled={!password || !email} type="submit" value="Signup" />
           <a className="back" href="#" onClick={() => Router.push("/")}>
             or Cancel
           </a>
@@ -84,4 +74,4 @@ function Signup(props) {
   )
 }
 
-export default Signup
+export default Signin
