@@ -11,7 +11,7 @@ import {
 } from "nexus"
 import path from "path"
 import cors from "micro-cors"
-import prisma from "lib/prisma"
+import prisma from "src/lib/prisma"
 
 export const GQLDate = asNexusMethod(DateTimeResolver, "date")
 
@@ -359,8 +359,8 @@ export const schema = makeSchema({
     GQLDate,
   ],
   outputs: {
-    typegen: path.join(process.cwd(), "generated/nexus-typegen.ts"),
-    schema: path.join(process.cwd(), "generated/schema.graphql"),
+    typegen: path.join(process.cwd(), "src/generated/nexus-typegen.ts"),
+    schema: path.join(process.cwd(), "src/generated/schema.graphql"),
   },
 })
 
