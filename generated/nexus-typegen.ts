@@ -46,7 +46,19 @@ export interface NexusGenObjects {
   Category: { // root type
     category_title?: string | null; // String
     created_at?: NexusGenScalars['DateTime'] | null; // DateTime
-    id?: string | null; // ID
+    id?: number | null; // Int
+    user_id?: string | null; // String
+  }
+  Favorite: { // root type
+    created_at?: NexusGenScalars['DateTime'] | null; // DateTime
+    id?: number | null; // Int
+    story_id?: string | null; // String
+    user_id?: string | null; // String
+  }
+  Follow: { // root type
+    created_at?: NexusGenScalars['DateTime'] | null; // DateTime
+    follow_id?: string | null; // String
+    id?: number | null; // Int
     user_id?: string | null; // String
   }
   Mutation: {};
@@ -91,7 +103,22 @@ export interface NexusGenFieldTypes {
   Category: { // field return type
     category_title: string | null; // String
     created_at: NexusGenScalars['DateTime'] | null; // DateTime
-    id: string | null; // ID
+    id: number | null; // Int
+    user: NexusGenRootTypes['User'] | null; // User
+    user_id: string | null; // String
+  }
+  Favorite: { // field return type
+    created_at: NexusGenScalars['DateTime'] | null; // DateTime
+    id: number | null; // Int
+    story: NexusGenRootTypes['Story'] | null; // Story
+    story_id: string | null; // String
+    user: NexusGenRootTypes['User'] | null; // User
+    user_id: string | null; // String
+  }
+  Follow: { // field return type
+    created_at: NexusGenScalars['DateTime'] | null; // DateTime
+    follow_id: string | null; // String
+    id: number | null; // Int
     user: NexusGenRootTypes['User'] | null; // User
     user_id: string | null; // String
   }
@@ -112,6 +139,10 @@ export interface NexusGenFieldTypes {
     categories: Array<NexusGenRootTypes['Category'] | null> | null; // [Category]
     drafts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     feed: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
+    filterFavoritesByStoryId: Array<NexusGenRootTypes['Favorite'] | null> | null; // [Favorite]
+    filterFavoritesByUserId: Array<NexusGenRootTypes['Favorite'] | null> | null; // [Favorite]
+    filterFollowsByFollowId: Array<NexusGenRootTypes['Follow'] | null> | null; // [Follow]
+    filterFollowsByUserId: Array<NexusGenRootTypes['Follow'] | null> | null; // [Follow]
     filterPosts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     filterStoriesByUserId: Array<NexusGenRootTypes['Story'] | null> | null; // [Story]
     post: NexusGenRootTypes['Post'] | null; // Post
@@ -144,7 +175,22 @@ export interface NexusGenFieldTypeNames {
   Category: { // field return type name
     category_title: 'String'
     created_at: 'DateTime'
-    id: 'ID'
+    id: 'Int'
+    user: 'User'
+    user_id: 'String'
+  }
+  Favorite: { // field return type name
+    created_at: 'DateTime'
+    id: 'Int'
+    story: 'Story'
+    story_id: 'String'
+    user: 'User'
+    user_id: 'String'
+  }
+  Follow: { // field return type name
+    created_at: 'DateTime'
+    follow_id: 'String'
+    id: 'Int'
     user: 'User'
     user_id: 'String'
   }
@@ -165,6 +211,10 @@ export interface NexusGenFieldTypeNames {
     categories: 'Category'
     drafts: 'Post'
     feed: 'Post'
+    filterFavoritesByStoryId: 'Favorite'
+    filterFavoritesByUserId: 'Favorite'
+    filterFollowsByFollowId: 'Follow'
+    filterFollowsByUserId: 'Follow'
     filterPosts: 'Post'
     filterStoriesByUserId: 'Story'
     post: 'Post'
@@ -212,6 +262,18 @@ export interface NexusGenArgTypes {
     }
   }
   Query: {
+    filterFavoritesByStoryId: { // args
+      storyId: string; // String!
+    }
+    filterFavoritesByUserId: { // args
+      userId: string; // String!
+    }
+    filterFollowsByFollowId: { // args
+      followId: string; // String!
+    }
+    filterFollowsByUserId: { // args
+      userId: string; // String!
+    }
     filterPosts: { // args
       searchString?: string | null; // String
     }

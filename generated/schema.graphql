@@ -5,7 +5,7 @@
 type Category {
   category_title: String
   created_at: DateTime
-  id: ID
+  id: Int
   user: User
   user_id: String
 }
@@ -14,6 +14,23 @@ type Category {
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
+
+type Favorite {
+  created_at: DateTime
+  id: Int
+  story: Story
+  story_id: String
+  user: User
+  user_id: String
+}
+
+type Follow {
+  created_at: DateTime
+  follow_id: String
+  id: Int
+  user: User
+  user_id: String
+}
 
 type Mutation {
   createDraft(authorEmail: String, content: String, title: String!): Post
@@ -34,6 +51,10 @@ type Query {
   categories: [Category]
   drafts: [Post]
   feed: [Post]
+  filterFavoritesByStoryId(storyId: String!): [Favorite]
+  filterFavoritesByUserId(userId: String!): [Favorite]
+  filterFollowsByFollowId(followId: String!): [Follow]
+  filterFollowsByUserId(userId: String!): [Follow]
   filterPosts(searchString: String): [Post]
   filterStoriesByUserId(userId: String!): [Story]
   post(postId: String!): Post

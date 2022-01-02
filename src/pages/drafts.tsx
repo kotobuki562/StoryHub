@@ -1,4 +1,4 @@
-import Layout from "../components/Layout"
+import Layout from "src/components/Layout"
 import Link from "next/link"
 import gql from "graphql-tag"
 import { useQuery } from "@apollo/client"

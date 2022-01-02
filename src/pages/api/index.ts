@@ -11,14 +11,15 @@ import {
 } from "nexus"
 import path from "path"
 import cors from "micro-cors"
-import prisma from "src/lib/prisma"
+import prisma from "lib/prisma"
 
 export const GQLDate = asNexusMethod(DateTimeResolver, "date")
 
 const Category = objectType({
   name: "Category",
   definition(t) {
-    t.id("id")
+    // idは数値のid
+    t.int("id")
     t.nullable.string("user_id")
     t.nullable.string("category_title")
     t.date("created_at")
@@ -44,12 +45,55 @@ const User = objectType({
     t.nullable.date("updated_at")
     t.list.field("stories", {
       type: "Story",
-      // storyのuser_idがuser.idと一致するものを取得
       resolve: (parent, args, ctx) => {
         return prisma.story.findMany({
           where: {
             user_id: parent.id,
           },
+        })
+      },
+    })
+  },
+})
+
+const Follow = objectType({
+  name: "Follow",
+  definition(t) {
+    t.int("id")
+    t.string("user_id")
+    t.string("follow_id")
+    t.date("created_at")
+    t.field("user", {
+      type: "User",
+      resolve: (parent, args, ctx) => {
+        return prisma.user.findUnique({
+          where: { id: parent.user_id },
+        })
+      },
+    })
+  },
+})
+
+const Favorite = objectType({
+  name: "Favorite",
+  definition(t) {
+    t.int("id")
+    t.string("user_id")
+    t.string("story_id")
+    t.date("created_at")
+    t.field("user", {
+      type: "User",
+      resolve: (parent, args, ctx) => {
+        return prisma.user.findUnique({
+          where: { id: parent.user_id },
+        })
+      },
+    })
+    t.field("story", {
+      type: "Story",
+      resolve: (parent, args, ctx) => {
+        return prisma.story.findUnique({
+          where: { id: parent.story_id },
         })
       },
     })
@@ -127,6 +171,54 @@ const Query = objectType({
       type: "Category",
       resolve: (_parent, _args) => {
         return prisma.category.findMany()
+      },
+    })
+
+    t.list.field("filterFollowsByUserId", {
+      type: "Follow",
+      args: {
+        userId: nonNull(stringArg()),
+      },
+      resolve: (_parent, args) => {
+        return prisma.follow.findMany({
+          where: { user_id: args.userId },
+        })
+      },
+    })
+
+    t.list.field("filterFollowsByFollowId", {
+      type: "Follow",
+      args: {
+        followId: nonNull(stringArg()),
+      },
+      resolve: (_parent, args) => {
+        return prisma.follow.findMany({
+          where: { follow_id: args.followId },
+        })
+      },
+    })
+
+    t.list.field("filterFavoritesByUserId", {
+      type: "Favorite",
+      args: {
+        userId: nonNull(stringArg()),
+      },
+      resolve: (_parent, args) => {
+        return prisma.favorite.findMany({
+          where: { user_id: args.userId },
+        })
+      },
+    })
+
+    t.list.field("filterFavoritesByStoryId", {
+      type: "Favorite",
+      args: {
+        storyId: nonNull(stringArg()),
+      },
+      resolve: (_parent, args) => {
+        return prisma.favorite.findMany({
+          where: { story_id: args.storyId },
+        })
       },
     })
 
@@ -255,7 +347,17 @@ const Mutation = objectType({
 })
 
 export const schema = makeSchema({
-  types: [Query, Mutation, Post, Story, Category, User, GQLDate],
+  types: [
+    Query,
+    Mutation,
+    Post,
+    Favorite,
+    Follow,
+    Story,
+    Category,
+    User,
+    GQLDate,
+  ],
   outputs: {
     typegen: path.join(process.cwd(), "generated/nexus-typegen.ts"),
     schema: path.join(process.cwd(), "generated/schema.graphql"),
