@@ -147,10 +147,11 @@ export interface NexusGenFieldTypes {
     title: string | null; // String
   }
   Query: { // field return type
+    QueryMe: NexusGenRootTypes['User'] | null; // User
     QueryPageReviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
+    QueryStories: Array<NexusGenRootTypes['Story'] | null> | null; // [Story]
     categories: Array<NexusGenRootTypes['Category'] | null> | null; // [Category]
     drafts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
-    feed: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     filterFavoritesByStoryId: Array<NexusGenRootTypes['Favorite'] | null> | null; // [Favorite]
     filterFavoritesByUserId: Array<NexusGenRootTypes['Favorite'] | null> | null; // [Favorite]
     filterFollowsByFollowId: Array<NexusGenRootTypes['Follow'] | null> | null; // [Follow]
@@ -159,10 +160,8 @@ export interface NexusGenFieldTypes {
     filterReviewsByStoryId: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
     filterReviewsByUserId: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
     filterStoriesByUserId: Array<NexusGenRootTypes['Story'] | null> | null; // [Story]
-    me: NexusGenRootTypes['User'] | null; // User
     post: NexusGenRootTypes['Post'] | null; // Post
     reviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
-    stories: Array<NexusGenRootTypes['Story'] | null> | null; // [Story]
     users: Array<NexusGenRootTypes['User'] | null> | null; // [User]
   }
   Review: { // field return type
@@ -241,10 +240,11 @@ export interface NexusGenFieldTypeNames {
     title: 'String'
   }
   Query: { // field return type name
+    QueryMe: 'User'
     QueryPageReviews: 'Review'
+    QueryStories: 'Story'
     categories: 'Category'
     drafts: 'Post'
-    feed: 'Post'
     filterFavoritesByStoryId: 'Favorite'
     filterFavoritesByUserId: 'Favorite'
     filterFollowsByFollowId: 'Follow'
@@ -253,10 +253,8 @@ export interface NexusGenFieldTypeNames {
     filterReviewsByStoryId: 'Review'
     filterReviewsByUserId: 'Review'
     filterStoriesByUserId: 'Story'
-    me: 'User'
     post: 'Post'
     reviews: 'Review'
-    stories: 'Story'
     users: 'User'
   }
   Review: { // field return type name
@@ -317,6 +315,9 @@ export interface NexusGenArgTypes {
     }
   }
   Query: {
+    QueryMe: { // args
+      userId: string; // String!
+    }
     QueryPageReviews: { // args
       page: string | null; // String
     }
@@ -342,9 +343,6 @@ export interface NexusGenArgTypes {
       userId: string; // String!
     }
     filterStoriesByUserId: { // args
-      userId: string; // String!
-    }
-    me: { // args
       userId: string; // String!
     }
     post: { // args

@@ -48,10 +48,11 @@ type Post {
 }
 
 type Query {
+  QueryMe(userId: String!): User
   QueryPageReviews(page: String = "1"): [Review]
+  QueryStories: [Story]
   categories: [Category]
   drafts: [Post]
-  feed: [Post]
   filterFavoritesByStoryId(storyId: String!): [Favorite]
   filterFavoritesByUserId(userId: String!): [Favorite]
   filterFollowsByFollowId(followId: String!): [Follow]
@@ -60,10 +61,8 @@ type Query {
   filterReviewsByStoryId(storyId: String!): [Review]
   filterReviewsByUserId(userId: String!): [Review]
   filterStoriesByUserId(userId: String!): [Story]
-  me(userId: String!): User
   post(postId: String!): Post
   reviews: [Review]
-  stories: [Story]
   users: [User]
 }
 

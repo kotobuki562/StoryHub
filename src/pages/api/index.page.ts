@@ -14,6 +14,12 @@ import cors from "micro-cors"
 import prisma from "src/lib/prisma"
 import supabase from "src/lib/supabase"
 import jwt from "jsonwebtoken"
+import { Category } from "src/pages/api/models/category"
+import { User } from "src/pages/api/models/user"
+import { Review } from "src/pages/api/models/review"
+import { Story } from "src/pages/api/models/story"
+import { QueryMe } from "src/pages/api/querys/user"
+import { QueryStories } from "src/pages/api/querys/story"
 
 export const GQLDate = asNexusMethod(DateTimeResolver, "date")
 
@@ -26,117 +32,6 @@ const isSafe = (acess_token: string, userId: string) => {
     throw new Error("Invalid token")
   }
 }
-
-const Category = objectType({
-  name: "Category",
-  definition(t) {
-    t.int("id")
-    t.nullable.string("user_id")
-    t.nullable.string("category_title")
-    t.date("created_at")
-    t.field("user", {
-      type: "User",
-      resolve: (parent, args, ctx) => {
-        return prisma.user.findUnique({
-          where: { id: `${`${parent.user_id}`}` },
-        })
-      },
-    })
-  },
-})
-
-const User = objectType({
-  name: "User",
-  definition(t) {
-    t.id("id")
-    t.string("user_name")
-    t.string("user_deal")
-    t.string("image")
-    t.date("created_at")
-    t.nullable.date("updated_at")
-    t.list.field("stories", {
-      type: "Story",
-      resolve: (parent, args, ctx) => {
-        return prisma.story.findMany({
-          where: {
-            user_id: parent.id,
-          },
-        })
-      },
-    })
-    t.list.field("categories", {
-      type: "Category",
-      resolve: (parent, args, ctx) => {
-        return prisma.category.findMany({
-          where: {
-            user_id: parent.id,
-          },
-        })
-      },
-    })
-    t.list.field("favorites", {
-      type: "Favorite",
-      resolve: (parent, args, ctx) => {
-        return prisma.favorite.findMany({
-          where: {
-            user_id: parent.id,
-          },
-        })
-      },
-    })
-    t.list.field("reviews", {
-      type: "Review",
-      resolve: (parent, args, ctx) => {
-        return prisma.review.findMany({
-          where: {
-            user_id: parent.id,
-          },
-        })
-      },
-    })
-    t.list.field("follows", {
-      type: "Follow",
-      resolve: (parent, args, ctx) => {
-        return prisma.follow.findMany({
-          where: {
-            user_id: parent.id,
-          },
-        })
-      },
-    })
-  },
-})
-
-const Review = objectType({
-  name: "Review",
-  definition(t) {
-    t.id("id")
-    t.string("user_id")
-    t.string("story_id")
-    t.string("review_title")
-    t.string("review_body")
-    t.int("stars")
-    t.boolean("publish")
-    t.date("created_at")
-    t.nullable.date("updated_at")
-    t.field("user", {
-      type: "User",
-      resolve: (parent, args, ctx) => {
-        return prisma.user.findUnique({
-          where: { id: `${parent.user_id}` },
-        })
-      },
-    })
-    t.field("story", {
-      type: "Story",
-      resolve: (parent, args, ctx) => {
-        return prisma.story.findUnique({
-          where: { id: `${parent.story_id}` },
-        })
-      },
-    })
-  },
-})
 
 const Follow = objectType({
   name: "Follow",
@@ -182,30 +77,6 @@ const Favorite = objectType({
   },
 })
 
-const Story = objectType({
-  name: "Story",
-  definition(t) {
-    t.id("id")
-    t.nullable.string("user_id")
-    t.nullable.string("story_title")
-    t.nullable.string("story_synopsis")
-    t.nullable.string("story_image")
-    t.boolean("publish")
-    t.date("created_at")
-    t.nullable.date("updated_at")
-    t.nullable.field("user", {
-      type: "User",
-      resolve: async (parent, _args, _ctx) => {
-        return await prisma.user.findUnique({
-          where: {
-            id: `${parent.user_id}`,
-          },
-        })
-      },
-    })
-  },
-})
-
 const Post = objectType({
   name: "Post",
   definition(t) {
@@ -240,26 +111,7 @@ const Query = objectType({
       },
     })
 
-    t.field("me", {
-      type: "User",
-      args: {
-        userId: nonNull(stringArg()),
-      },
-      resolve: (_, args) => {
-        return prisma.user.findUnique({
-          where: { id: args.userId },
-        })
-      },
-    })
-
-    t.list.field("feed", {
-      type: "Post",
-      resolve: (_parent, _args) => {
-        return prisma.post.findMany({
-          where: { published: true },
-        })
-      },
-    })
+    QueryMe(t)
 
     // 全て取得する
     t.list.field("categories", {
@@ -276,14 +128,7 @@ const Query = objectType({
       },
     })
 
-    t.list.field("stories", {
-      type: "Story",
-      resolve: (_parent, _args) => {
-        return prisma.story.findMany({
-          where: { publish: true },
-        })
-      },
-    })
+    QueryStories(t)
 
     t.list.field("reviews", {
       type: "Review",
