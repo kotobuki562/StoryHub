@@ -49,6 +49,25 @@ export interface NexusGenObjects {
     id?: number | null; // Int
     user_id?: string | null; // String
   }
+  Chapter: { // root type
+    chapter_image?: string | null; // String
+    chapter_title?: string | null; // String
+    created_at?: NexusGenScalars['DateTime'] | null; // DateTime
+    episode_id?: string | null; // String
+    id?: string | null; // ID
+    publish?: boolean | null; // Boolean
+    updated_at?: NexusGenScalars['DateTime'] | null; // DateTime
+  }
+  Episode: { // root type
+    created_at?: NexusGenScalars['DateTime'] | null; // DateTime
+    episode_image?: string | null; // String
+    episode_synopsis?: string | null; // String
+    episode_title?: string | null; // String
+    id?: string | null; // ID
+    publish?: boolean | null; // Boolean
+    season_id?: string | null; // String
+    updated_at?: NexusGenScalars['DateTime'] | null; // DateTime
+  }
   Favorite: { // root type
     created_at?: NexusGenScalars['DateTime'] | null; // DateTime
     id?: number | null; // Int
@@ -62,6 +81,13 @@ export interface NexusGenObjects {
     user_id?: string | null; // String
   }
   Mutation: {};
+  Page: { // root type
+    chapter_id?: string | null; // String
+    created_at?: NexusGenScalars['DateTime'] | null; // DateTime
+    id?: string | null; // ID
+    page_body?: string | null; // String
+    updated_at?: NexusGenScalars['DateTime'] | null; // DateTime
+  }
   Post: { // root type
     content?: string | null; // String
     id?: number | null; // Int
@@ -79,6 +105,16 @@ export interface NexusGenObjects {
     story_id?: string | null; // String
     updated_at?: NexusGenScalars['DateTime'] | null; // DateTime
     user_id?: string | null; // String
+  }
+  Season: { // root type
+    created_at?: NexusGenScalars['DateTime'] | null; // DateTime
+    id?: string | null; // ID
+    publish?: boolean | null; // Boolean
+    season_image?: string | null; // String
+    season_synopsis?: string | null; // String
+    season_title?: string | null; // String
+    story_id?: string | null; // String
+    updated_at?: NexusGenScalars['DateTime'] | null; // DateTime
   }
   Story: { // root type
     created_at?: NexusGenScalars['DateTime'] | null; // DateTime
@@ -118,6 +154,29 @@ export interface NexusGenFieldTypes {
     user: NexusGenRootTypes['User'] | null; // User
     user_id: string | null; // String
   }
+  Chapter: { // field return type
+    chapter_image: string | null; // String
+    chapter_title: string | null; // String
+    created_at: NexusGenScalars['DateTime'] | null; // DateTime
+    episode: NexusGenRootTypes['Episode'] | null; // Episode
+    episode_id: string | null; // String
+    id: string | null; // ID
+    pages: Array<NexusGenRootTypes['Page'] | null> | null; // [Page]
+    publish: boolean | null; // Boolean
+    updated_at: NexusGenScalars['DateTime'] | null; // DateTime
+  }
+  Episode: { // field return type
+    chapters: Array<NexusGenRootTypes['Chapter'] | null> | null; // [Chapter]
+    created_at: NexusGenScalars['DateTime'] | null; // DateTime
+    episode_image: string | null; // String
+    episode_synopsis: string | null; // String
+    episode_title: string | null; // String
+    id: string | null; // ID
+    publish: boolean | null; // Boolean
+    season: NexusGenRootTypes['Season'] | null; // Season
+    season_id: string | null; // String
+    updated_at: NexusGenScalars['DateTime'] | null; // DateTime
+  }
   Favorite: { // field return type
     created_at: NexusGenScalars['DateTime'] | null; // DateTime
     id: number | null; // Int
@@ -138,6 +197,14 @@ export interface NexusGenFieldTypes {
     deletePost: NexusGenRootTypes['Post'] | null; // Post
     publish: NexusGenRootTypes['Post'] | null; // Post
     signupUser: NexusGenRootTypes['User'] | null; // User
+  }
+  Page: { // field return type
+    chapter: NexusGenRootTypes['Chapter'] | null; // Chapter
+    chapter_id: string | null; // String
+    created_at: NexusGenScalars['DateTime'] | null; // DateTime
+    id: string | null; // ID
+    page_body: string | null; // String
+    updated_at: NexusGenScalars['DateTime'] | null; // DateTime
   }
   Post: { // field return type
     author: NexusGenRootTypes['User'] | null; // User
@@ -177,6 +244,18 @@ export interface NexusGenFieldTypes {
     user: NexusGenRootTypes['User'] | null; // User
     user_id: string | null; // String
   }
+  Season: { // field return type
+    created_at: NexusGenScalars['DateTime'] | null; // DateTime
+    episodes: Array<NexusGenRootTypes['Episode'] | null> | null; // [Episode]
+    id: string | null; // ID
+    publish: boolean | null; // Boolean
+    season_image: string | null; // String
+    season_synopsis: string | null; // String
+    season_title: string | null; // String
+    story: NexusGenRootTypes['Story'] | null; // Story
+    story_id: string | null; // String
+    updated_at: NexusGenScalars['DateTime'] | null; // DateTime
+  }
   Story: { // field return type
     created_at: NexusGenScalars['DateTime'] | null; // DateTime
     id: string | null; // ID
@@ -211,6 +290,29 @@ export interface NexusGenFieldTypeNames {
     user: 'User'
     user_id: 'String'
   }
+  Chapter: { // field return type name
+    chapter_image: 'String'
+    chapter_title: 'String'
+    created_at: 'DateTime'
+    episode: 'Episode'
+    episode_id: 'String'
+    id: 'ID'
+    pages: 'Page'
+    publish: 'Boolean'
+    updated_at: 'DateTime'
+  }
+  Episode: { // field return type name
+    chapters: 'Chapter'
+    created_at: 'DateTime'
+    episode_image: 'String'
+    episode_synopsis: 'String'
+    episode_title: 'String'
+    id: 'ID'
+    publish: 'Boolean'
+    season: 'Season'
+    season_id: 'String'
+    updated_at: 'DateTime'
+  }
   Favorite: { // field return type name
     created_at: 'DateTime'
     id: 'Int'
@@ -231,6 +333,14 @@ export interface NexusGenFieldTypeNames {
     deletePost: 'Post'
     publish: 'Post'
     signupUser: 'User'
+  }
+  Page: { // field return type name
+    chapter: 'Chapter'
+    chapter_id: 'String'
+    created_at: 'DateTime'
+    id: 'ID'
+    page_body: 'String'
+    updated_at: 'DateTime'
   }
   Post: { // field return type name
     author: 'User'
@@ -269,6 +379,18 @@ export interface NexusGenFieldTypeNames {
     updated_at: 'DateTime'
     user: 'User'
     user_id: 'String'
+  }
+  Season: { // field return type name
+    created_at: 'DateTime'
+    episodes: 'Episode'
+    id: 'ID'
+    publish: 'Boolean'
+    season_image: 'String'
+    season_synopsis: 'String'
+    season_title: 'String'
+    story: 'Story'
+    story_id: 'String'
+    updated_at: 'DateTime'
   }
   Story: { // field return type name
     created_at: 'DateTime'

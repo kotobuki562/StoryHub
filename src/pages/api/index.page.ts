@@ -20,6 +20,12 @@ import { Review } from "src/pages/api/models/review"
 import { Story } from "src/pages/api/models/story"
 import { QueryMe } from "src/pages/api/querys/user"
 import { QueryStories } from "src/pages/api/querys/story"
+import { Favorite } from "src/pages/api/models/favorite"
+import { Follow } from "src/pages/api/models/follow"
+import { Episode } from "src/pages/api/models/episode"
+import { Chapter } from "src/pages/api/models/chapter"
+import { Page } from "src/pages/api/models/page"
+import { Season } from "src/pages/api/models/season"
 
 export const GQLDate = asNexusMethod(DateTimeResolver, "date")
 
@@ -32,50 +38,6 @@ const isSafe = (acess_token: string, userId: string) => {
     throw new Error("Invalid token")
   }
 }
-
-const Follow = objectType({
-  name: "Follow",
-  definition(t) {
-    t.int("id")
-    t.string("user_id")
-    t.string("follow_id")
-    t.date("created_at")
-    t.field("user", {
-      type: "User",
-      resolve: (parent, args, ctx) => {
-        return prisma.user.findUnique({
-          where: { id: `${parent.user_id}` },
-        })
-      },
-    })
-  },
-})
-
-const Favorite = objectType({
-  name: "Favorite",
-  definition(t) {
-    t.int("id")
-    t.string("user_id")
-    t.string("story_id")
-    t.date("created_at")
-    t.field("user", {
-      type: "User",
-      resolve: (parent, args, ctx) => {
-        return prisma.user.findUnique({
-          where: { id: `${parent.user_id}` },
-        })
-      },
-    })
-    t.field("story", {
-      type: "Story",
-      resolve: (parent, args, ctx) => {
-        return prisma.story.findUnique({
-          where: { id: `${parent.story_id}` },
-        })
-      },
-    })
-  },
-})
 
 const Post = objectType({
   name: "Post",
@@ -355,6 +317,10 @@ export const schema = makeSchema({
     Query,
     Mutation,
     Post,
+    Episode,
+    Chapter,
+    Page,
+    Season,
     Favorite,
     Follow,
     Story,

@@ -1,12 +1,12 @@
 import { objectType } from "nexus"
 import prisma from "src/lib/prisma"
 
-const Category = objectType({
-  name: "Category",
+const Favorite = objectType({
+  name: "Favorite",
   definition(t) {
     t.int("id")
-    t.nullable.string("user_id")
-    t.nullable.string("category_title")
+    t.string("user_id")
+    t.string("story_id")
     t.date("created_at")
     t.field("user", {
       type: "User",
@@ -16,7 +16,15 @@ const Category = objectType({
         })
       },
     })
+    t.field("story", {
+      type: "Story",
+      resolve: (parent, args, ctx) => {
+        return prisma.story.findUnique({
+          where: { id: `${parent.story_id}` },
+        })
+      },
+    })
   },
 })
 
-export { Category }
+export { Favorite }

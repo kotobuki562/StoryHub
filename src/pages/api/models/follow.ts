@@ -1,12 +1,12 @@
 import { objectType } from "nexus"
 import prisma from "src/lib/prisma"
 
-const Category = objectType({
-  name: "Category",
+const Follow = objectType({
+  name: "Follow",
   definition(t) {
     t.int("id")
-    t.nullable.string("user_id")
-    t.nullable.string("category_title")
+    t.string("user_id")
+    t.string("follow_id")
     t.date("created_at")
     t.field("user", {
       type: "User",
@@ -19,4 +19,4 @@ const Category = objectType({
   },
 })
 
-export { Category }
+export { Follow }
