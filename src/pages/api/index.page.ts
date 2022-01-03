@@ -1,6 +1,6 @@
 import { ApolloServer } from "apollo-server-micro"
 import { DateTimeResolver } from "graphql-scalars"
-import { NextApiHandler } from "next"
+import { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import {
   asNexusMethod,
   makeSchema,
@@ -13,13 +13,23 @@ import path from "path"
 import cors from "micro-cors"
 import prisma from "src/lib/prisma"
 import supabase from "src/lib/supabase"
+import jwt from "jsonwebtoken"
 
 export const GQLDate = asNexusMethod(DateTimeResolver, "date")
+
+const isSafe = (acess_token: string, userId: string) => {
+  try {
+    const decodeData = jwt.decode(acess_token)
+    const user_id = decodeData?.sub
+    return userId === user_id ? true : false
+  } catch (error) {
+    throw new Error("Invalid token")
+  }
+}
 
 const Category = objectType({
   name: "Category",
   definition(t) {
-    // idは数値のid
     t.int("id")
     t.nullable.string("user_id")
     t.nullable.string("category_title")
@@ -28,7 +38,7 @@ const Category = objectType({
       type: "User",
       resolve: (parent, args, ctx) => {
         return prisma.user.findUnique({
-          where: { id: parent.user_id },
+          where: { id: `${`${parent.user_id}`}` },
         })
       },
     })
@@ -54,6 +64,77 @@ const User = objectType({
         })
       },
     })
+    t.list.field("categories", {
+      type: "Category",
+      resolve: (parent, args, ctx) => {
+        return prisma.category.findMany({
+          where: {
+            user_id: parent.id,
+          },
+        })
+      },
+    })
+    t.list.field("favorites", {
+      type: "Favorite",
+      resolve: (parent, args, ctx) => {
+        return prisma.favorite.findMany({
+          where: {
+            user_id: parent.id,
+          },
+        })
+      },
+    })
+    t.list.field("reviews", {
+      type: "Review",
+      resolve: (parent, args, ctx) => {
+        return prisma.review.findMany({
+          where: {
+            user_id: parent.id,
+          },
+        })
+      },
+    })
+    t.list.field("follows", {
+      type: "Follow",
+      resolve: (parent, args, ctx) => {
+        return prisma.follow.findMany({
+          where: {
+            user_id: parent.id,
+          },
+        })
+      },
+    })
+  },
+})
+
+const Review = objectType({
+  name: "Review",
+  definition(t) {
+    t.id("id")
+    t.string("user_id")
+    t.string("story_id")
+    t.string("review_title")
+    t.string("review_body")
+    t.int("stars")
+    t.boolean("publish")
+    t.date("created_at")
+    t.nullable.date("updated_at")
+    t.field("user", {
+      type: "User",
+      resolve: (parent, args, ctx) => {
+        return prisma.user.findUnique({
+          where: { id: `${parent.user_id}` },
+        })
+      },
+    })
+    t.field("story", {
+      type: "Story",
+      resolve: (parent, args, ctx) => {
+        return prisma.story.findUnique({
+          where: { id: `${parent.story_id}` },
+        })
+      },
+    })
   },
 })
 
@@ -68,7 +149,7 @@ const Follow = objectType({
       type: "User",
       resolve: (parent, args, ctx) => {
         return prisma.user.findUnique({
-          where: { id: parent.user_id },
+          where: { id: `${parent.user_id}` },
         })
       },
     })
@@ -86,7 +167,7 @@ const Favorite = objectType({
       type: "User",
       resolve: (parent, args, ctx) => {
         return prisma.user.findUnique({
-          where: { id: parent.user_id },
+          where: { id: `${parent.user_id}` },
         })
       },
     })
@@ -94,7 +175,7 @@ const Favorite = objectType({
       type: "Story",
       resolve: (parent, args, ctx) => {
         return prisma.story.findUnique({
-          where: { id: parent.story_id },
+          where: { id: `${parent.story_id}` },
         })
       },
     })
@@ -117,7 +198,7 @@ const Story = objectType({
       resolve: async (parent, _args, _ctx) => {
         return await prisma.user.findUnique({
           where: {
-            id: parent.user_id,
+            id: `${parent.user_id}`,
           },
         })
       },
@@ -159,6 +240,18 @@ const Query = objectType({
       },
     })
 
+    t.field("me", {
+      type: "User",
+      args: {
+        userId: nonNull(stringArg()),
+      },
+      resolve: (_, args) => {
+        return prisma.user.findUnique({
+          where: { id: args.userId },
+        })
+      },
+    })
+
     t.list.field("feed", {
       type: "Post",
       resolve: (_parent, _args) => {
@@ -168,10 +261,82 @@ const Query = objectType({
       },
     })
 
+    // 全て取得する
     t.list.field("categories", {
       type: "Category",
       resolve: (_parent, _args) => {
         return prisma.category.findMany()
+      },
+    })
+
+    t.list.field("users", {
+      type: "User",
+      resolve: (_parent, _args) => {
+        return prisma.user.findMany()
+      },
+    })
+
+    t.list.field("stories", {
+      type: "Story",
+      resolve: (_parent, _args) => {
+        return prisma.story.findMany({
+          where: { publish: true },
+        })
+      },
+    })
+
+    t.list.field("reviews", {
+      type: "Review",
+      resolve: (_parent, _args) => {
+        return prisma.review.findMany({
+          where: { publish: true },
+        })
+      },
+    })
+
+    t.list.field("QueryPageReviews", {
+      type: "Review",
+      args: {
+        page: stringArg({ default: "1" }),
+      },
+      resolve: async (_parent, args) => {
+        const { page } = args
+        const pageSize = 10
+        const skip = pageSize * (Number(page) - 1)
+        const reviews = await prisma.review.findMany({
+          skip,
+          take: pageSize,
+          orderBy: { created_at: "desc" },
+        })
+        return reviews
+      },
+    })
+
+    t.list.field("filterReviewsByUserId", {
+      type: "Review",
+      args: {
+        userId: nonNull(stringArg()),
+      },
+      resolve: async (_parent, args) => {
+        return await prisma.review.findMany({
+          where: {
+            user_id: args.userId,
+          },
+        })
+      },
+    })
+
+    t.list.field("filterReviewsByStoryId", {
+      type: "Review",
+      args: {
+        storyId: nonNull(stringArg()),
+      },
+      resolve: async (_parent, args) => {
+        return await prisma.review.findMany({
+          where: {
+            story_id: args.storyId,
+          },
+        })
       },
     })
 
@@ -222,23 +387,6 @@ const Query = objectType({
         })
       },
     })
-
-    t.list.field("users", {
-      type: "User",
-      resolve: (_parent, _args, ctx) => {
-        return prisma.user.findMany()
-      },
-    })
-
-    t.list.field("stories", {
-      type: "Story",
-      resolve: (_parent, _args) => {
-        return prisma.story.findMany({
-          where: { publish: true },
-        })
-      },
-    })
-
     // UserIdに紐づくStoryを取得
     t.list.field("filterStoriesByUserId", {
       type: "Story",
@@ -298,7 +446,7 @@ const Mutation = objectType({
           .then(res => {
             return prisma.user.create({
               data: {
-                id: res.user.id,
+                id: `${res?.user?.id}`,
                 user_name,
               },
             })
@@ -365,6 +513,7 @@ export const schema = makeSchema({
     Favorite,
     Follow,
     Story,
+    Review,
     Category,
     User,
     GQLDate,
@@ -397,7 +546,10 @@ async function getApolloServerHandler() {
   return apolloServerHandler
 }
 
-const handler: NextApiHandler = async (req, res) => {
+const handler: NextApiHandler = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
   const apolloServerHandler = await getApolloServerHandler()
 
   if (req.method === "OPTIONS") {
@@ -408,4 +560,5 @@ const handler: NextApiHandler = async (req, res) => {
   return apolloServerHandler(req, res)
 }
 
+// @ts-ignore
 export default cors()(handler)
