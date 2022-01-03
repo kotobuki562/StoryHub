@@ -69,6 +69,17 @@ export interface NexusGenObjects {
     title?: string | null; // String
   }
   Query: {};
+  Review: { // root type
+    created_at?: NexusGenScalars['DateTime'] | null; // DateTime
+    id?: string | null; // ID
+    publish?: boolean | null; // Boolean
+    review_body?: string | null; // String
+    review_title?: string | null; // String
+    stars?: number | null; // Int
+    story_id?: string | null; // String
+    updated_at?: NexusGenScalars['DateTime'] | null; // DateTime
+    user_id?: string | null; // String
+  }
   Story: { // root type
     created_at?: NexusGenScalars['DateTime'] | null; // DateTime
     id?: string | null; // ID
@@ -136,6 +147,7 @@ export interface NexusGenFieldTypes {
     title: string | null; // String
   }
   Query: { // field return type
+    QueryPageReviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
     categories: Array<NexusGenRootTypes['Category'] | null> | null; // [Category]
     drafts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     feed: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
@@ -144,10 +156,27 @@ export interface NexusGenFieldTypes {
     filterFollowsByFollowId: Array<NexusGenRootTypes['Follow'] | null> | null; // [Follow]
     filterFollowsByUserId: Array<NexusGenRootTypes['Follow'] | null> | null; // [Follow]
     filterPosts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
+    filterReviewsByStoryId: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
+    filterReviewsByUserId: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
     filterStoriesByUserId: Array<NexusGenRootTypes['Story'] | null> | null; // [Story]
+    me: NexusGenRootTypes['User'] | null; // User
     post: NexusGenRootTypes['Post'] | null; // Post
+    reviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
     stories: Array<NexusGenRootTypes['Story'] | null> | null; // [Story]
     users: Array<NexusGenRootTypes['User'] | null> | null; // [User]
+  }
+  Review: { // field return type
+    created_at: NexusGenScalars['DateTime'] | null; // DateTime
+    id: string | null; // ID
+    publish: boolean | null; // Boolean
+    review_body: string | null; // String
+    review_title: string | null; // String
+    stars: number | null; // Int
+    story: NexusGenRootTypes['Story'] | null; // Story
+    story_id: string | null; // String
+    updated_at: NexusGenScalars['DateTime'] | null; // DateTime
+    user: NexusGenRootTypes['User'] | null; // User
+    user_id: string | null; // String
   }
   Story: { // field return type
     created_at: NexusGenScalars['DateTime'] | null; // DateTime
@@ -161,9 +190,13 @@ export interface NexusGenFieldTypes {
     user_id: string | null; // String
   }
   User: { // field return type
+    categories: Array<NexusGenRootTypes['Category'] | null> | null; // [Category]
     created_at: NexusGenScalars['DateTime'] | null; // DateTime
+    favorites: Array<NexusGenRootTypes['Favorite'] | null> | null; // [Favorite]
+    follows: Array<NexusGenRootTypes['Follow'] | null> | null; // [Follow]
     id: string | null; // ID
     image: string | null; // String
+    reviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
     stories: Array<NexusGenRootTypes['Story'] | null> | null; // [Story]
     updated_at: NexusGenScalars['DateTime'] | null; // DateTime
     user_deal: string | null; // String
@@ -208,6 +241,7 @@ export interface NexusGenFieldTypeNames {
     title: 'String'
   }
   Query: { // field return type name
+    QueryPageReviews: 'Review'
     categories: 'Category'
     drafts: 'Post'
     feed: 'Post'
@@ -216,10 +250,27 @@ export interface NexusGenFieldTypeNames {
     filterFollowsByFollowId: 'Follow'
     filterFollowsByUserId: 'Follow'
     filterPosts: 'Post'
+    filterReviewsByStoryId: 'Review'
+    filterReviewsByUserId: 'Review'
     filterStoriesByUserId: 'Story'
+    me: 'User'
     post: 'Post'
+    reviews: 'Review'
     stories: 'Story'
     users: 'User'
+  }
+  Review: { // field return type name
+    created_at: 'DateTime'
+    id: 'ID'
+    publish: 'Boolean'
+    review_body: 'String'
+    review_title: 'String'
+    stars: 'Int'
+    story: 'Story'
+    story_id: 'String'
+    updated_at: 'DateTime'
+    user: 'User'
+    user_id: 'String'
   }
   Story: { // field return type name
     created_at: 'DateTime'
@@ -233,9 +284,13 @@ export interface NexusGenFieldTypeNames {
     user_id: 'String'
   }
   User: { // field return type name
+    categories: 'Category'
     created_at: 'DateTime'
+    favorites: 'Favorite'
+    follows: 'Follow'
     id: 'ID'
     image: 'String'
+    reviews: 'Review'
     stories: 'Story'
     updated_at: 'DateTime'
     user_deal: 'String'
@@ -262,6 +317,9 @@ export interface NexusGenArgTypes {
     }
   }
   Query: {
+    QueryPageReviews: { // args
+      page: string | null; // String
+    }
     filterFavoritesByStoryId: { // args
       storyId: string; // String!
     }
@@ -277,7 +335,16 @@ export interface NexusGenArgTypes {
     filterPosts: { // args
       searchString?: string | null; // String
     }
+    filterReviewsByStoryId: { // args
+      storyId: string; // String!
+    }
+    filterReviewsByUserId: { // args
+      userId: string; // String!
+    }
     filterStoriesByUserId: { // args
+      userId: string; // String!
+    }
+    me: { // args
       userId: string; // String!
     }
     post: { // args

@@ -48,6 +48,7 @@ type Post {
 }
 
 type Query {
+  QueryPageReviews(page: String = "1"): [Review]
   categories: [Category]
   drafts: [Post]
   feed: [Post]
@@ -56,10 +57,28 @@ type Query {
   filterFollowsByFollowId(followId: String!): [Follow]
   filterFollowsByUserId(userId: String!): [Follow]
   filterPosts(searchString: String): [Post]
+  filterReviewsByStoryId(storyId: String!): [Review]
+  filterReviewsByUserId(userId: String!): [Review]
   filterStoriesByUserId(userId: String!): [Story]
+  me(userId: String!): User
   post(postId: String!): Post
+  reviews: [Review]
   stories: [Story]
   users: [User]
+}
+
+type Review {
+  created_at: DateTime
+  id: ID
+  publish: Boolean
+  review_body: String
+  review_title: String
+  stars: Int
+  story: Story
+  story_id: String
+  updated_at: DateTime
+  user: User
+  user_id: String
 }
 
 type Story {
@@ -75,9 +94,13 @@ type Story {
 }
 
 type User {
+  categories: [Category]
   created_at: DateTime
+  favorites: [Favorite]
+  follows: [Follow]
   id: ID
   image: String
+  reviews: [Review]
   stories: [Story]
   updated_at: DateTime
   user_deal: String
