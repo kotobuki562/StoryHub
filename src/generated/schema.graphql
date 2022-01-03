@@ -10,10 +10,35 @@ type Category {
   user_id: String
 }
 
+type Chapter {
+  chapter_image: String
+  chapter_title: String
+  created_at: DateTime
+  episode: Episode
+  episode_id: String
+  id: ID
+  pages: [Page]
+  publish: Boolean
+  updated_at: DateTime
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
+
+type Episode {
+  chapters: [Chapter]
+  created_at: DateTime
+  episode_image: String
+  episode_synopsis: String
+  episode_title: String
+  id: ID
+  publish: Boolean
+  season: Season
+  season_id: String
+  updated_at: DateTime
+}
 
 type Favorite {
   created_at: DateTime
@@ -39,6 +64,15 @@ type Mutation {
   signupUser(email: String!, user_name: String): User
 }
 
+type Page {
+  chapter: Chapter
+  chapter_id: String
+  created_at: DateTime
+  id: ID
+  page_body: String
+  updated_at: DateTime
+}
+
 type Post {
   author: User
   content: String
@@ -48,10 +82,11 @@ type Post {
 }
 
 type Query {
+  QueryMe(userId: String!): User
   QueryPageReviews(page: String = "1"): [Review]
+  QueryStories: [Story]
   categories: [Category]
   drafts: [Post]
-  feed: [Post]
   filterFavoritesByStoryId(storyId: String!): [Favorite]
   filterFavoritesByUserId(userId: String!): [Favorite]
   filterFollowsByFollowId(followId: String!): [Follow]
@@ -60,10 +95,8 @@ type Query {
   filterReviewsByStoryId(storyId: String!): [Review]
   filterReviewsByUserId(userId: String!): [Review]
   filterStoriesByUserId(userId: String!): [Story]
-  me(userId: String!): User
   post(postId: String!): Post
   reviews: [Review]
-  stories: [Story]
   users: [User]
 }
 
@@ -79,6 +112,19 @@ type Review {
   updated_at: DateTime
   user: User
   user_id: String
+}
+
+type Season {
+  created_at: DateTime
+  episodes: [Episode]
+  id: ID
+  publish: Boolean
+  season_image: String
+  season_synopsis: String
+  season_title: String
+  story: Story
+  story_id: String
+  updated_at: DateTime
 }
 
 type Story {
