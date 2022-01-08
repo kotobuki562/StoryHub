@@ -21,7 +21,9 @@
     "seed": "npx prisma db seed",
     "prisma:format": "npx prisma format",
     "prisma:generate": "npx prisma generate",
-    "studio": "prisma studio --port 7777"
+    "studio": "prisma studio --port 7777",
+    "migrate:init": "prisma migrate dev --name init",
+    "migrate": "npx prisma migrate dev"
   },
   "dependencies": {
     "@apollo/client": "3.5.6",
@@ -52,6 +54,7 @@
     "@types/react": "17.0.38",
     "@typescript-eslint/eslint-plugin": "5.8.1",
     "@typescript-eslint/parser": "5.8.1",
+    "@withshepherd/faker": "^5.5.5",
     "autoprefixer": "^10.4.1",
     "eslint": "8.6.0",
     "eslint-config-next": "12.0.7",

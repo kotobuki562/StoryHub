@@ -21,11 +21,13 @@ const Page = objectType({
     t.field("chapter", {
       type: "Chapter",
       resolve: (parent, args, ctx) => {
-        return prisma.chapter.findUnique({
-          where: {
-            id: `${parent.chapter_id}`,
-          },
-        })
+        return parent.chapter_id
+          ? prisma.chapter.findUnique({
+              where: {
+                id: parent.chapter_id,
+              },
+            })
+          : null
       },
     })
   },

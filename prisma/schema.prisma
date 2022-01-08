@@ -4,7 +4,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("NEXT_PUBLIC_DATABASE_URL")
+  url      = env("NEXT_PUBLIC_TEST_DATABASE_URL")
+  // url      = env("NEXT_PUBLIC_DATABASE_URL")
 }
 
 model User {
@@ -24,11 +25,11 @@ model User {
 
 model Review {
   id           String    @id @unique @default(uuid())
-  user_id      String?
-  story_id     String?
-  review_title String?
-  review_body  String?
-  stars        Int?
+  user_id      String
+  story_id     String
+  review_title String
+  review_body  String
+  stars        Int       @default(0)
   publish      Boolean   @default(false) @db.Boolean
   created_at   DateTime  @default(now())
   updated_at   DateTime?
@@ -46,8 +47,8 @@ model Follow {
 
 model Favorite {
   id         Int      @id @unique @default(autoincrement())
-  user_id    String?
-  story_id   String?
+  user_id    String
+  story_id   String
   created_at DateTime @default(now())
   user       User?    @relation(fields: [user_id], references: [id])
   story      Story?   @relation(fields: [story_id], references: [id])
@@ -55,8 +56,8 @@ model Favorite {
 
 model Story {
   id               String     @id @unique @default(uuid())
-  user_id          String?
-  story_title      String?
+  user_id          String
+  story_title      String
   story_synopsis   String?
   story_image      String?
   story_categories Json?
@@ -71,8 +72,8 @@ model Story {
 
 model Season {
   id                String    @id @unique @default(uuid())
-  story_id          String?
-  season_title      String?
+  story_id          String
+  season_title      String
   season_image      String?
   season_synopsis   String?
   season_categories Json?
@@ -85,8 +86,8 @@ model Season {
 
 model Episode {
   id               String    @id @unique @default(uuid())
-  season_id        String?
-  episode_title    String?
+  season_id        String
+  episode_title    String
   episode_image    String?
   episode_synopsis String?
   publish          Boolean   @default(false) @db.Boolean
@@ -98,8 +99,8 @@ model Episode {
 
 model Chapter {
   id            String    @id @unique @default(uuid())
-  episode_id    String?
-  chapter_title String?
+  episode_id    String
+  chapter_title String
   chapter_image String?
   publish       Boolean   @default(false) @db.Boolean
   created_at    DateTime  @default(now())
@@ -110,8 +111,8 @@ model Chapter {
 
 model Page {
   id         String    @id @unique @default(uuid())
-  chapter_id String?
-  page_body  String?
+  chapter_id String
+  page_body  String
   created_at DateTime  @default(now())
   updated_at DateTime?
   chapter    Chapter?  @relation(fields: [chapter_id], references: [id])
@@ -120,7 +121,7 @@ model Page {
 model Category {
   id             Int      @id @unique @default(autoincrement())
   user_id        String?
-  category_title String?
+  category_title String
   created_at     DateTime @default(now())
   user           User?    @relation(fields: [user_id], references: [id])
 }

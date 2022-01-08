@@ -24,9 +24,11 @@ const Review = objectType({
     t.field("story", {
       type: "Story",
       resolve: (parent, args, ctx) => {
-        return prisma.story.findUnique({
-          where: { id: `${parent.story_id}` },
-        })
+        return parent.story_id
+          ? prisma.story.findUnique({
+              where: { id: parent.story_id },
+            })
+          : null
       },
     })
   },

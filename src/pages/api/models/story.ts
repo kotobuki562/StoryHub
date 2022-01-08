@@ -5,17 +5,54 @@ const Story = objectType({
   name: "Story",
   definition(t) {
     t.id("id")
-    t.nullable.string("user_id")
-    t.nullable.string("story_title")
-    t.nullable.string("story_synopsis")
-    t.nullable.string("story_image")
+    t.string("user_id")
+    t.string("story_title")
+    t.string("story_synopsis")
+    t.string("story_image")
+    // t.string("story_categories")
     t.boolean("publish")
     t.date("created_at")
     t.nullable.date("updated_at")
-    t.nullable.field("user", {
+    t.list.field("seasons", {
+      type: "Season",
+      resolve: (parent, args, ctx) => {
+        return parent.id
+          ? prisma.season.findMany({
+              where: {
+                story_id: parent.id,
+              },
+            })
+          : []
+      },
+    })
+    t.list.field("reviews", {
+      type: "Review",
+      resolve: (parent, args, ctx) => {
+        return parent.id
+          ? prisma.review.findMany({
+              where: {
+                story_id: parent.id,
+              },
+            })
+          : []
+      },
+    })
+    t.list.field("favorites", {
+      type: "Favorite",
+      resolve: (parent, args, ctx) => {
+        return parent.id
+          ? prisma.favorite.findMany({
+              where: {
+                story_id: parent.id,
+              },
+            })
+          : []
+      },
+    })
+    t.field("user", {
       type: "User",
-      resolve: async (parent, _args, _ctx) => {
-        return await prisma.user.findUnique({
+      resolve: (parent, args, ctx) => {
+        return prisma.user.findUnique({
           where: {
             id: `${parent.user_id}`,
           },

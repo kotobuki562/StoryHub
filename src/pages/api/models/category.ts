@@ -11,9 +11,11 @@ const Category = objectType({
     t.field("user", {
       type: "User",
       resolve: (parent, args, ctx) => {
-        return prisma.user.findUnique({
-          where: { id: `${parent.user_id}` },
-        })
+        return parent.user_id
+          ? prisma.user.findUnique({
+              where: { id: parent.user_id },
+            })
+          : null
       },
     })
   },
