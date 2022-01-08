@@ -129,8 +129,11 @@ type Season {
 
 type Story {
   created_at: DateTime
+  favorites: [Favorite]
   id: ID
   publish: Boolean
+  reviews: [Review]
+  seasons: [Season]
   story_image: String
   story_synopsis: String
   story_title: String

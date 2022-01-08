@@ -15,21 +15,25 @@ const Episode = objectType({
     t.list.field("chapters", {
       type: "Chapter",
       resolve: (parent, args, ctx) => {
-        return prisma.chapter.findMany({
-          where: {
-            episode_id: parent.id,
-          },
-        })
+        return parent.id
+          ? prisma.chapter.findMany({
+              where: {
+                episode_id: parent.id,
+              },
+            })
+          : []
       },
     })
     t.field("season", {
       type: "Season",
       resolve: (parent, args, ctx) => {
-        return prisma.season.findUnique({
-          where: {
-            id: `${parent.season_id}`,
-          },
-        })
+        return parent.season_id
+          ? prisma.season.findUnique({
+              where: {
+                id: parent.season_id,
+              },
+            })
+          : null
       },
     })
   },

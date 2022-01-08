@@ -258,8 +258,11 @@ export interface NexusGenFieldTypes {
   }
   Story: { // field return type
     created_at: NexusGenScalars['DateTime'] | null; // DateTime
+    favorites: Array<NexusGenRootTypes['Favorite'] | null> | null; // [Favorite]
     id: string | null; // ID
     publish: boolean | null; // Boolean
+    reviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
+    seasons: Array<NexusGenRootTypes['Season'] | null> | null; // [Season]
     story_image: string | null; // String
     story_synopsis: string | null; // String
     story_title: string | null; // String
@@ -394,8 +397,11 @@ export interface NexusGenFieldTypeNames {
   }
   Story: { // field return type name
     created_at: 'DateTime'
+    favorites: 'Favorite'
     id: 'ID'
     publish: 'Boolean'
+    reviews: 'Review'
+    seasons: 'Season'
     story_image: 'String'
     story_synopsis: 'String'
     story_title: 'String'
