@@ -110,6 +110,7 @@ export interface NexusGenObjects {
     created_at?: NexusGenScalars['DateTime'] | null; // DateTime
     id?: string | null; // ID
     publish?: boolean | null; // Boolean
+    season_categories?: Array<string | null> | null; // [String]
     season_image?: string | null; // String
     season_synopsis?: string | null; // String
     season_title?: string | null; // String
@@ -120,6 +121,7 @@ export interface NexusGenObjects {
     created_at?: NexusGenScalars['DateTime'] | null; // DateTime
     id?: string | null; // ID
     publish?: boolean | null; // Boolean
+    story_categories?: Array<string | null> | null; // [String]
     story_image?: string | null; // String
     story_synopsis?: string | null; // String
     story_title?: string | null; // String
@@ -215,8 +217,12 @@ export interface NexusGenFieldTypes {
   }
   Query: { // field return type
     QueryMe: NexusGenRootTypes['User'] | null; // User
+    QueryMyStories: Array<NexusGenRootTypes['Story'] | null> | null; // [Story]
+    QueryMyStoryById: NexusGenRootTypes['Story'] | null; // Story
     QueryPageReviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
     QueryStories: Array<NexusGenRootTypes['Story'] | null> | null; // [Story]
+    QueryStoryById: NexusGenRootTypes['Story'] | null; // Story
+    QueryUsers: Array<NexusGenRootTypes['User'] | null> | null; // [User]
     categories: Array<NexusGenRootTypes['Category'] | null> | null; // [Category]
     drafts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     filterFavoritesByStoryId: Array<NexusGenRootTypes['Favorite'] | null> | null; // [Favorite]
@@ -229,7 +235,6 @@ export interface NexusGenFieldTypes {
     filterStoriesByUserId: Array<NexusGenRootTypes['Story'] | null> | null; // [Story]
     post: NexusGenRootTypes['Post'] | null; // Post
     reviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
-    users: Array<NexusGenRootTypes['User'] | null> | null; // [User]
   }
   Review: { // field return type
     created_at: NexusGenScalars['DateTime'] | null; // DateTime
@@ -249,6 +254,7 @@ export interface NexusGenFieldTypes {
     episodes: Array<NexusGenRootTypes['Episode'] | null> | null; // [Episode]
     id: string | null; // ID
     publish: boolean | null; // Boolean
+    season_categories: Array<string | null> | null; // [String]
     season_image: string | null; // String
     season_synopsis: string | null; // String
     season_title: string | null; // String
@@ -263,6 +269,7 @@ export interface NexusGenFieldTypes {
     publish: boolean | null; // Boolean
     reviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
     seasons: Array<NexusGenRootTypes['Season'] | null> | null; // [Season]
+    story_categories: Array<string | null> | null; // [String]
     story_image: string | null; // String
     story_synopsis: string | null; // String
     story_title: string | null; // String
@@ -354,8 +361,12 @@ export interface NexusGenFieldTypeNames {
   }
   Query: { // field return type name
     QueryMe: 'User'
+    QueryMyStories: 'Story'
+    QueryMyStoryById: 'Story'
     QueryPageReviews: 'Review'
     QueryStories: 'Story'
+    QueryStoryById: 'Story'
+    QueryUsers: 'User'
     categories: 'Category'
     drafts: 'Post'
     filterFavoritesByStoryId: 'Favorite'
@@ -368,7 +379,6 @@ export interface NexusGenFieldTypeNames {
     filterStoriesByUserId: 'Story'
     post: 'Post'
     reviews: 'Review'
-    users: 'User'
   }
   Review: { // field return type name
     created_at: 'DateTime'
@@ -388,6 +398,7 @@ export interface NexusGenFieldTypeNames {
     episodes: 'Episode'
     id: 'ID'
     publish: 'Boolean'
+    season_categories: 'String'
     season_image: 'String'
     season_synopsis: 'String'
     season_title: 'String'
@@ -402,6 +413,7 @@ export interface NexusGenFieldTypeNames {
     publish: 'Boolean'
     reviews: 'Review'
     seasons: 'Season'
+    story_categories: 'String'
     story_image: 'String'
     story_synopsis: 'String'
     story_title: 'String'
@@ -444,10 +456,40 @@ export interface NexusGenArgTypes {
   }
   Query: {
     QueryMe: { // args
+      accessToken: string; // String!
+      userId: string; // String!
+    }
+    QueryMyStories: { // args
+      accessToken: string; // String!
+      page: number; // Int!
+      pageSize: number; // Int!
+      searchCategory?: string | null; // String
+      searchTitle?: string | null; // String
+      searchUserId?: string | null; // String
+      userId: string; // String!
+    }
+    QueryMyStoryById: { // args
+      accessToken: string; // String!
+      id: string; // String!
       userId: string; // String!
     }
     QueryPageReviews: { // args
       page: string | null; // String
+    }
+    QueryStories: { // args
+      page: number; // Int!
+      pageSize: number; // Int!
+      searchCategory?: string | null; // String
+      searchTitle?: string | null; // String
+      searchUserId?: string | null; // String
+    }
+    QueryStoryById: { // args
+      id: string; // String!
+    }
+    QueryUsers: { // args
+      page: number; // Int!
+      pageSize: number; // Int!
+      searchUserName?: string | null; // String
     }
     filterFavoritesByStoryId: { // args
       storyId: string; // String!

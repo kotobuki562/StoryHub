@@ -9,6 +9,7 @@ const createStories = (): Prisma.StoryCreateInput[] => {
       story_title: faker.lorem.sentence(),
       story_synopsis: faker.lorem.paragraph(),
       story_image: faker.image.imageUrl(),
+      story_categories: ["フィクション", "SF", "ホラー"],
     })
   }
   return data

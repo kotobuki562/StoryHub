@@ -3,6 +3,7 @@ import { DateTimeResolver } from "graphql-scalars"
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import {
   asNexusMethod,
+  intArg,
   makeSchema,
   nonNull,
   nullable,
@@ -21,8 +22,13 @@ import { Category } from "src/pages/api/models/category"
 import { User } from "src/pages/api/models/user"
 import { Review } from "src/pages/api/models/review"
 import { Story } from "src/pages/api/models/story"
-import { QueryMe } from "src/pages/api/querys/user"
-import { QueryStories } from "src/pages/api/querys/story"
+import { QueryMe, QueryUsers } from "src/pages/api/querys/user"
+import {
+  QueryStories,
+  QueryMyStories,
+  QueryStoryById,
+  QueryMyStoryById,
+} from "src/pages/api/querys/story"
 import { Favorite } from "src/pages/api/models/favorite"
 import { Follow } from "src/pages/api/models/follow"
 import { Episode } from "src/pages/api/models/episode"
@@ -32,7 +38,7 @@ import { Season } from "src/pages/api/models/season"
 
 export const GQLDate = asNexusMethod(DateTimeResolver, "date")
 
-const isSafe = (acess_token: string, userId: string) => {
+export const isSafe = (acess_token: string, userId: string) => {
   try {
     const decodeData = jwt.decode(acess_token)
     const user_id = decodeData?.sub
@@ -40,6 +46,16 @@ const isSafe = (acess_token: string, userId: string) => {
   } catch (error) {
     throw new Error("Invalid token")
   }
+}
+
+export const defaultArgs = {
+  page: nonNull(intArg()),
+  pageSize: nonNull(intArg()),
+}
+
+export const authArgs = {
+  userId: nonNull(stringArg()),
+  accessToken: nonNull(stringArg()),
 }
 
 const Post = objectType({
@@ -76,7 +92,15 @@ const Query = objectType({
       },
     })
 
+    // ユーザーのクエリ
     QueryMe(t)
+    QueryUsers(t)
+
+    // ストーリーのクエリ
+    QueryStories(t)
+    QueryMyStories(t)
+    QueryStoryById(t)
+    QueryMyStoryById(t)
 
     // 全て取得する
     t.list.field("categories", {
@@ -85,15 +109,6 @@ const Query = objectType({
         return prisma.category.findMany()
       },
     })
-
-    t.list.field("users", {
-      type: "User",
-      resolve: (_parent, _args) => {
-        return prisma.user.findMany()
-      },
-    })
-
-    QueryStories(t)
 
     t.list.field("reviews", {
       type: "Review",
@@ -329,6 +344,7 @@ export const schema = makeSchema({
     Story,
     Review,
     Category,
+    ,
     User,
     GQLDate,
   ],

@@ -15,10 +15,10 @@ export async function main() {
   try {
     console.log(`Start seeding ...`)
     for (const u of createPages()) {
-      const page = await prisma.page.create({
+      const story = await prisma.page.create({
         data: u,
       })
-      console.log(`Created page with id: ${page.id}`)
+      console.log(`Created story with id: ${story.id}`)
     }
     console.log(`Seeding finished.`)
   } catch (err) {

@@ -82,9 +82,13 @@ type Post {
 }
 
 type Query {
-  QueryMe(userId: String!): User
+  QueryMe(accessToken: String!, userId: String!): User
+  QueryMyStories(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Story]
+  QueryMyStoryById(accessToken: String!, id: String!, userId: String!): Story
   QueryPageReviews(page: String = "1"): [Review]
-  QueryStories: [Story]
+  QueryStories(page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String): [Story]
+  QueryStoryById(id: String!): Story
+  QueryUsers(page: Int!, pageSize: Int!, searchUserName: String): [User]
   categories: [Category]
   drafts: [Post]
   filterFavoritesByStoryId(storyId: String!): [Favorite]
@@ -97,7 +101,6 @@ type Query {
   filterStoriesByUserId(userId: String!): [Story]
   post(postId: String!): Post
   reviews: [Review]
-  users: [User]
 }
 
 type Review {
@@ -119,6 +122,7 @@ type Season {
   episodes: [Episode]
   id: ID
   publish: Boolean
+  season_categories: [String]
   season_image: String
   season_synopsis: String
   season_title: String
@@ -134,6 +138,7 @@ type Story {
   publish: Boolean
   reviews: [Review]
   seasons: [Season]
+  story_categories: [String]
   story_image: String
   story_synopsis: String
   story_title: String

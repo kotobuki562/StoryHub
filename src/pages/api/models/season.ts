@@ -9,7 +9,7 @@ const Season = objectType({
     t.string("season_title")
     t.string("season_image")
     t.string("season_synopsis")
-    // t.string("season_categories")
+    t.list.string("season_categories")
     t.boolean("publish")
     t.date("created_at")
     t.nullable.date("updated_at")
