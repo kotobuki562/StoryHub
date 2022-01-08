@@ -17,16 +17,22 @@
     "prettier": "prettier --check .",
     "fix": "run-s -l -c fix:lint fix:prettier",
     "fix:lint": "next lint --fix",
-    "fix:prettier": "prettier --write ."
+    "fix:prettier": "prettier --write .",
+    "seed": "npx prisma db seed",
+    "prisma:format": "npx prisma format",
+    "prisma:generate": "npx prisma generate",
+    "studio": "prisma studio --port 7777"
   },
   "dependencies": {
     "@apollo/client": "3.5.6",
     "@prisma/client": "^3.7.0",
     "@supabase/supabase-js": "^1.29.1",
+    "apollo-server-express": "^3.6.1",
     "apollo-server-micro": "3.6.1",
     "express": "4.17.2",
     "graphql": "15.8.0",
     "graphql-scalars": "1.14.1",
+    "graphql-subscriptions": "^2.0.0",
     "graphql-tag": "2.12.6",
     "jsonwebtoken": "^8.5.1",
     "micro": "9.3.4",
@@ -35,7 +41,8 @@
     "nexus": "1.1.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-markdown": "7.1.1"
+    "react-markdown": "7.1.1",
+    "subscriptions-transport-ws": "^0.11.0"
   },
   "devDependencies": {
     "@types/graphql": "14.5.0",

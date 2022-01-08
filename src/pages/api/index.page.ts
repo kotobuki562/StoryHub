@@ -9,6 +9,9 @@ import {
   objectType,
   stringArg,
 } from "nexus"
+import { SubscriptionServer } from "subscriptions-transport-ws"
+import { makeExecutableSchema } from "@graphql-tools/schema"
+import { PubSub } from "graphql-subscriptions"
 import path from "path"
 import cors from "micro-cors"
 import prisma from "src/lib/prisma"
