@@ -83,11 +83,16 @@ type Post {
 
 type Query {
   QueryMe(accessToken: String!, userId: String!): User
+  QueryMySeasonById(accessToken: String!, id: String!, page: Int!, pageSize: Int!, userId: String!): Season
+  QueryMySeasons(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Season]
   QueryMyStories(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Story]
   QueryMyStoryById(accessToken: String!, id: String!, userId: String!): Story
   QueryPageReviews(page: String = "1"): [Review]
+  QuerySeasonById(id: String!): Season
+  QuerySeasons(page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String): [Season]
   QueryStories(page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String): [Story]
   QueryStoryById(id: String!): Story
+  QueryUserById(id: String!): User
   QueryUsers(page: Int!, pageSize: Int!, searchUserName: String): [User]
   categories: [Category]
   drafts: [Post]
@@ -154,8 +159,8 @@ type User {
   follows: [Follow]
   id: ID
   image: String
-  reviews: [Review]
-  stories: [Story]
+  reviews(reviewAccessToken: String!, reviewPage: Int!, reviewPageSize: Int!): [Review]
+  stories(storyAccessToken: String!, storyPage: Int!, storyPageSize: Int!): [Story]
   updated_at: DateTime
   user_deal: String
   user_name: String

@@ -22,13 +22,19 @@ import { Category } from "src/pages/api/models/category"
 import { User } from "src/pages/api/models/user"
 import { Review } from "src/pages/api/models/review"
 import { Story } from "src/pages/api/models/story"
-import { QueryMe, QueryUsers } from "src/pages/api/querys/user"
+import { QueryMe, QueryUserById, QueryUsers } from "src/pages/api/querys/user"
 import {
   QueryStories,
   QueryMyStories,
   QueryStoryById,
   QueryMyStoryById,
 } from "src/pages/api/querys/story"
+import {
+  QuerySeasons,
+  QuerySeasonById,
+  QueryMySeasons,
+  QueryMySeasonById,
+} from "src/pages/api/querys/season"
 import { Favorite } from "src/pages/api/models/favorite"
 import { Follow } from "src/pages/api/models/follow"
 import { Episode } from "src/pages/api/models/episode"
@@ -43,6 +49,16 @@ export const isSafe = (acess_token: string, userId: string) => {
     const decodeData = jwt.decode(acess_token)
     const user_id = decodeData?.sub
     return userId === user_id ? true : false
+  } catch (error) {
+    throw new Error("Invalid token")
+  }
+}
+
+export const decodeUserId = (acess_token: string) => {
+  try {
+    const decodeData = jwt.decode(acess_token)
+    const user_id = decodeData?.sub
+    return user_id
   } catch (error) {
     throw new Error("Invalid token")
   }
@@ -94,6 +110,7 @@ const Query = objectType({
 
     // ユーザーのクエリ
     QueryMe(t)
+    QueryUserById(t)
     QueryUsers(t)
 
     // ストーリーのクエリ
@@ -101,6 +118,12 @@ const Query = objectType({
     QueryMyStories(t)
     QueryStoryById(t)
     QueryMyStoryById(t)
+
+    // シーズンのクエリ
+    QuerySeasons(t)
+    QuerySeasonById(t)
+    QueryMySeasons(t)
+    QueryMySeasonById(t)
 
     // 全て取得する
     t.list.field("categories", {
