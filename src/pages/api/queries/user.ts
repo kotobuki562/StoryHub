@@ -1,7 +1,7 @@
 import { nonNull, nullable, ObjectDefinitionBlock } from "nexus/dist/core"
 import { stringArg } from "nexus"
 import prisma from "src/lib/prisma"
-import { defaultArgs, isSafe, authArgs } from "../index.page"
+import { defaultArgs, decodeUserId } from "../index.page"
 
 const QueryUsers = (t: ObjectDefinitionBlock<"Query">) => {
   return t.list.field("QueryUsers", {
@@ -45,14 +45,12 @@ const QueryMe = (t: ObjectDefinitionBlock<"Query">) => {
   return t.field("QueryMe", {
     type: "User",
     args: {
-      ...authArgs,
+      accessToken: nonNull(stringArg()),
     },
     resolve: (_, args) => {
-      return isSafe(args.accessToken, args.userId)
-        ? prisma.user.findUnique({
-            where: { id: args.userId },
-          })
-        : null
+      return prisma.user.findUnique({
+        where: { id: `${decodeUserId(args.accessToken)}` },
+      })
     },
   })
 }

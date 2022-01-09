@@ -9,7 +9,6 @@ import {
   nullable,
   objectType,
   stringArg,
-  subscriptionType,
 } from "nexus"
 import { SubscriptionServer } from "subscriptions-transport-ws"
 import { makeExecutableSchema } from "@graphql-tools/schema"
@@ -22,7 +21,7 @@ import { Category } from "src/pages/api/models/category"
 import { User } from "src/pages/api/models/user"
 import { Review } from "src/pages/api/models/review"
 import { Story } from "src/pages/api/models/story"
-import { QueryMe, QueryUserById, QueryUsers } from "src/pages/api/querys/user"
+import { QueryMe, QueryUserById, QueryUsers } from "src/pages/api/queries/user"
 import {
   QueryStories,
   QueryMyStories,
@@ -30,7 +29,7 @@ import {
   QueryMyStoryById,
   QueryStoriesCountByUnPublish,
   QueryStoriesCountByPublish,
-} from "src/pages/api/querys/story"
+} from "src/pages/api/queries/story"
 import {
   QuerySeasons,
   QuerySeasonById,
@@ -38,7 +37,15 @@ import {
   QueryMySeasonById,
   QuerySeasonsCountByPublish,
   QuerySeasonsCountByUnPublish,
-} from "src/pages/api/querys/season"
+} from "src/pages/api/queries/season"
+import {
+  QueryEpisodes,
+  QueryEpisodeById,
+  QueryMyEpisodes,
+  QueryMyEpisodeById,
+  QueryEpisodesCountByPublish,
+  QueryEpisodesCountByUnPublish,
+} from "src/pages/api/queries/episode"
 import { Favorite } from "src/pages/api/models/favorite"
 import { Follow } from "src/pages/api/models/follow"
 import { Episode } from "src/pages/api/models/episode"
@@ -133,6 +140,14 @@ const Query = objectType({
     QueryMySeasonById(t)
     QuerySeasonsCountByPublish(t)
     QuerySeasonsCountByUnPublish(t)
+
+    // エピソードのクエリ
+    QueryEpisodes(t)
+    QueryEpisodeById(t)
+    QueryMyEpisodes(t)
+    QueryMyEpisodeById(t)
+    QueryEpisodesCountByPublish(t)
+    QueryEpisodesCountByUnPublish(t)
 
     // 全て取得する
     t.list.field("categories", {
@@ -362,25 +377,10 @@ const Mutation = objectType({
   },
 })
 
-const Subscription = subscriptionType({
-  definition(t) {
-    t.field("users", {
-      type: "User",
-      subscribe: (_, __, ctx) => {
-        return ctx.pubsub.asyncInterrator("users")
-      },
-      resolve: payload => {
-        return payload
-      },
-    })
-  },
-})
-
 export const schema = makeSchema({
   types: [
     Query,
     Mutation,
-    Subscription,
     Post,
     Episode,
     Chapter,
@@ -398,18 +398,18 @@ export const schema = makeSchema({
     typegen: path.join(process.cwd(), "src/generated/nexus-typegen.ts"),
     schema: path.join(process.cwd(), "src/generated/schema.graphql"),
   },
-  contextType: {
-    module: require.resolve("./context"),
-    export: "Context",
-  },
-  sourceTypes: {
-    modules: [
-      {
-        module: "@prisma/client",
-        alias: "prisma",
-      },
-    ],
-  },
+  // contextType: {
+  //   module: require.resolve("./context"),
+  //   export: "Context",
+  // },
+  // sourceTypes: {
+  //   modules: [
+  //     {
+  //       module: "@prisma/client",
+  //       alias: "prisma",
+  //     },
+  //   ],
+  // },
 })
 
 export const config = {

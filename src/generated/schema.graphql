@@ -17,7 +17,7 @@ type Chapter {
   episode: Episode
   episode_id: String
   id: ID
-  pages: [Page]
+  pages(pageAccessToken: String, pagePage: Int!, pagePageSize: Int!, pageUserId: String): [Page]
   publish: Boolean
   updated_at: DateTime
 }
@@ -28,7 +28,7 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 scalar DateTime
 
 type Episode {
-  chapters: [Chapter]
+  chapters(chapterAccessToken: String, chapterPage: Int!, chapterPageSize: Int!, chapterUserId: String): [Chapter]
   created_at: DateTime
   episode_image: String
   episode_synopsis: String
@@ -82,7 +82,13 @@ type Post {
 }
 
 type Query {
-  QueryMe(accessToken: String!, userId: String!): User
+  QueryEpisodeById(id: String!): Episode
+  QueryEpisodes(page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String): [Episode]
+  QueryEpisodesCountByPublish: Int
+  QueryEpisodesCountByUnPublish: Int
+  QueryMe(accessToken: String!): User
+  QueryMyEpisodeById(accessToken: String!, id: String!, page: Int!, pageSize: Int!, userId: String!): Episode
+  QueryMyEpisodes(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String, userId: String!): [Episode]
   QueryMySeasonById(accessToken: String!, id: String!, page: Int!, pageSize: Int!, userId: String!): Season
   QueryMySeasons(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Season]
   QueryMyStories(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Story]
@@ -128,7 +134,7 @@ type Review {
 
 type Season {
   created_at: DateTime
-  episodes: [Episode]
+  episodes(episodeAccessToken: String, episodePage: Int!, episodePageSize: Int!, episodeUserId: String): [Episode]
   id: ID
   publish: Boolean
   season_categories: [String]
@@ -146,7 +152,7 @@ type Story {
   id: ID
   publish: Boolean
   reviews: [Review]
-  seasons: [Season]
+  seasons(seasonAccessToken: String, seasonPage: Int!, seasonPageSize: Int!, seasonUserId: String): [Season]
   story_categories: [String]
   story_image: String
   story_synopsis: String

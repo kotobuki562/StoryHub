@@ -1,17 +1,13 @@
-import { objectType } from "nexus"
+import { intArg, nonNull, nullable, objectType, stringArg } from "nexus"
 import prisma from "src/lib/prisma"
+import { isSafe } from "../index.page"
 
-// model Chapter {
-//   id            String    @id @unique @default(uuid())
-//   episode_id    String
-//   chapter_title String
-//   chapter_image String?
-//   publish       Boolean   @default(false) @db.Boolean
-//   created_at    DateTime  @default(now())
-//   updated_at    DateTime?
-//   pages         Page[]
-//   episode       Episode?  @relation(fields: [episode_id], references: [id])
-// }
+const pageArgs = {
+  pageAccessToken: nullable(stringArg()),
+  pageUserId: nullable(stringArg()),
+  pagePage: nonNull(intArg()),
+  pagePageSize: nonNull(intArg()),
+}
 
 const Chapter = objectType({
   name: "Chapter",
@@ -25,11 +21,31 @@ const Chapter = objectType({
     t.nullable.date("updated_at")
     t.list.field("pages", {
       type: "Page",
+      args: pageArgs,
       resolve: (parent, args, ctx) => {
-        return parent.id
+        const { pageAccessToken, pageUserId, pagePage, pagePageSize } = args
+        const skip = pagePageSize * (pagePage - 1)
+        if (
+          pageAccessToken &&
+          pageUserId &&
+          isSafe(pageAccessToken, pageUserId)
+        ) {
+          return prisma.page.findMany({
+            skip,
+            take: pagePageSize,
+            orderBy: { created_at: "desc" },
+            where: {
+              chapter_id: `${parent.id}`,
+            },
+          })
+        }
+        return parent.publish
           ? prisma.page.findMany({
+              skip,
+              take: pagePageSize,
+              orderBy: { created_at: "desc" },
               where: {
-                chapter_id: parent.id,
+                chapter_id: `${parent.id}`,
               },
             })
           : []
