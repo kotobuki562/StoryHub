@@ -9,10 +9,10 @@ import {
   nullable,
   objectType,
   stringArg,
+  subscriptionType,
 } from "nexus"
 import { SubscriptionServer } from "subscriptions-transport-ws"
 import { makeExecutableSchema } from "@graphql-tools/schema"
-import { PubSub } from "graphql-subscriptions"
 import path from "path"
 import cors from "micro-cors"
 import prisma from "src/lib/prisma"
@@ -28,12 +28,16 @@ import {
   QueryMyStories,
   QueryStoryById,
   QueryMyStoryById,
+  QueryStoriesCountByUnPublish,
+  QueryStoriesCountByPublish,
 } from "src/pages/api/querys/story"
 import {
   QuerySeasons,
   QuerySeasonById,
   QueryMySeasons,
   QueryMySeasonById,
+  QuerySeasonsCountByPublish,
+  QuerySeasonsCountByUnPublish,
 } from "src/pages/api/querys/season"
 import { Favorite } from "src/pages/api/models/favorite"
 import { Follow } from "src/pages/api/models/follow"
@@ -41,6 +45,7 @@ import { Episode } from "src/pages/api/models/episode"
 import { Chapter } from "src/pages/api/models/chapter"
 import { Page } from "src/pages/api/models/page"
 import { Season } from "src/pages/api/models/season"
+import { context } from "./context"
 
 export const GQLDate = asNexusMethod(DateTimeResolver, "date")
 
@@ -118,12 +123,16 @@ const Query = objectType({
     QueryMyStories(t)
     QueryStoryById(t)
     QueryMyStoryById(t)
+    QueryStoriesCountByUnPublish(t)
+    QueryStoriesCountByPublish(t)
 
     // シーズンのクエリ
     QuerySeasons(t)
     QuerySeasonById(t)
     QueryMySeasons(t)
     QueryMySeasonById(t)
+    QuerySeasonsCountByPublish(t)
+    QuerySeasonsCountByUnPublish(t)
 
     // 全て取得する
     t.list.field("categories", {
@@ -353,10 +362,25 @@ const Mutation = objectType({
   },
 })
 
+const Subscription = subscriptionType({
+  definition(t) {
+    t.field("users", {
+      type: "User",
+      subscribe: (_, __, ctx) => {
+        return ctx.pubsub.asyncInterrator("users")
+      },
+      resolve: payload => {
+        return payload
+      },
+    })
+  },
+})
+
 export const schema = makeSchema({
   types: [
     Query,
     Mutation,
+    Subscription,
     Post,
     Episode,
     Chapter,
@@ -367,13 +391,24 @@ export const schema = makeSchema({
     Story,
     Review,
     Category,
-    ,
     User,
     GQLDate,
   ],
   outputs: {
     typegen: path.join(process.cwd(), "src/generated/nexus-typegen.ts"),
     schema: path.join(process.cwd(), "src/generated/schema.graphql"),
+  },
+  contextType: {
+    module: require.resolve("./context"),
+    export: "Context",
+  },
+  sourceTypes: {
+    modules: [
+      {
+        module: "@prisma/client",
+        alias: "prisma",
+      },
+    ],
   },
 })
 
@@ -383,7 +418,7 @@ export const config = {
   },
 }
 
-const apolloServer = new ApolloServer({ schema })
+const apolloServer = new ApolloServer({ schema, context: context })
 
 let apolloServerHandler: NextApiHandler
 

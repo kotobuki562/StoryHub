@@ -1,15 +1,16 @@
 import { intArg, nonNull, objectType, stringArg } from "nexus"
 import prisma from "src/lib/prisma"
 import { isSafe } from "../index.page"
+import { nullable } from "nexus/dist/core"
 
 const postArgs = {
-  storyAccessToken: nonNull(stringArg()),
+  storyAccessToken: nullable(stringArg()),
   storyPage: nonNull(intArg()),
   storyPageSize: nonNull(intArg()),
 }
 
 const reviewArgs = {
-  reviewAccessToken: nonNull(stringArg()),
+  reviewAccessToken: nullable(stringArg()),
   reviewPage: nonNull(intArg()),
   reviewPageSize: nonNull(intArg()),
 }
@@ -30,7 +31,7 @@ const User = objectType({
       resolve: (parent, args, ctx) => {
         const { storyAccessToken, storyPage, storyPageSize } = args
         const skip = storyPageSize * (Number(storyPage) - 1)
-        return isSafe(storyAccessToken, `${parent.id}`)
+        return storyAccessToken && isSafe(storyAccessToken, `${parent.id}`)
           ? prisma.story.findMany({
               skip,
               take: storyPageSize,
@@ -56,7 +57,7 @@ const User = objectType({
       resolve: (parent, args, ctx) => {
         const { reviewAccessToken, reviewPage, reviewPageSize } = args
         const skip = reviewPageSize * (Number(reviewPage) - 1)
-        return isSafe(reviewAccessToken, `${parent.id}`)
+        return reviewAccessToken && isSafe(reviewAccessToken, `${parent.id}`)
           ? prisma.review.findMany({
               skip,
               take: reviewPageSize,

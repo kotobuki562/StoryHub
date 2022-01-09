@@ -90,7 +90,11 @@ type Query {
   QueryPageReviews(page: String = "1"): [Review]
   QuerySeasonById(id: String!): Season
   QuerySeasons(page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String): [Season]
+  QuerySeasonsCountByPublish: Int
+  QuerySeasonsCountByUnPublish: Int
   QueryStories(page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String): [Story]
+  QueryStoriesCountByPublish: Int
+  QueryStoriesCountByUnPublish: Int
   QueryStoryById(id: String!): Story
   QueryUserById(id: String!): User
   QueryUsers(page: Int!, pageSize: Int!, searchUserName: String): [User]
@@ -159,8 +163,8 @@ type User {
   follows: [Follow]
   id: ID
   image: String
-  reviews(reviewAccessToken: String!, reviewPage: Int!, reviewPageSize: Int!): [Review]
-  stories(storyAccessToken: String!, storyPage: Int!, storyPageSize: Int!): [Story]
+  reviews(reviewAccessToken: String, reviewPage: Int!, reviewPageSize: Int!): [Review]
+  stories(storyAccessToken: String, storyPage: Int!, storyPageSize: Int!): [Story]
   updated_at: DateTime
   user_deal: String
   user_name: String

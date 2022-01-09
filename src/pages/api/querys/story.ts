@@ -1,4 +1,5 @@
 import {
+  booleanArg,
   nonNull,
   nullable,
   ObjectDefinitionBlock,
@@ -101,4 +102,37 @@ const QueryMyStoryById = (t: ObjectDefinitionBlock<"Query">) => {
   })
 }
 
-export { QueryStories, QueryMyStories, QueryStoryById, QueryMyStoryById }
+const QueryStoriesCountByPublish = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryStoriesCountByPublish", {
+    type: "Int",
+    resolve: (_parent, args) => {
+      return prisma.story.count({
+        where: {
+          publish: true,
+        },
+      })
+    },
+  })
+}
+
+const QueryStoriesCountByUnPublish = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryStoriesCountByUnPublish", {
+    type: "Int",
+    resolve: (_parent, args) => {
+      return prisma.story.count({
+        where: {
+          publish: false,
+        },
+      })
+    },
+  })
+}
+
+export {
+  QueryStories,
+  QueryMyStories,
+  QueryStoryById,
+  QueryMyStoryById,
+  QueryStoriesCountByPublish,
+  QueryStoriesCountByUnPublish,
+}

@@ -104,4 +104,37 @@ const QueryMySeasonById = (t: ObjectDefinitionBlock<"Query">) => {
   })
 }
 
-export { QuerySeasons, QuerySeasonById, QueryMySeasons, QueryMySeasonById }
+const QuerySeasonsCountByPublish = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QuerySeasonsCountByPublish", {
+    type: "Int",
+    resolve: (_parent, args) => {
+      return prisma.season.count({
+        where: {
+          publish: true,
+        },
+      })
+    },
+  })
+}
+
+const QuerySeasonsCountByUnPublish = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QuerySeasonsCountByUnPublish", {
+    type: "Int",
+    resolve: (_parent, args) => {
+      return prisma.season.count({
+        where: {
+          publish: false,
+        },
+      })
+    },
+  })
+}
+
+export {
+  QuerySeasons,
+  QuerySeasonById,
+  QueryMySeasons,
+  QueryMySeasonById,
+  QuerySeasonsCountByPublish,
+  QuerySeasonsCountByUnPublish,
+}

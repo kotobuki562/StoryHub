@@ -224,7 +224,11 @@ export interface NexusGenFieldTypes {
     QueryPageReviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
     QuerySeasonById: NexusGenRootTypes['Season'] | null; // Season
     QuerySeasons: Array<NexusGenRootTypes['Season'] | null> | null; // [Season]
+    QuerySeasonsCountByPublish: number | null; // Int
+    QuerySeasonsCountByUnPublish: number | null; // Int
     QueryStories: Array<NexusGenRootTypes['Story'] | null> | null; // [Story]
+    QueryStoriesCountByPublish: number | null; // Int
+    QueryStoriesCountByUnPublish: number | null; // Int
     QueryStoryById: NexusGenRootTypes['Story'] | null; // Story
     QueryUserById: NexusGenRootTypes['User'] | null; // User
     QueryUsers: Array<NexusGenRootTypes['User'] | null> | null; // [User]
@@ -373,7 +377,11 @@ export interface NexusGenFieldTypeNames {
     QueryPageReviews: 'Review'
     QuerySeasonById: 'Season'
     QuerySeasons: 'Season'
+    QuerySeasonsCountByPublish: 'Int'
+    QuerySeasonsCountByUnPublish: 'Int'
     QueryStories: 'Story'
+    QueryStoriesCountByPublish: 'Int'
+    QueryStoriesCountByUnPublish: 'Int'
     QueryStoryById: 'Story'
     QueryUserById: 'User'
     QueryUsers: 'User'
@@ -560,12 +568,12 @@ export interface NexusGenArgTypes {
   }
   User: {
     reviews: { // args
-      reviewAccessToken: string; // String!
+      reviewAccessToken?: string | null; // String
       reviewPage: number; // Int!
       reviewPageSize: number; // Int!
     }
     stories: { // args
-      storyAccessToken: string; // String!
+      storyAccessToken?: string | null; // String
       storyPage: number; // Int!
       storyPageSize: number; // Int!
     }
