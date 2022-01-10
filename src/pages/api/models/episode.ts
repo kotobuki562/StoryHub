@@ -1,5 +1,13 @@
-import { objectType } from "nexus"
+import { intArg, nonNull, nullable, objectType, stringArg } from "nexus"
 import prisma from "src/lib/prisma"
+import { isSafe } from "../index.page"
+
+const chapterArgs = {
+  chapterAccessToken: nullable(stringArg()),
+  chapterUserId: nullable(stringArg()),
+  chapterPage: nonNull(intArg()),
+  chapterPageSize: nonNull(intArg()),
+}
 
 const Episode = objectType({
   name: "Episode",
@@ -14,14 +22,36 @@ const Episode = objectType({
     t.nullable.date("updated_at")
     t.list.field("chapters", {
       type: "Chapter",
+      args: chapterArgs,
       resolve: (parent, args, ctx) => {
-        return parent.id
+        const {
+          chapterAccessToken,
+          chapterUserId,
+          chapterPage,
+          chapterPageSize,
+        } = args
+        const skip = chapterPageSize * (chapterPage - 1)
+        return chapterAccessToken &&
+          chapterUserId &&
+          isSafe(chapterAccessToken, chapterUserId)
           ? prisma.chapter.findMany({
+              skip,
+              take: chapterPageSize,
+              orderBy: { created_at: "desc" },
               where: {
-                episode_id: parent.id,
+                episode_id: `${parent.id}`,
               },
             })
-          : []
+          : prisma.chapter.findMany({
+              skip,
+              take: chapterPageSize,
+
+              orderBy: { created_at: "desc" },
+              where: {
+                episode_id: `${parent.id}`,
+                publish: true,
+              },
+            })
       },
     })
     t.field("season", {

@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -60,7 +61,7 @@ model Story {
   story_title      String
   story_synopsis   String?
   story_image      String?
-  story_categories Json?
+  story_categories String[]
   publish          Boolean    @default(false) @db.Boolean
   created_at       DateTime   @default(now())
   updated_at       DateTime?
@@ -76,7 +77,7 @@ model Season {
   season_title      String
   season_image      String?
   season_synopsis   String?
-  season_categories Json?
+  season_categories String[]
   publish           Boolean   @default(false) @db.Boolean
   created_at        DateTime  @default(now())
   updated_at        DateTime?

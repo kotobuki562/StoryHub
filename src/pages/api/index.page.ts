@@ -3,6 +3,7 @@ import { DateTimeResolver } from "graphql-scalars"
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import {
   asNexusMethod,
+  intArg,
   makeSchema,
   nonNull,
   nullable,
@@ -11,7 +12,6 @@ import {
 } from "nexus"
 import { SubscriptionServer } from "subscriptions-transport-ws"
 import { makeExecutableSchema } from "@graphql-tools/schema"
-import { PubSub } from "graphql-subscriptions"
 import path from "path"
 import cors from "micro-cors"
 import prisma from "src/lib/prisma"
@@ -21,18 +21,42 @@ import { Category } from "src/pages/api/models/category"
 import { User } from "src/pages/api/models/user"
 import { Review } from "src/pages/api/models/review"
 import { Story } from "src/pages/api/models/story"
-import { QueryMe } from "src/pages/api/querys/user"
-import { QueryStories } from "src/pages/api/querys/story"
+import { QueryMe, QueryUserById, QueryUsers } from "src/pages/api/queries/user"
+import {
+  QueryStories,
+  QueryMyStories,
+  QueryStoryById,
+  QueryMyStoryById,
+  QueryStoriesCountByUnPublish,
+  QueryStoriesCountByPublish,
+} from "src/pages/api/queries/story"
+import {
+  QuerySeasons,
+  QuerySeasonById,
+  QueryMySeasons,
+  QueryMySeasonById,
+  QuerySeasonsCountByPublish,
+  QuerySeasonsCountByUnPublish,
+} from "src/pages/api/queries/season"
+import {
+  QueryEpisodes,
+  QueryEpisodeById,
+  QueryMyEpisodes,
+  QueryMyEpisodeById,
+  QueryEpisodesCountByPublish,
+  QueryEpisodesCountByUnPublish,
+} from "src/pages/api/queries/episode"
 import { Favorite } from "src/pages/api/models/favorite"
 import { Follow } from "src/pages/api/models/follow"
 import { Episode } from "src/pages/api/models/episode"
 import { Chapter } from "src/pages/api/models/chapter"
 import { Page } from "src/pages/api/models/page"
 import { Season } from "src/pages/api/models/season"
+import { context } from "./context"
 
 export const GQLDate = asNexusMethod(DateTimeResolver, "date")
 
-const isSafe = (acess_token: string, userId: string) => {
+export const isSafe = (acess_token: string, userId: string) => {
   try {
     const decodeData = jwt.decode(acess_token)
     const user_id = decodeData?.sub
@@ -40,6 +64,26 @@ const isSafe = (acess_token: string, userId: string) => {
   } catch (error) {
     throw new Error("Invalid token")
   }
+}
+
+export const decodeUserId = (acess_token: string) => {
+  try {
+    const decodeData = jwt.decode(acess_token)
+    const user_id = decodeData?.sub
+    return user_id
+  } catch (error) {
+    throw new Error("Invalid token")
+  }
+}
+
+export const defaultArgs = {
+  page: nonNull(intArg()),
+  pageSize: nonNull(intArg()),
+}
+
+export const authArgs = {
+  userId: nonNull(stringArg()),
+  accessToken: nonNull(stringArg()),
 }
 
 const Post = objectType({
@@ -76,7 +120,34 @@ const Query = objectType({
       },
     })
 
+    // ユーザーのクエリ
     QueryMe(t)
+    QueryUserById(t)
+    QueryUsers(t)
+
+    // ストーリーのクエリ
+    QueryStories(t)
+    QueryMyStories(t)
+    QueryStoryById(t)
+    QueryMyStoryById(t)
+    QueryStoriesCountByUnPublish(t)
+    QueryStoriesCountByPublish(t)
+
+    // シーズンのクエリ
+    QuerySeasons(t)
+    QuerySeasonById(t)
+    QueryMySeasons(t)
+    QueryMySeasonById(t)
+    QuerySeasonsCountByPublish(t)
+    QuerySeasonsCountByUnPublish(t)
+
+    // エピソードのクエリ
+    QueryEpisodes(t)
+    QueryEpisodeById(t)
+    QueryMyEpisodes(t)
+    QueryMyEpisodeById(t)
+    QueryEpisodesCountByPublish(t)
+    QueryEpisodesCountByUnPublish(t)
 
     // 全て取得する
     t.list.field("categories", {
@@ -85,15 +156,6 @@ const Query = objectType({
         return prisma.category.findMany()
       },
     })
-
-    t.list.field("users", {
-      type: "User",
-      resolve: (_parent, _args) => {
-        return prisma.user.findMany()
-      },
-    })
-
-    QueryStories(t)
 
     t.list.field("reviews", {
       type: "Review",
@@ -336,6 +398,18 @@ export const schema = makeSchema({
     typegen: path.join(process.cwd(), "src/generated/nexus-typegen.ts"),
     schema: path.join(process.cwd(), "src/generated/schema.graphql"),
   },
+  // contextType: {
+  //   module: require.resolve("./context"),
+  //   export: "Context",
+  // },
+  // sourceTypes: {
+  //   modules: [
+  //     {
+  //       module: "@prisma/client",
+  //       alias: "prisma",
+  //     },
+  //   ],
+  // },
 })
 
 export const config = {
@@ -344,7 +418,7 @@ export const config = {
   },
 }
 
-const apolloServer = new ApolloServer({ schema })
+const apolloServer = new ApolloServer({ schema, context: context })
 
 let apolloServerHandler: NextApiHandler
 

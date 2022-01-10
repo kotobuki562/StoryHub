@@ -14,11 +14,11 @@ const prisma = new PrismaClient()
 export async function main() {
   try {
     console.log(`Start seeding ...`)
-    for (const u of createPages()) {
-      const page = await prisma.page.create({
+    for (const u of createEpisodes()) {
+      const story = await prisma.episode.create({
         data: u,
       })
-      console.log(`Created page with id: ${page.id}`)
+      console.log(`Created story with id: ${story.id}`)
     }
     console.log(`Seeding finished.`)
   } catch (err) {

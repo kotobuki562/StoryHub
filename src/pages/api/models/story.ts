@@ -1,5 +1,13 @@
-import { objectType } from "nexus"
+import { intArg, nonNull, nullable, objectType, stringArg } from "nexus"
 import prisma from "src/lib/prisma"
+import { isSafe } from "../index.page"
+
+const seasonArgs = {
+  seasonAccessToken: nullable(stringArg()),
+  seasonUserId: nullable(stringArg()),
+  seasonPage: nonNull(intArg()),
+  seasonPageSize: nonNull(intArg()),
+}
 
 const Story = objectType({
   name: "Story",
@@ -8,21 +16,38 @@ const Story = objectType({
     t.string("user_id")
     t.string("story_title")
     t.string("story_synopsis")
+    t.list.string("story_categories")
     t.string("story_image")
-    // t.string("story_categories")
     t.boolean("publish")
     t.date("created_at")
     t.nullable.date("updated_at")
     t.list.field("seasons", {
       type: "Season",
+      args: seasonArgs,
       resolve: (parent, args, ctx) => {
-        return parent.id
+        const { seasonAccessToken, seasonUserId, seasonPage, seasonPageSize } =
+          args
+        const skip = seasonPageSize * (seasonPage - 1)
+        return seasonAccessToken &&
+          seasonUserId &&
+          isSafe(seasonAccessToken, seasonUserId)
           ? prisma.season.findMany({
+              skip,
+              take: seasonPageSize,
+              orderBy: { created_at: "desc" },
               where: {
-                story_id: parent.id,
+                story_id: `${parent.id}`,
               },
             })
-          : []
+          : prisma.season.findMany({
+              skip,
+              take: seasonPageSize,
+              orderBy: { created_at: "desc" },
+              where: {
+                story_id: `${parent.id}`,
+                publish: true,
+              },
+            })
       },
     })
     t.list.field("reviews", {
@@ -32,6 +57,7 @@ const Story = objectType({
           ? prisma.review.findMany({
               where: {
                 story_id: parent.id,
+                publish: true,
               },
             })
           : []
