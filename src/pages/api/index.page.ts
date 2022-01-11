@@ -21,6 +21,8 @@ import { Category } from "src/pages/api/models/category"
 import { User } from "src/pages/api/models/user"
 import { Review } from "src/pages/api/models/review"
 import { Story } from "src/pages/api/models/story"
+import { SettingMaterial } from "src/pages/api/models/settingMaterial"
+import { Character } from "src/pages/api/models/character"
 import { QueryMe, QueryUserById, QueryUsers } from "src/pages/api/queries/user"
 import {
   QueryStories,
@@ -53,6 +55,8 @@ import { Chapter } from "src/pages/api/models/chapter"
 import { Page } from "src/pages/api/models/page"
 import { Season } from "src/pages/api/models/season"
 import { context } from "./context"
+import { Terminology } from "src/pages/api/models/terminology"
+import { Object } from "src/pages/api/models/object"
 
 export const GQLDate = asNexusMethod(DateTimeResolver, "date")
 
@@ -391,6 +395,10 @@ export const schema = makeSchema({
     Story,
     Review,
     Category,
+    Character,
+    Terminology,
+    Object,
+    SettingMaterial,
     User,
     GQLDate,
   ],

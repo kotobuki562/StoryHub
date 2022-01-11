@@ -22,6 +22,21 @@ type Chapter {
   updated_at: DateTime
 }
 
+type Character {
+  character_category: String
+  character_deal: String
+  character_image: String
+  character_name: String
+  character_sex: String
+  created_at: DateTime
+  id: ID
+  isSpoiler: Boolean
+  publish: Boolean
+  settingMaterial: SettingMaterial
+  setting_material_id: String
+  updated_at: DateTime
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -62,6 +77,19 @@ type Mutation {
   deletePost(postId: String): Post
   publish(postId: String): Post
   signupUser(email: String!, user_name: String): User
+}
+
+type Object {
+  created_at: DateTime
+  id: ID
+  isSpoiler: Boolean
+  object_deal: String
+  object_image: String
+  object_name: String
+  publish: Boolean
+  settingMaterial: SettingMaterial
+  setting_material_id: String
+  updated_at: DateTime
 }
 
 type Page {
@@ -146,6 +174,23 @@ type Season {
   updated_at: DateTime
 }
 
+type SettingMaterial {
+  character(storyAccessToken: String, storyPage: Int!, storyPageSize: Int!): [Character]
+  created_at: DateTime
+  id: ID
+  object(reviewAccessToken: String, reviewPage: Int!, reviewPageSize: Int!): [Object]
+  publish: Boolean
+  setting_material_deal: String
+  setting_material_image: String
+  setting_material_title: String
+  story(storyAccessToken: String, storyPage: Int!, storyPageSize: Int!): Story
+  story_id: String
+  terminology(terminologyAccessToken: String, terminologyPage: Int!, terminologyPageSize: Int!): [Terminology]
+  updated_at: DateTime
+  user: User
+  user_id: String
+}
+
 type Story {
   created_at: DateTime
   favorites: [Favorite]
@@ -160,6 +205,18 @@ type Story {
   updated_at: DateTime
   user: User
   user_id: String
+}
+
+type Terminology {
+  created_at: DateTime
+  id: ID
+  isSpoiler: Boolean
+  publish: Boolean
+  settingMaterial: SettingMaterial
+  setting_material_id: String
+  terminology_deal: String
+  terminology_name: String
+  updated_at: DateTime
 }
 
 type User {

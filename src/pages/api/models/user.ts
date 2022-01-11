@@ -1,7 +1,6 @@
-import { intArg, nonNull, objectType, stringArg } from "nexus"
+import { intArg, nonNull, objectType, stringArg, nullable } from "nexus"
 import prisma from "src/lib/prisma"
 import { isSafe } from "../index.page"
-import { nullable } from "nexus/dist/core"
 
 const postArgs = {
   storyAccessToken: nullable(stringArg()),
