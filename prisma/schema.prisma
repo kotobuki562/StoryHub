@@ -114,20 +114,21 @@ model Favorite {
 }
 
 model Story {
-  id               String            @id @unique @default(uuid())
-  user_id          String
-  story_title      String
-  story_synopsis   String?
-  story_image      String?
-  story_categories String[]
-  publish          Boolean           @default(false) @db.Boolean
-  created_at       DateTime          @default(now())
-  updated_at       DateTime?
-  seasons          Season[]
-  reviews          Review[]
-  favorites        Favorite[]
-  user             User?             @relation(fields: [user_id], references: [id])
-  SettingMaterial  SettingMaterial[]
+  id                  String            @id @unique @default(uuid())
+  user_id             String
+  story_title         String
+  story_synopsis      String?
+  story_image         String?
+  story_categories    String[]
+  viewing_restriction String?
+  publish             Boolean           @default(false) @db.Boolean
+  created_at          DateTime          @default(now())
+  updated_at          DateTime?
+  seasons             Season[]
+  reviews             Review[]
+  favorites           Favorite[]
+  user                User?             @relation(fields: [user_id], references: [id])
+  SettingMaterial     SettingMaterial[]
 }
 
 model Season {

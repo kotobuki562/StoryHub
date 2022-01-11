@@ -19,6 +19,7 @@ const Story = objectType({
     t.list.string("story_categories")
     t.string("story_image")
     t.boolean("publish")
+    t.string("viewing_restriction")
     t.date("created_at")
     t.nullable.date("updated_at")
     t.list.field("seasons", {

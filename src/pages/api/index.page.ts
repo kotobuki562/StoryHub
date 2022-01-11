@@ -57,6 +57,17 @@ import { Season } from "src/pages/api/models/season"
 import { context } from "./context"
 import { Terminology } from "src/pages/api/models/terminology"
 import { Object } from "src/pages/api/models/object"
+import {
+  signupUser,
+  createUser,
+  updateUser,
+  deleteUser,
+} from "src/pages/api/mutations/user"
+import {
+  createStory,
+  updateStory,
+  deleteStory,
+} from "src/pages/api/mutations/story"
 
 export const GQLDate = asNexusMethod(DateTimeResolver, "date")
 
@@ -90,40 +101,9 @@ export const authArgs = {
   accessToken: nonNull(stringArg()),
 }
 
-const Post = objectType({
-  name: "Post",
-  definition(t) {
-    t.int("id")
-    t.string("title")
-    t.nullable.string("content")
-    t.boolean("published")
-    t.nullable.field("author", {
-      type: "User",
-      resolve: parent =>
-        prisma.post
-          .findUnique({
-            where: { id: Number(parent.id) },
-          })
-          .author(),
-    })
-  },
-})
-
 const Query = objectType({
   name: "Query",
   definition(t) {
-    t.field("post", {
-      type: "Post",
-      args: {
-        postId: nonNull(stringArg()),
-      },
-      resolve: (_, args) => {
-        return prisma.post.findUnique({
-          where: { id: Number(args.postId) },
-        })
-      },
-    })
-
     // ユーザーのクエリ
     QueryMe(t)
     QueryUserById(t)
@@ -275,109 +255,22 @@ const Query = objectType({
         })
       },
     })
-
-    t.list.field("drafts", {
-      type: "Post",
-      resolve: (_parent, _args, ctx) => {
-        return prisma.post.findMany({
-          where: { published: false },
-        })
-      },
-    })
-
-    t.list.field("filterPosts", {
-      type: "Post",
-      args: {
-        searchString: nullable(stringArg()),
-      },
-      resolve: (_, { searchString }, ctx) => {
-        return prisma.post.findMany({
-          where: {
-            OR: [
-              { title: { contains: searchString } },
-              { content: { contains: searchString } },
-            ],
-          },
-        })
-      },
-    })
   },
 })
 
 const Mutation = objectType({
   name: "Mutation",
   definition(t) {
-    t.field("signupUser", {
-      type: "User",
-      args: {
-        user_name: stringArg(),
-        email: nonNull(stringArg()),
-      },
-      resolve: async (_, { user_name, email }, ctx) => {
-        return await supabase.auth
-          .signUp({
-            email,
-            password: "password",
-          })
-          .then(res => {
-            return prisma.user.create({
-              data: {
-                id: `${res?.user?.id}`,
-                user_name,
-              },
-            })
-          })
-          .catch(error => {
-            throw new Error(error)
-          })
-      },
-    })
+    // ユーザーのミューテーション
+    signupUser(t)
+    createUser(t)
+    updateUser(t)
+    deleteUser(t)
 
-    t.nullable.field("deletePost", {
-      type: "Post",
-      args: {
-        postId: stringArg(),
-      },
-      resolve: (_, { postId }, ctx) => {
-        return prisma.post.delete({
-          where: { id: Number(postId) },
-        })
-      },
-    })
-
-    t.field("createDraft", {
-      type: "Post",
-      args: {
-        title: nonNull(stringArg()),
-        content: stringArg(),
-        authorEmail: stringArg(),
-      },
-      resolve: (_, { title, content, authorEmail }, ctx) => {
-        return prisma.post.create({
-          data: {
-            title,
-            content,
-            published: false,
-            author: {
-              connect: { email: authorEmail },
-            },
-          },
-        })
-      },
-    })
-
-    t.nullable.field("publish", {
-      type: "Post",
-      args: {
-        postId: stringArg(),
-      },
-      resolve: (_, { postId }, ctx) => {
-        return prisma.post.update({
-          where: { id: Number(postId) },
-          data: { published: true },
-        })
-      },
-    })
+    // ストーリーのミューテーション
+    createStory(t)
+    updateStory(t)
+    deleteStory(t)
   },
 })
 
@@ -385,7 +278,6 @@ export const schema = makeSchema({
   types: [
     Query,
     Mutation,
-    Post,
     Episode,
     Chapter,
     Page,
