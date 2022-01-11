@@ -58,6 +58,19 @@ export interface NexusGenObjects {
     publish?: boolean | null; // Boolean
     updated_at?: NexusGenScalars['DateTime'] | null; // DateTime
   }
+  Character: { // root type
+    character_category?: string | null; // String
+    character_deal?: string | null; // String
+    character_image?: string | null; // String
+    character_name?: string | null; // String
+    character_sex?: string | null; // String
+    created_at?: NexusGenScalars['DateTime'] | null; // DateTime
+    id?: string | null; // ID
+    isSpoiler?: boolean | null; // Boolean
+    publish?: boolean | null; // Boolean
+    setting_material_id?: string | null; // String
+    updated_at?: NexusGenScalars['DateTime'] | null; // DateTime
+  }
   Episode: { // root type
     created_at?: NexusGenScalars['DateTime'] | null; // DateTime
     episode_image?: string | null; // String
@@ -81,18 +94,23 @@ export interface NexusGenObjects {
     user_id?: string | null; // String
   }
   Mutation: {};
+  Object: { // root type
+    created_at?: NexusGenScalars['DateTime'] | null; // DateTime
+    id?: string | null; // ID
+    isSpoiler?: boolean | null; // Boolean
+    object_deal?: string | null; // String
+    object_image?: string | null; // String
+    object_name?: string | null; // String
+    publish?: boolean | null; // Boolean
+    setting_material_id?: string | null; // String
+    updated_at?: NexusGenScalars['DateTime'] | null; // DateTime
+  }
   Page: { // root type
     chapter_id?: string | null; // String
     created_at?: NexusGenScalars['DateTime'] | null; // DateTime
     id?: string | null; // ID
     page_body?: string | null; // String
     updated_at?: NexusGenScalars['DateTime'] | null; // DateTime
-  }
-  Post: { // root type
-    content?: string | null; // String
-    id?: number | null; // Int
-    published?: boolean | null; // Boolean
-    title?: string | null; // String
   }
   Query: {};
   Review: { // root type
@@ -117,6 +135,17 @@ export interface NexusGenObjects {
     story_id?: string | null; // String
     updated_at?: NexusGenScalars['DateTime'] | null; // DateTime
   }
+  SettingMaterial: { // root type
+    created_at?: NexusGenScalars['DateTime'] | null; // DateTime
+    id?: string | null; // ID
+    publish?: boolean | null; // Boolean
+    setting_material_deal?: string | null; // String
+    setting_material_image?: string | null; // String
+    setting_material_title?: string | null; // String
+    story_id?: string | null; // String
+    updated_at?: NexusGenScalars['DateTime'] | null; // DateTime
+    user_id?: string | null; // String
+  }
   Story: { // root type
     created_at?: NexusGenScalars['DateTime'] | null; // DateTime
     id?: string | null; // ID
@@ -127,6 +156,17 @@ export interface NexusGenObjects {
     story_title?: string | null; // String
     updated_at?: NexusGenScalars['DateTime'] | null; // DateTime
     user_id?: string | null; // String
+    viewing_restriction?: string | null; // String
+  }
+  Terminology: { // root type
+    created_at?: NexusGenScalars['DateTime'] | null; // DateTime
+    id?: string | null; // ID
+    isSpoiler?: boolean | null; // Boolean
+    publish?: boolean | null; // Boolean
+    setting_material_id?: string | null; // String
+    terminology_deal?: string | null; // String
+    terminology_name?: string | null; // String
+    updated_at?: NexusGenScalars['DateTime'] | null; // DateTime
   }
   User: { // root type
     created_at?: NexusGenScalars['DateTime'] | null; // DateTime
@@ -167,6 +207,20 @@ export interface NexusGenFieldTypes {
     publish: boolean | null; // Boolean
     updated_at: NexusGenScalars['DateTime'] | null; // DateTime
   }
+  Character: { // field return type
+    character_category: string | null; // String
+    character_deal: string | null; // String
+    character_image: string | null; // String
+    character_name: string | null; // String
+    character_sex: string | null; // String
+    created_at: NexusGenScalars['DateTime'] | null; // DateTime
+    id: string | null; // ID
+    isSpoiler: boolean | null; // Boolean
+    publish: boolean | null; // Boolean
+    settingMaterial: NexusGenRootTypes['SettingMaterial'] | null; // SettingMaterial
+    setting_material_id: string | null; // String
+    updated_at: NexusGenScalars['DateTime'] | null; // DateTime
+  }
   Episode: { // field return type
     chapters: Array<NexusGenRootTypes['Chapter'] | null> | null; // [Chapter]
     created_at: NexusGenScalars['DateTime'] | null; // DateTime
@@ -195,10 +249,25 @@ export interface NexusGenFieldTypes {
     user_id: string | null; // String
   }
   Mutation: { // field return type
-    createDraft: NexusGenRootTypes['Post'] | null; // Post
-    deletePost: NexusGenRootTypes['Post'] | null; // Post
-    publish: NexusGenRootTypes['Post'] | null; // Post
+    createStory: NexusGenRootTypes['Story'] | null; // Story
+    createUser: NexusGenRootTypes['User'] | null; // User
+    deleteStory: NexusGenRootTypes['Story'] | null; // Story
+    deleteUser: NexusGenRootTypes['User'] | null; // User
     signupUser: NexusGenRootTypes['User'] | null; // User
+    updateStory: NexusGenRootTypes['Story'] | null; // Story
+    updateUser: NexusGenRootTypes['User'] | null; // User
+  }
+  Object: { // field return type
+    created_at: NexusGenScalars['DateTime'] | null; // DateTime
+    id: string | null; // ID
+    isSpoiler: boolean | null; // Boolean
+    object_deal: string | null; // String
+    object_image: string | null; // String
+    object_name: string | null; // String
+    publish: boolean | null; // Boolean
+    settingMaterial: NexusGenRootTypes['SettingMaterial'] | null; // SettingMaterial
+    setting_material_id: string | null; // String
+    updated_at: NexusGenScalars['DateTime'] | null; // DateTime
   }
   Page: { // field return type
     chapter: NexusGenRootTypes['Chapter'] | null; // Chapter
@@ -207,13 +276,6 @@ export interface NexusGenFieldTypes {
     id: string | null; // ID
     page_body: string | null; // String
     updated_at: NexusGenScalars['DateTime'] | null; // DateTime
-  }
-  Post: { // field return type
-    author: NexusGenRootTypes['User'] | null; // User
-    content: string | null; // String
-    id: number | null; // Int
-    published: boolean | null; // Boolean
-    title: string | null; // String
   }
   Query: { // field return type
     QueryEpisodeById: NexusGenRootTypes['Episode'] | null; // Episode
@@ -239,16 +301,13 @@ export interface NexusGenFieldTypes {
     QueryUserById: NexusGenRootTypes['User'] | null; // User
     QueryUsers: Array<NexusGenRootTypes['User'] | null> | null; // [User]
     categories: Array<NexusGenRootTypes['Category'] | null> | null; // [Category]
-    drafts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     filterFavoritesByStoryId: Array<NexusGenRootTypes['Favorite'] | null> | null; // [Favorite]
     filterFavoritesByUserId: Array<NexusGenRootTypes['Favorite'] | null> | null; // [Favorite]
     filterFollowsByFollowId: Array<NexusGenRootTypes['Follow'] | null> | null; // [Follow]
     filterFollowsByUserId: Array<NexusGenRootTypes['Follow'] | null> | null; // [Follow]
-    filterPosts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
     filterReviewsByStoryId: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
     filterReviewsByUserId: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
     filterStoriesByUserId: Array<NexusGenRootTypes['Story'] | null> | null; // [Story]
-    post: NexusGenRootTypes['Post'] | null; // Post
     reviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
   }
   Review: { // field return type
@@ -277,6 +336,22 @@ export interface NexusGenFieldTypes {
     story_id: string | null; // String
     updated_at: NexusGenScalars['DateTime'] | null; // DateTime
   }
+  SettingMaterial: { // field return type
+    character: Array<NexusGenRootTypes['Character'] | null> | null; // [Character]
+    created_at: NexusGenScalars['DateTime'] | null; // DateTime
+    id: string | null; // ID
+    object: Array<NexusGenRootTypes['Object'] | null> | null; // [Object]
+    publish: boolean | null; // Boolean
+    setting_material_deal: string | null; // String
+    setting_material_image: string | null; // String
+    setting_material_title: string | null; // String
+    story: NexusGenRootTypes['Story'] | null; // Story
+    story_id: string | null; // String
+    terminology: Array<NexusGenRootTypes['Terminology'] | null> | null; // [Terminology]
+    updated_at: NexusGenScalars['DateTime'] | null; // DateTime
+    user: NexusGenRootTypes['User'] | null; // User
+    user_id: string | null; // String
+  }
   Story: { // field return type
     created_at: NexusGenScalars['DateTime'] | null; // DateTime
     favorites: Array<NexusGenRootTypes['Favorite'] | null> | null; // [Favorite]
@@ -291,6 +366,18 @@ export interface NexusGenFieldTypes {
     updated_at: NexusGenScalars['DateTime'] | null; // DateTime
     user: NexusGenRootTypes['User'] | null; // User
     user_id: string | null; // String
+    viewing_restriction: string | null; // String
+  }
+  Terminology: { // field return type
+    created_at: NexusGenScalars['DateTime'] | null; // DateTime
+    id: string | null; // ID
+    isSpoiler: boolean | null; // Boolean
+    publish: boolean | null; // Boolean
+    settingMaterial: NexusGenRootTypes['SettingMaterial'] | null; // SettingMaterial
+    setting_material_id: string | null; // String
+    terminology_deal: string | null; // String
+    terminology_name: string | null; // String
+    updated_at: NexusGenScalars['DateTime'] | null; // DateTime
   }
   User: { // field return type
     categories: Array<NexusGenRootTypes['Category'] | null> | null; // [Category]
@@ -326,6 +413,20 @@ export interface NexusGenFieldTypeNames {
     publish: 'Boolean'
     updated_at: 'DateTime'
   }
+  Character: { // field return type name
+    character_category: 'String'
+    character_deal: 'String'
+    character_image: 'String'
+    character_name: 'String'
+    character_sex: 'String'
+    created_at: 'DateTime'
+    id: 'ID'
+    isSpoiler: 'Boolean'
+    publish: 'Boolean'
+    settingMaterial: 'SettingMaterial'
+    setting_material_id: 'String'
+    updated_at: 'DateTime'
+  }
   Episode: { // field return type name
     chapters: 'Chapter'
     created_at: 'DateTime'
@@ -354,10 +455,25 @@ export interface NexusGenFieldTypeNames {
     user_id: 'String'
   }
   Mutation: { // field return type name
-    createDraft: 'Post'
-    deletePost: 'Post'
-    publish: 'Post'
+    createStory: 'Story'
+    createUser: 'User'
+    deleteStory: 'Story'
+    deleteUser: 'User'
     signupUser: 'User'
+    updateStory: 'Story'
+    updateUser: 'User'
+  }
+  Object: { // field return type name
+    created_at: 'DateTime'
+    id: 'ID'
+    isSpoiler: 'Boolean'
+    object_deal: 'String'
+    object_image: 'String'
+    object_name: 'String'
+    publish: 'Boolean'
+    settingMaterial: 'SettingMaterial'
+    setting_material_id: 'String'
+    updated_at: 'DateTime'
   }
   Page: { // field return type name
     chapter: 'Chapter'
@@ -366,13 +482,6 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     page_body: 'String'
     updated_at: 'DateTime'
-  }
-  Post: { // field return type name
-    author: 'User'
-    content: 'String'
-    id: 'Int'
-    published: 'Boolean'
-    title: 'String'
   }
   Query: { // field return type name
     QueryEpisodeById: 'Episode'
@@ -398,16 +507,13 @@ export interface NexusGenFieldTypeNames {
     QueryUserById: 'User'
     QueryUsers: 'User'
     categories: 'Category'
-    drafts: 'Post'
     filterFavoritesByStoryId: 'Favorite'
     filterFavoritesByUserId: 'Favorite'
     filterFollowsByFollowId: 'Follow'
     filterFollowsByUserId: 'Follow'
-    filterPosts: 'Post'
     filterReviewsByStoryId: 'Review'
     filterReviewsByUserId: 'Review'
     filterStoriesByUserId: 'Story'
-    post: 'Post'
     reviews: 'Review'
   }
   Review: { // field return type name
@@ -436,6 +542,22 @@ export interface NexusGenFieldTypeNames {
     story_id: 'String'
     updated_at: 'DateTime'
   }
+  SettingMaterial: { // field return type name
+    character: 'Character'
+    created_at: 'DateTime'
+    id: 'ID'
+    object: 'Object'
+    publish: 'Boolean'
+    setting_material_deal: 'String'
+    setting_material_image: 'String'
+    setting_material_title: 'String'
+    story: 'Story'
+    story_id: 'String'
+    terminology: 'Terminology'
+    updated_at: 'DateTime'
+    user: 'User'
+    user_id: 'String'
+  }
   Story: { // field return type name
     created_at: 'DateTime'
     favorites: 'Favorite'
@@ -450,6 +572,18 @@ export interface NexusGenFieldTypeNames {
     updated_at: 'DateTime'
     user: 'User'
     user_id: 'String'
+    viewing_restriction: 'String'
+  }
+  Terminology: { // field return type name
+    created_at: 'DateTime'
+    id: 'ID'
+    isSpoiler: 'Boolean'
+    publish: 'Boolean'
+    settingMaterial: 'SettingMaterial'
+    setting_material_id: 'String'
+    terminology_deal: 'String'
+    terminology_name: 'String'
+    updated_at: 'DateTime'
   }
   User: { // field return type name
     categories: 'Category'
@@ -484,20 +618,48 @@ export interface NexusGenArgTypes {
     }
   }
   Mutation: {
-    createDraft: { // args
-      authorEmail?: string | null; // String
-      content?: string | null; // String
-      title: string; // String!
+    createStory: { // args
+      acessToken: string; // String!
+      publish: boolean; // Boolean!
+      storyCategories: Array<string | null>; // [String]!
+      storyImage?: string | null; // String
+      storySynopsis?: string | null; // String
+      storyTitle: string; // String!
+      viewingRestriction?: string | null; // String
     }
-    deletePost: { // args
-      postId?: string | null; // String
+    createUser: { // args
+      accessToken: string; // String!
+      image?: string | null; // String
+      links?: Array<string | null> | null; // [String]
+      userDeal: string; // String!
+      userName: string; // String!
     }
-    publish: { // args
-      postId?: string | null; // String
+    deleteStory: { // args
+      storyId: string; // String!
+    }
+    deleteUser: { // args
+      accessToken: string; // String!
     }
     signupUser: { // args
       email: string; // String!
-      user_name?: string | null; // String
+      password: string; // String!
+      userName?: string | null; // String
+    }
+    updateStory: { // args
+      publish: boolean; // Boolean!
+      storyCategories?: Array<string | null> | null; // [String]
+      storyId: string; // String!
+      storyImage?: string | null; // String
+      storySynopsis?: string | null; // String
+      storyTitle?: string | null; // String
+      viewingRestriction?: string | null; // String
+    }
+    updateUser: { // args
+      accessToken: string; // String!
+      image?: string | null; // String
+      links?: Array<string | null> | null; // [String]
+      userDeal: string; // String!
+      userName: string; // String!
     }
   }
   Query: {
@@ -601,9 +763,6 @@ export interface NexusGenArgTypes {
     filterFollowsByUserId: { // args
       userId: string; // String!
     }
-    filterPosts: { // args
-      searchString?: string | null; // String
-    }
     filterReviewsByStoryId: { // args
       storyId: string; // String!
     }
@@ -613,9 +772,6 @@ export interface NexusGenArgTypes {
     filterStoriesByUserId: { // args
       userId: string; // String!
     }
-    post: { // args
-      postId: string; // String!
-    }
   }
   Season: {
     episodes: { // args
@@ -623,6 +779,28 @@ export interface NexusGenArgTypes {
       episodePage: number; // Int!
       episodePageSize: number; // Int!
       episodeUserId?: string | null; // String
+    }
+  }
+  SettingMaterial: {
+    character: { // args
+      storyAccessToken?: string | null; // String
+      storyPage: number; // Int!
+      storyPageSize: number; // Int!
+    }
+    object: { // args
+      reviewAccessToken?: string | null; // String
+      reviewPage: number; // Int!
+      reviewPageSize: number; // Int!
+    }
+    story: { // args
+      storyAccessToken?: string | null; // String
+      storyPage: number; // Int!
+      storyPageSize: number; // Int!
+    }
+    terminology: { // args
+      terminologyAccessToken?: string | null; // String
+      terminologyPage: number; // Int!
+      terminologyPageSize: number; // Int!
     }
   }
   Story: {

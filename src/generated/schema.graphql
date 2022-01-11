@@ -22,6 +22,21 @@ type Chapter {
   updated_at: DateTime
 }
 
+type Character {
+  character_category: String
+  character_deal: String
+  character_image: String
+  character_name: String
+  character_sex: String
+  created_at: DateTime
+  id: ID
+  isSpoiler: Boolean
+  publish: Boolean
+  settingMaterial: SettingMaterial
+  setting_material_id: String
+  updated_at: DateTime
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -58,10 +73,26 @@ type Follow {
 }
 
 type Mutation {
-  createDraft(authorEmail: String, content: String, title: String!): Post
-  deletePost(postId: String): Post
-  publish(postId: String): Post
-  signupUser(email: String!, user_name: String): User
+  createStory(acessToken: String!, publish: Boolean!, storyCategories: [String]!, storyImage: String, storySynopsis: String, storyTitle: String!, viewingRestriction: String): Story
+  createUser(accessToken: String!, image: String, links: [String], userDeal: String!, userName: String!): User
+  deleteStory(storyId: String!): Story
+  deleteUser(accessToken: String!): User
+  signupUser(email: String!, password: String!, userName: String): User
+  updateStory(publish: Boolean!, storyCategories: [String], storyId: String!, storyImage: String, storySynopsis: String, storyTitle: String, viewingRestriction: String): Story
+  updateUser(accessToken: String!, image: String, links: [String], userDeal: String!, userName: String!): User
+}
+
+type Object {
+  created_at: DateTime
+  id: ID
+  isSpoiler: Boolean
+  object_deal: String
+  object_image: String
+  object_name: String
+  publish: Boolean
+  settingMaterial: SettingMaterial
+  setting_material_id: String
+  updated_at: DateTime
 }
 
 type Page {
@@ -71,14 +102,6 @@ type Page {
   id: ID
   page_body: String
   updated_at: DateTime
-}
-
-type Post {
-  author: User
-  content: String
-  id: Int
-  published: Boolean
-  title: String
 }
 
 type Query {
@@ -105,16 +128,13 @@ type Query {
   QueryUserById(id: String!): User
   QueryUsers(page: Int!, pageSize: Int!, searchUserName: String): [User]
   categories: [Category]
-  drafts: [Post]
   filterFavoritesByStoryId(storyId: String!): [Favorite]
   filterFavoritesByUserId(userId: String!): [Favorite]
   filterFollowsByFollowId(followId: String!): [Follow]
   filterFollowsByUserId(userId: String!): [Follow]
-  filterPosts(searchString: String): [Post]
   filterReviewsByStoryId(storyId: String!): [Review]
   filterReviewsByUserId(userId: String!): [Review]
   filterStoriesByUserId(userId: String!): [Story]
-  post(postId: String!): Post
   reviews: [Review]
 }
 
@@ -146,6 +166,23 @@ type Season {
   updated_at: DateTime
 }
 
+type SettingMaterial {
+  character(storyAccessToken: String, storyPage: Int!, storyPageSize: Int!): [Character]
+  created_at: DateTime
+  id: ID
+  object(reviewAccessToken: String, reviewPage: Int!, reviewPageSize: Int!): [Object]
+  publish: Boolean
+  setting_material_deal: String
+  setting_material_image: String
+  setting_material_title: String
+  story(storyAccessToken: String, storyPage: Int!, storyPageSize: Int!): Story
+  story_id: String
+  terminology(terminologyAccessToken: String, terminologyPage: Int!, terminologyPageSize: Int!): [Terminology]
+  updated_at: DateTime
+  user: User
+  user_id: String
+}
+
 type Story {
   created_at: DateTime
   favorites: [Favorite]
@@ -160,6 +197,19 @@ type Story {
   updated_at: DateTime
   user: User
   user_id: String
+  viewing_restriction: String
+}
+
+type Terminology {
+  created_at: DateTime
+  id: ID
+  isSpoiler: Boolean
+  publish: Boolean
+  settingMaterial: SettingMaterial
+  setting_material_id: String
+  terminology_deal: String
+  terminology_name: String
+  updated_at: DateTime
 }
 
 type User {

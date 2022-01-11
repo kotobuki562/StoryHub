@@ -1,5 +1,4 @@
 import {
-  booleanArg,
   nonNull,
   nullable,
   ObjectDefinitionBlock,
@@ -33,6 +32,11 @@ const QueryStories = (t: ObjectDefinitionBlock<"Query">) => {
             story_title: { contains: args.searchTitle },
           }),
           ...(args.searchUserId && { user_id: args.searchUserId }),
+          ...(args.searchCategory && {
+            story_categories: {
+              has: args.searchCategory,
+            },
+          }),
           publish: true,
         },
       })
@@ -62,6 +66,11 @@ const QueryMyStories = (t: ObjectDefinitionBlock<"Query">) => {
                 story_title: { contains: args.searchTitle },
               }),
               ...(args.searchUserId && { user_id: args.searchUserId }),
+              ...(args.searchCategory && {
+                story_categories: {
+                  has: args.searchCategory,
+                },
+              }),
               user_id: args.userId,
             },
           })
