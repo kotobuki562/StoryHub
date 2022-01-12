@@ -621,7 +621,7 @@ export interface NexusGenArgTypes {
     createStory: { // args
       acessToken: string; // String!
       publish: boolean; // Boolean!
-      storyCategories: Array<string | null>; // [String]!
+      storyCategories: string[]; // [String!]!
       storyImage?: string | null; // String
       storySynopsis?: string | null; // String
       storyTitle: string; // String!
@@ -647,7 +647,7 @@ export interface NexusGenArgTypes {
     }
     updateStory: { // args
       publish: boolean; // Boolean!
-      storyCategories?: Array<string | null> | null; // [String]
+      storyCategories: string[]; // [String!]!
       storyId: string; // String!
       storyImage?: string | null; // String
       storySynopsis?: string | null; // String
