@@ -1,29 +1,30 @@
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react"
 import Layout from "../components/Layout"
 import Router, { useRouter } from "next/router"
 import supabase from "src/lib/supabase"
 import { uuidv4 } from "src/tools/uuidv4"
 import jwt from "jsonwebtoken"
-import { PDFDownloadLink } from "@react-pdf/renderer"
-import { PDFDOcument } from "src/components/Pdf"
 import ReactCrop, { Crop } from "react-image-crop"
 import "react-image-crop/dist/ReactCrop.css"
 
-function generateDownload(canvas: HTMLCanvasElement, crop: Crop) {
+const generateDownload = (canvas: HTMLCanvasElement, crop: Crop) => {
   if (!crop || !canvas) {
     return
   }
-
   canvas.toBlob(
     blob => {
       if (blob) {
         const previewUrl = window.URL.createObjectURL(blob)
-
         const anchor = document.createElement("a")
         anchor.download = "cropPreview.png"
         anchor.href = URL.createObjectURL(blob)
         anchor.click()
-
         window.URL.revokeObjectURL(previewUrl)
       }
     },
@@ -35,26 +36,51 @@ function generateDownload(canvas: HTMLCanvasElement, crop: Crop) {
 function Signin() {
   const [password, setPassword] = useState("")
   const [email, setEmail] = useState("")
-  const [avater, setAvater] = useState<File | null>(null)
   const [preview, setPreview] = useState<Blob | null>(null)
-  const [upImg, setUpImg] = useState()
+  const [upImg, setUpImg] = useState<string>("")
   const imgRef = useRef<HTMLImageElement>(null)
   const previewCanvasRef = useRef<HTMLCanvasElement>(null)
-  const [crop, setCrop] = useState({ unit: "%", width: 30, aspect: 16 / 9 })
-  const [completedCrop, setCompletedCrop] = useState(null)
-  const auth = supabase.auth.session()
+  const [crop, setCrop] = useState<Crop>({
+    // 正方形にするために、縦横比を維持して、縦横の最小値を設定する
+    aspect: 1,
+    width: 30,
+    height: 30,
+    x: 0,
+    y: 0,
+    unit: "%",
 
-  const onSelectFile = e => {
+    // unit: "%",
+    // width: 30,
+    // aspect: 16 / 9,
+    // x: 0,
+    // y: 0,
+    // height: 30,
+  })
+
+  const [completedCrop, setCompletedCrop] = useState<Crop | null>(null)
+
+  const onSelectFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader()
-      reader.addEventListener("load", () => setUpImg(reader.result))
+      reader.addEventListener("load", () => setUpImg(reader.result as string))
       reader.readAsDataURL(e.target.files[0])
     }
-  }
+  }, [])
 
-  const onLoad = useCallback(img => {
+  const onLoad = useCallback((img: HTMLImageElement) => {
     imgRef.current = img
   }, [])
+
+  const onChangeCrop = useCallback((crop: Crop) => {
+    setCrop(crop)
+  }, [])
+
+  const onCompleteCrop = useCallback(
+    (crop: Crop) => {
+      setCompletedCrop(crop)
+    },
+    [setCompletedCrop]
+  )
 
   useEffect(() => {
     if (!completedCrop || !previewCanvasRef.current || !imgRef.current) {
@@ -64,7 +90,6 @@ function Signin() {
     const image = imgRef.current
     const canvas = previewCanvasRef.current
     const crop: Crop = completedCrop
-
     const scaleX = image.naturalWidth / image.width
     const scaleY = image.naturalHeight / image.height
     const ctx = canvas.getContext("2d")
@@ -98,29 +123,44 @@ function Signin() {
   //   console.log(decode?.sub)
   // }
 
-  const uploadImage = async (userId: string) => {
-    return await supabase.storage
-      .from("avatars")
-      .upload(`public/${userId}`, avater, {
-        cacheControl: "3600",
-        upsert: false,
-      })
-      .then(async res => {
-        console.log(res)
-        await supabase.storage
-          .from("avatars")
-          .download(`public/${userId}`)
-          .then(res => {
-            setPreview(res.data)
-          })
-      })
-      .then(async () => {
-        const { publicURL, error } = supabase.storage
-          .from("avatars")
-          .getPublicUrl(`public/${userId}`)
-        console.log(publicURL, error)
-      })
-  }
+  const uploadPreview = useCallback(
+    async (canvas: HTMLCanvasElement, userId: string, crop: Crop) => {
+      if (!userId || !canvas || !crop) {
+        return
+      }
+      canvas.toBlob(
+        async blob => {
+          if (blob) {
+            // blobをsupabaseにアップロードする
+            return await supabase.storage
+              .from("avatars")
+              .upload(`public/${userId}`, blob, {
+                cacheControl: "3600",
+                upsert: false,
+              })
+              .then(async res => {
+                console.log(res)
+                await supabase.storage
+                  .from("avatars")
+                  .download(`public/${userId}`)
+                  .then(res => {
+                    setPreview(res.data)
+                  })
+              })
+              .then(async () => {
+                const { publicURL, error } = supabase.storage
+                  .from("avatars")
+                  .getPublicUrl(`public/${userId}`)
+                console.log(publicURL, error)
+              })
+          }
+        },
+        "image/png",
+        1
+      )
+    },
+    []
+  )
 
   const getImages = async () => {
     await supabase.storage
@@ -151,8 +191,8 @@ function Signin() {
           src={upImg}
           onImageLoaded={onLoad}
           crop={crop}
-          onChange={c => setCrop(c)}
-          onComplete={c => setCompletedCrop(c)}
+          onChange={onChangeCrop}
+          onComplete={onCompleteCrop}
         />
         <div>
           <canvas
@@ -171,8 +211,12 @@ function Signin() {
         {previewCanvasRef.current && (
           <button
             type="button"
-            onClick={() =>
-              generateDownload(previewCanvasRef.current, completedCrop)
+            onClick={async () =>
+              await uploadPreview(
+                previewCanvasRef.current as HTMLCanvasElement,
+                uuidv4(),
+                crop
+              )
             }
           >
             Download cropped image
@@ -192,20 +236,6 @@ function Signin() {
           }}
         >
           signout
-        </button>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={e => {
-            setAvater(e.target.files[0])
-          }}
-        />
-        <button
-          onClick={() => {
-            uploadImage(uuidv4())
-          }}
-        >
-          Upload
         </button>
         <img
           src={
