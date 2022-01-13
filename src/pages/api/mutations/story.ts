@@ -1,5 +1,6 @@
-import { nonNull, nullable, stringArg, list } from "nexus"
-import { booleanArg, ObjectDefinitionBlock } from "nexus/dist/core"
+import { list, nonNull, nullable, stringArg } from "nexus"
+import type { ObjectDefinitionBlock } from "nexus/dist/core"
+import { booleanArg } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
 import { decodeUserId } from "src/pages/api/index.page"
 
@@ -90,4 +91,4 @@ const deleteStory = (t: ObjectDefinitionBlock<"Mutation">) => {
   })
 }
 
-export { createStory, updateStory, deleteStory }
+export { createStory, deleteStory, updateStory }

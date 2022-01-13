@@ -1,17 +1,15 @@
-import React, {
-  ChangeEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
-import Layout from "../components/Layout"
+import "react-image-crop/dist/ReactCrop.css"
+
+import jwt from "jsonwebtoken"
 import Router, { useRouter } from "next/router"
+import type { ChangeEvent } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
+import type { Crop } from "react-image-crop"
+import ReactCrop from "react-image-crop"
 import supabase from "src/lib/supabase"
 import { uuidv4 } from "src/tools/uuidv4"
-import jwt from "jsonwebtoken"
-import ReactCrop, { Crop } from "react-image-crop"
-import "react-image-crop/dist/ReactCrop.css"
+
+import Layout from "../components/Layout"
 
 const generateDownload = (canvas: HTMLCanvasElement, crop: Crop) => {
   if (!crop || !canvas) {
@@ -62,12 +60,15 @@ function Signin() {
   const onSelectFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader()
-      reader.addEventListener("load", () => setUpImg(reader.result as string))
+      reader.addEventListener("load", () => {
+        return setUpImg(reader.result as string)
+      })
       reader.readAsDataURL(e.target.files[0])
     }
   }, [])
 
   const onLoad = useCallback((img: HTMLImageElement) => {
+    // @ts-ignore
     imgRef.current = img
   }, [])
 
@@ -211,13 +212,13 @@ function Signin() {
         {previewCanvasRef.current && (
           <button
             type="button"
-            onClick={async () =>
-              await uploadPreview(
+            onClick={async () => {
+              return await uploadPreview(
                 previewCanvasRef.current as HTMLCanvasElement,
                 uuidv4(),
                 crop
               )
-            }
+            }}
           >
             Download cropped image
           </button>
@@ -263,19 +264,29 @@ function Signin() {
           <h1>Signup user</h1>
           <input
             autoFocus
-            onChange={e => setPassword(e.target.value)}
+            onChange={e => {
+              return setPassword(e.target.value)
+            }}
             placeholder="Password"
             type="password"
             value={password}
           />
           <input
-            onChange={e => setEmail(e.target.value)}
+            onChange={e => {
+              return setEmail(e.target.value)
+            }}
             placeholder="Email address)"
             type="text"
             value={email}
           />
           <input disabled={!password || !email} type="submit" value="Signup" />
-          <a className="back" href="#" onClick={() => Router.push("/")}>
+          <a
+            className="back"
+            href="#"
+            onClick={() => {
+              return Router.push("/")
+            }}
+          >
             or Cancel
           </a>
         </form>

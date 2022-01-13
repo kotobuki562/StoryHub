@@ -1,13 +1,13 @@
 import {
   Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  PDFDownloadLink,
-  usePDF,
   Font,
+  Page,
+  PDFDownloadLink,
   PDFViewer,
+  StyleSheet,
+  Text,
+  usePDF,
+  View,
 } from "@react-pdf/renderer"
 
 Font.register({

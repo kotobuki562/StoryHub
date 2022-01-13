@@ -1,5 +1,5 @@
 import type { ObjectDefinitionBlock } from "nexus/dist/core"
-import { nonNull, nullable, stringArg } from "nexus/dist/core"
+import { nonNull, nullable, stringArg } from "nexus"
 import prisma from "src/lib/prisma"
 import { authArgs, defaultArgs, isSafe } from "src/pages/api/index.page"
 
@@ -8,9 +8,9 @@ const episodeArgs = {
   serchSeasonId: nullable(stringArg()),
 }
 
-const QueryEpisodes = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.list.field("QueryEpisodes", {
-    type: "Episode",
+const QueryChapters = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.list.field("QueryChapters", {
+    type: "Chapter",
     args: {
       ...episodeArgs,
       ...defaultArgs,
@@ -18,18 +18,18 @@ const QueryEpisodes = (t: ObjectDefinitionBlock<"Query">) => {
     resolve: async (_parent, args) => {
       const { page, pageSize } = args
       const skip = pageSize * (Number(page) - 1)
-      const seasons = await prisma.episode.findMany({
+      const seasons = await prisma.chapter.findMany({
         skip,
         take: pageSize,
-        orderBy: { created_at: "desc" },
+        // 古い順
+        orderBy: { created_at: "asc" },
         where: {
           ...(args.searchTitle && {
-            episode_title: { contains: args.searchTitle },
+            chapter_title: { contains: args.searchTitle },
           }),
           ...(args.serchSeasonId && {
-            season_id: args.serchSeasonId,
+            episode_id: args.serchSeasonId,
           }),
-
           publish: true,
         },
       })
@@ -38,9 +38,9 @@ const QueryEpisodes = (t: ObjectDefinitionBlock<"Query">) => {
   })
 }
 
-const QueryMyEpisodes = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.list.field("QueryMyEpisodes", {
-    type: "Episode",
+const QueryMyChapters = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.list.field("QueryMyChapters", {
+    type: "Chapter",
     args: {
       ...episodeArgs,
       ...authArgs,
@@ -50,15 +50,15 @@ const QueryMyEpisodes = (t: ObjectDefinitionBlock<"Query">) => {
       const { page, pageSize } = args
       const skip = pageSize * (Number(page) - 1)
       return isSafe(args.accessToken, args.userId)
-        ? prisma.episode.findMany({
+        ? prisma.chapter.findMany({
             skip,
             take: pageSize,
-            orderBy: { created_at: "desc" },
+            orderBy: { created_at: "asc" },
             where: {
               ...(args.searchTitle && {
-                episode_title: { contains: args.searchTitle },
+                chapter_title: { contains: args.searchTitle },
                 ...(args.serchSeasonId && {
-                  season_id: args.serchSeasonId,
+                  episode_id: args.serchSeasonId,
                 }),
               }),
             },
@@ -68,14 +68,14 @@ const QueryMyEpisodes = (t: ObjectDefinitionBlock<"Query">) => {
   })
 }
 
-const QueryEpisodeById = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.field("QueryEpisodeById", {
-    type: "Episode",
+const QueryChapterById = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryChapterById", {
+    type: "Chapter",
     args: {
       id: nonNull(stringArg()),
     },
     resolve: (_parent, args) => {
-      return prisma.episode.findUnique({
+      return prisma.character.findUnique({
         where: {
           id: args.id,
         },
@@ -84,9 +84,9 @@ const QueryEpisodeById = (t: ObjectDefinitionBlock<"Query">) => {
   })
 }
 
-const QueryMyEpisodeById = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.field("QueryMyEpisodeById", {
-    type: "Episode",
+const QueryMyChapterById = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryMyChapterById", {
+    type: "Chapter",
     args: {
       id: nonNull(stringArg()),
       ...authArgs,
@@ -94,7 +94,7 @@ const QueryMyEpisodeById = (t: ObjectDefinitionBlock<"Query">) => {
     },
     resolve: (_parent, args) => {
       return isSafe(args.accessToken, args.userId)
-        ? prisma.episode.findUnique({
+        ? prisma.chapter.findUnique({
             where: {
               id: args.id,
             },
@@ -104,11 +104,11 @@ const QueryMyEpisodeById = (t: ObjectDefinitionBlock<"Query">) => {
   })
 }
 
-const QueryEpisodesCountByPublish = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.field("QueryEpisodesCountByPublish", {
+const QueryChaptersCountByPublish = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryChaptersCountByPublish", {
     type: "Int",
     resolve: (_parent, args) => {
-      return prisma.episode.count({
+      return prisma.chapter.count({
         where: {
           publish: true,
         },
@@ -117,11 +117,11 @@ const QueryEpisodesCountByPublish = (t: ObjectDefinitionBlock<"Query">) => {
   })
 }
 
-const QueryEpisodesCountByUnPublish = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.field("QueryEpisodesCountByUnPublish", {
+const QueryChaptersCountByUnPublish = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryChaptersCountByUnPublish", {
     type: "Int",
     resolve: (_parent, args) => {
-      return prisma.episode.count({
+      return prisma.chapter.count({
         where: {
           publish: false,
         },
@@ -131,10 +131,10 @@ const QueryEpisodesCountByUnPublish = (t: ObjectDefinitionBlock<"Query">) => {
 }
 
 export {
-  QueryEpisodeById,
-  QueryEpisodes,
-  QueryEpisodesCountByPublish,
-  QueryEpisodesCountByUnPublish,
-  QueryMyEpisodeById,
-  QueryMyEpisodes,
+  QueryChapters,
+  QueryMyChapters,
+  QueryChapterById,
+  QueryMyChapterById,
+  QueryChaptersCountByPublish,
+  QueryChaptersCountByUnPublish,
 }

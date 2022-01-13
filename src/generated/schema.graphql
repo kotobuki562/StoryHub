@@ -105,11 +105,17 @@ type Page {
 }
 
 type Query {
+  QueryChapterById(id: String!): Chapter
+  QueryChapters(page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String): [Chapter]
+  QueryChaptersCountByPublish: Int
+  QueryChaptersCountByUnPublish: Int
   QueryEpisodeById(id: String!): Episode
   QueryEpisodes(page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String): [Episode]
   QueryEpisodesCountByPublish: Int
   QueryEpisodesCountByUnPublish: Int
   QueryMe(accessToken: String!): User
+  QueryMyChapterById(accessToken: String!, id: String!, page: Int!, pageSize: Int!, userId: String!): Chapter
+  QueryMyChapters(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String, userId: String!): [Chapter]
   QueryMyEpisodeById(accessToken: String!, id: String!, page: Int!, pageSize: Int!, userId: String!): Episode
   QueryMyEpisodes(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String, userId: String!): [Episode]
   QueryMySeasonById(accessToken: String!, id: String!, page: Int!, pageSize: Int!, userId: String!): Season

@@ -1,8 +1,9 @@
-import React, { useState } from "react"
-import Layout from "../components/Layout"
-import Router, { useRouter } from "next/router"
-import gql from "graphql-tag"
 import { useMutation } from "@apollo/client"
+import gql from "graphql-tag"
+import Router, { useRouter } from "next/router"
+import React, { useState } from "react"
+
+import Layout from "../components/Layout"
 
 const SignupMutation = gql`
   mutation Mutation($email: String!, $userName: String) {
@@ -37,19 +38,29 @@ function Signup(props) {
           <h1>Signup user</h1>
           <input
             autoFocus
-            onChange={e => setName(e.target.value)}
+            onChange={e => {
+              return setName(e.target.value)
+            }}
             placeholder="Name"
             type="text"
             value={name}
           />
           <input
-            onChange={e => setEmail(e.target.value)}
+            onChange={e => {
+              return setEmail(e.target.value)
+            }}
             placeholder="Email address)"
             type="text"
             value={email}
           />
           <input disabled={!name || !email} type="submit" value="Signup" />
-          <a className="back" href="#" onClick={() => Router.push("/")}>
+          <a
+            className="back"
+            href="#"
+            onClick={() => {
+              return Router.push("/")
+            }}
+          >
             or Cancel
           </a>
         </form>

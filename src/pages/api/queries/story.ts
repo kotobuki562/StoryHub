@@ -1,9 +1,5 @@
-import {
-  nonNull,
-  nullable,
-  ObjectDefinitionBlock,
-  stringArg,
-} from "nexus/dist/core"
+import type { ObjectDefinitionBlock } from "nexus/dist/core"
+import { nonNull, nullable, stringArg } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
 import { authArgs, defaultArgs, isSafe } from "src/pages/api/index.page"
 
@@ -138,10 +134,10 @@ const QueryStoriesCountByUnPublish = (t: ObjectDefinitionBlock<"Query">) => {
 }
 
 export {
-  QueryStories,
   QueryMyStories,
-  QueryStoryById,
   QueryMyStoryById,
+  QueryStories,
   QueryStoriesCountByPublish,
   QueryStoriesCountByUnPublish,
+  QueryStoryById,
 }
