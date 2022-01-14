@@ -1,7 +1,8 @@
-import Layout from "../components/Layout"
-import Link from "next/link"
-import gql from "graphql-tag"
 import { useQuery } from "@apollo/client"
+import gql from "graphql-tag"
+import Link from "next/link"
+
+import Layout from "../components/Layout"
 
 const FeedQuery = gql`
   query FeedQuery {
@@ -18,23 +19,25 @@ const FeedQuery = gql`
   }
 `
 
-const Post = ({ post }) => (
-  <Link href="/p/[id]" as={`/p/${post.id}`}>
-    <a>
-      <h2>{post.title}</h2>
-      <small>By {post.author.name}</small>
-      <p>{post.content}</p>
-      <style jsx>{`
-        a {
-          text-decoration: none;
-          color: inherit;
-          padding: 2rem;
-          display: block;
-        }
-      `}</style>
-    </a>
-  </Link>
-)
+const Post = ({ post }) => {
+  return (
+    <Link href="/p/[id]" as={`/p/${post.id}`}>
+      <a>
+        <h2>{post.title}</h2>
+        <small>By {post.author.name}</small>
+        <p>{post.content}</p>
+        <style jsx>{`
+          a {
+            text-decoration: none;
+            color: inherit;
+            padding: 2rem;
+            display: block;
+          }
+        `}</style>
+      </a>
+    </Link>
+  )
+}
 
 const Blog = () => {
   const { loading, error, data } = useQuery(FeedQuery, {
@@ -53,11 +56,13 @@ const Blog = () => {
       <div className="page">
         <h1>My Blog</h1>
         <main>
-          {data.feed.map(post => (
-            <div key={post.id} className="post">
-              <Post post={post} />
-            </div>
-          ))}
+          {data.feed.map(post => {
+            return (
+              <div key={post.id} className="post">
+                <Post post={post} />
+              </div>
+            )
+          })}
         </main>
       </div>
       <style jsx>{`

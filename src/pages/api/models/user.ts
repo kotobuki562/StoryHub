@@ -1,5 +1,6 @@
-import { intArg, nonNull, objectType, stringArg, nullable } from "nexus"
+import { intArg, nonNull, nullable, objectType, stringArg } from "nexus"
 import prisma from "src/lib/prisma"
+
 import { isSafe } from "../index.page"
 
 const postArgs = {
@@ -93,18 +94,6 @@ const User = objectType({
       resolve: (parent, args, ctx) => {
         return parent.id
           ? prisma.favorite.findMany({
-              where: {
-                user_id: parent.id,
-              },
-            })
-          : []
-      },
-    })
-    t.list.field("categories", {
-      type: "Category",
-      resolve: (parent, args, ctx) => {
-        return parent.id
-          ? prisma.category.findMany({
               where: {
                 user_id: parent.id,
               },

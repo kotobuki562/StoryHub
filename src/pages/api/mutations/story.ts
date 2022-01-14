@@ -1,5 +1,6 @@
-import { nonNull, nullable, stringArg, list } from "nexus"
-import { booleanArg, ObjectDefinitionBlock } from "nexus/dist/core"
+import { list, nonNull, nullable, stringArg } from "nexus"
+import type { ObjectDefinitionBlock } from "nexus/dist/core"
+import { booleanArg } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
 import { decodeUserId } from "src/pages/api/index.page"
 
@@ -22,7 +23,7 @@ const createStory = (t: ObjectDefinitionBlock<"Mutation">) => {
     args: {
       storyTitle: nonNull(stringArg()),
       storySynopsis: nullable(stringArg()),
-      storyCategories: nonNull(list(stringArg())),
+      storyCategories: nonNull(list(nonNull(stringArg()))),
       storyImage: nullable(stringArg()),
       viewingRestriction: nullable(stringArg()),
       publish: nonNull(booleanArg()),
@@ -33,7 +34,7 @@ const createStory = (t: ObjectDefinitionBlock<"Mutation">) => {
         data: {
           story_title: `${args.storyTitle}`,
           story_synopsis: `${args.storySynopsis}`,
-          story_categories: `${args.storyCategories}`,
+          story_categories: args.storyCategories,
           story_image: `${args.storyImage}`,
           viewing_restriction: `${args.viewingRestriction}`,
           publish: args.publish,
@@ -51,7 +52,7 @@ const updateStory = (t: ObjectDefinitionBlock<"Mutation">) => {
       storyId: nonNull(stringArg()),
       storyTitle: nullable(stringArg()),
       storySynopsis: nullable(stringArg()),
-      storyCategories: nullable(list(stringArg())),
+      storyCategories: nonNull(list(nonNull(stringArg()))),
       storyImage: nullable(stringArg()),
       viewingRestriction: nullable(stringArg()),
       publish: nonNull(booleanArg()),
@@ -64,7 +65,7 @@ const updateStory = (t: ObjectDefinitionBlock<"Mutation">) => {
         data: {
           story_title: `${args.storyTitle}`,
           story_synopsis: `${args.storySynopsis}`,
-          story_categories: `${args.storyCategories}`,
+          story_categories: args.storyCategories,
           story_image: `${args.storyImage}`,
           viewing_restriction: `${args.viewingRestriction}`,
           publish: args.publish,
@@ -90,4 +91,4 @@ const deleteStory = (t: ObjectDefinitionBlock<"Mutation">) => {
   })
 }
 
-export { createStory, updateStory, deleteStory }
+export { createStory, deleteStory, updateStory }

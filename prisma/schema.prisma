@@ -21,7 +21,6 @@ model User {
   reviews         Review[]
   follows         Follow[]
   favorites       Favorite[]
-  categories      Category[]
   SettingMaterial SettingMaterial[]
 }
 
@@ -181,8 +180,6 @@ model Page {
 
 model Category {
   id             Int      @id @unique @default(autoincrement())
-  user_id        String?
   category_title String
   created_at     DateTime @default(now())
-  user           User?    @relation(fields: [user_id], references: [id])
 }

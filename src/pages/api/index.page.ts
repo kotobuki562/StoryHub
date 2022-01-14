@@ -1,6 +1,9 @@
+import { makeExecutableSchema } from "@graphql-tools/schema"
 import { ApolloServer } from "apollo-server-micro"
 import { DateTimeResolver } from "graphql-scalars"
-import { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
+import jwt from "jsonwebtoken"
+import cors from "micro-cors"
+import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import {
   asNexusMethod,
   intArg,
@@ -10,64 +13,80 @@ import {
   objectType,
   stringArg,
 } from "nexus"
-import { SubscriptionServer } from "subscriptions-transport-ws"
-import { makeExecutableSchema } from "@graphql-tools/schema"
 import path from "path"
-import cors from "micro-cors"
 import prisma from "src/lib/prisma"
 import supabase from "src/lib/supabase"
-import jwt from "jsonwebtoken"
 import { Category } from "src/pages/api/models/category"
-import { User } from "src/pages/api/models/user"
-import { Review } from "src/pages/api/models/review"
-import { Story } from "src/pages/api/models/story"
-import { SettingMaterial } from "src/pages/api/models/settingMaterial"
+import { Chapter } from "src/pages/api/models/chapter"
 import { Character } from "src/pages/api/models/character"
-import { QueryMe, QueryUserById, QueryUsers } from "src/pages/api/queries/user"
+import { Episode } from "src/pages/api/models/episode"
+import { Favorite } from "src/pages/api/models/favorite"
+import { Follow } from "src/pages/api/models/follow"
+import { Object } from "src/pages/api/models/object"
+import { Page } from "src/pages/api/models/page"
+import { Review } from "src/pages/api/models/review"
+import { Season } from "src/pages/api/models/season"
+import { SettingMaterial } from "src/pages/api/models/settingMaterial"
+import { Story } from "src/pages/api/models/story"
+import { Terminology } from "src/pages/api/models/terminology"
+import { User } from "src/pages/api/models/user"
 import {
-  QueryStories,
-  QueryMyStories,
-  QueryStoryById,
-  QueryMyStoryById,
-  QueryStoriesCountByUnPublish,
-  QueryStoriesCountByPublish,
-} from "src/pages/api/queries/story"
+  createStory,
+  deleteStory,
+  updateStory,
+} from "src/pages/api/mutations/story"
 import {
-  QuerySeasons,
-  QuerySeasonById,
-  QueryMySeasons,
+  createUser,
+  deleteUser,
+  signupUser,
+  updateUser,
+} from "src/pages/api/mutations/user"
+import {
+  QueryEpisodeById,
+  QueryEpisodes,
+  QueryEpisodesCountByPublish,
+  QueryEpisodesCountByUnPublish,
+  QueryMyEpisodeById,
+  QueryMyEpisodes,
+} from "src/pages/api/queries/episode"
+import {
   QueryMySeasonById,
+  QueryMySeasons,
+  QuerySeasonById,
+  QuerySeasons,
   QuerySeasonsCountByPublish,
   QuerySeasonsCountByUnPublish,
 } from "src/pages/api/queries/season"
 import {
-  QueryEpisodes,
-  QueryEpisodeById,
-  QueryMyEpisodes,
-  QueryMyEpisodeById,
-  QueryEpisodesCountByPublish,
-  QueryEpisodesCountByUnPublish,
-} from "src/pages/api/queries/episode"
-import { Favorite } from "src/pages/api/models/favorite"
-import { Follow } from "src/pages/api/models/follow"
-import { Episode } from "src/pages/api/models/episode"
-import { Chapter } from "src/pages/api/models/chapter"
-import { Page } from "src/pages/api/models/page"
-import { Season } from "src/pages/api/models/season"
+  QueryMyStories,
+  QueryMyStoryById,
+  QueryStories,
+  QueryStoriesCountByPublish,
+  QueryStoriesCountByUnPublish,
+  QueryStoryById,
+} from "src/pages/api/queries/story"
+import {
+  QueryChapters,
+  QueryMyChapters,
+  QueryChapterById,
+  QueryMyChapterById,
+  QueryChaptersCountByPublish,
+  QueryChaptersCountByUnPublish,
+} from "src/pages/api/queries/chapter"
+import {
+  QueryPages,
+  QueryPage,
+  QueryPageCountByChapterId,
+} from "src/pages/api/queries/page"
+import {
+  QueryCategories,
+  QueryCategory,
+  QueryCategoryCount,
+} from "src/pages/api/queries/category"
+import { QueryMe, QueryUserById, QueryUsers } from "src/pages/api/queries/user"
+import { SubscriptionServer } from "subscriptions-transport-ws"
+
 import { context } from "./context"
-import { Terminology } from "src/pages/api/models/terminology"
-import { Object } from "src/pages/api/models/object"
-import {
-  signupUser,
-  createUser,
-  updateUser,
-  deleteUser,
-} from "src/pages/api/mutations/user"
-import {
-  createStory,
-  updateStory,
-  deleteStory,
-} from "src/pages/api/mutations/story"
 
 export const GQLDate = asNexusMethod(DateTimeResolver, "date")
 
@@ -132,6 +151,24 @@ const Query = objectType({
     QueryMyEpisodeById(t)
     QueryEpisodesCountByPublish(t)
     QueryEpisodesCountByUnPublish(t)
+
+    // チャプターのクエリ
+    QueryChapters(t)
+    QueryChapterById(t)
+    QueryMyChapters(t)
+    QueryMyChapterById(t)
+    QueryChaptersCountByPublish(t)
+    QueryChaptersCountByUnPublish(t)
+
+    // ページのクエリ
+    QueryPages(t)
+    QueryPage(t)
+    QueryPageCountByChapterId(t)
+
+    // カテゴリーのクエリ
+    QueryCategories(t)
+    QueryCategory(t)
+    QueryCategoryCount(t)
 
     // 全て取得する
     t.list.field("categories", {

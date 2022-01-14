@@ -1,7 +1,8 @@
-import { nonNull, nullable, stringArg, list } from "nexus"
-import { ObjectDefinitionBlock } from "nexus/dist/core"
+import { list, nonNull, nullable, stringArg } from "nexus"
+import type { ObjectDefinitionBlock } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
 import supabase from "src/lib/supabase"
+
 import { decodeUserId } from "../index.page"
 
 const signupUser = (t: ObjectDefinitionBlock<"Mutation">) => {
@@ -99,4 +100,4 @@ const deleteUser = (t: ObjectDefinitionBlock<"Mutation">) => {
   })
 }
 
-export { signupUser, createUser, updateUser, deleteUser }
+export { createUser, deleteUser, signupUser, updateUser }

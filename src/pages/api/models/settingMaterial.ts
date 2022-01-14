@@ -1,5 +1,6 @@
-import { intArg, nonNull, objectType, stringArg, nullable } from "nexus"
+import { intArg, nonNull, nullable, objectType, stringArg } from "nexus"
 import prisma from "src/lib/prisma"
+
 import { isSafe } from "../index.page"
 
 const characterArgs = {

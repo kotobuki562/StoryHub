@@ -1,8 +1,9 @@
-import React, { useState } from "react"
-import Layout from "../components/Layout"
-import Router from "next/router"
-import gql from "graphql-tag"
 import { useMutation } from "@apollo/client"
+import gql from "graphql-tag"
+import Router from "next/router"
+import React, { useState } from "react"
+
+import Layout from "../components/Layout"
 
 const CreateDraftMutation = gql`
   mutation CreateDraftMutation(
@@ -51,20 +52,26 @@ function Draft(props) {
           <h1>Create Draft</h1>
           <input
             autoFocus
-            onChange={e => setTitle(e.target.value)}
+            onChange={e => {
+              return setTitle(e.target.value)
+            }}
             placeholder="Title"
             type="text"
             value={title}
           />
           <input
-            onChange={e => setAuthorEmail(e.target.value)}
+            onChange={e => {
+              return setAuthorEmail(e.target.value)
+            }}
             placeholder="Author (email adress)"
             type="text"
             value={authorEmail}
           />
           <textarea
             cols={50}
-            onChange={e => setContent(e.target.value)}
+            onChange={e => {
+              return setContent(e.target.value)
+            }}
             placeholder="Content"
             rows={8}
             value={content}
@@ -74,7 +81,13 @@ function Draft(props) {
             type="submit"
             value="Create"
           />
-          <a className="back" href="#" onClick={() => Router.push("/")}>
+          <a
+            className="back"
+            href="#"
+            onClick={() => {
+              return Router.push("/")
+            }}
+          >
             or Cancel
           </a>
         </form>

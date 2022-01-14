@@ -1,7 +1,9 @@
-import { nonNull, nullable, ObjectDefinitionBlock } from "nexus/dist/core"
 import { stringArg } from "nexus"
+import type { ObjectDefinitionBlock } from "nexus/dist/core"
+import { nonNull, nullable } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
-import { defaultArgs, decodeUserId } from "../index.page"
+
+import { decodeUserId, defaultArgs } from "../index.page"
 
 const QueryUsers = (t: ObjectDefinitionBlock<"Query">) => {
   return t.list.field("QueryUsers", {

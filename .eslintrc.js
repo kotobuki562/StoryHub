@@ -5,6 +5,7 @@ module.exports = {
   settings: { tailwindcss: { groupByResponsive: true } },
   plugins: [
     "simple-import-sort",
+    "sort-destructure-keys",
     "tailwindcss",
     "import-access",
     "testing-library",
@@ -16,6 +17,7 @@ module.exports = {
     "prettier",
   ],
   rules: {
+    curly: "error",
     "no-console": ["error", { allow: ["warn", "info", "error"] }],
     "no-restricted-syntax": [
       "error",
@@ -24,7 +26,11 @@ module.exports = {
     "prefer-arrow-callback": "error",
     "prefer-const": "error",
     "func-style": ["error", "expression"],
-    "arrow-body-style": ["error", "always"],
+    "arrow-body-style": [
+      "error",
+      "as-needed",
+      { requireReturnForObjectLiteral: true },
+    ],
     "no-restricted-imports": [
       "error",
       { paths: [{ name: "react", importNames: ["default"] }] },
@@ -36,17 +42,18 @@ module.exports = {
       {
         eventHandlerPrefix: "handle",
         eventHandlerPropPrefix: "on",
-        checkLocalVariables: true,
+        checkLocalVariables: false,
         checkInlineFunction: true,
       },
     ],
-    "react/destructuring-assignment": ["error", "never"],
-    // import
+    "react/destructuring-assignment": ["error", "always"],
+    // sort
     "import/newline-after-import": "error",
     "import/no-default-export": "error",
     "import-access/jsdoc": "error",
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
+    "sort-destructure-keys/sort-destructure-keys": 2,
     // @typescript-eslint
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-var-requires": "off",

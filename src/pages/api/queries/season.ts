@@ -1,9 +1,5 @@
-import {
-  nonNull,
-  nullable,
-  ObjectDefinitionBlock,
-  stringArg,
-} from "nexus/dist/core"
+import type { ObjectDefinitionBlock } from "nexus/dist/core"
+import { nonNull, nullable, stringArg } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
 import { authArgs, defaultArgs, isSafe } from "src/pages/api/index.page"
 
@@ -79,6 +75,9 @@ const QuerySeasonById = (t: ObjectDefinitionBlock<"Query">) => {
         where: {
           id: args.id,
         },
+        select: {
+          publish: true,
+        },
       })
     },
   })
@@ -131,10 +130,10 @@ const QuerySeasonsCountByUnPublish = (t: ObjectDefinitionBlock<"Query">) => {
 }
 
 export {
-  QuerySeasons,
-  QuerySeasonById,
-  QueryMySeasons,
   QueryMySeasonById,
+  QueryMySeasons,
+  QuerySeasonById,
+  QuerySeasons,
   QuerySeasonsCountByPublish,
   QuerySeasonsCountByUnPublish,
 }
