@@ -75,9 +75,10 @@ const resizeFile = (
 function Signin() {
   const [password, setPassword] = useState("")
   const [email, setEmail] = useState("")
-  const [text, setText] = useState("aaa")
+  const [text, setText] = useState("")
   const [preview, setPreview] = useState<Blob | null>(null)
   const [upImg, setUpImg] = useState<string>("")
+  const [imageUrl, setImageUrl] = useState<string>("")
   const imgRef = useRef<HTMLImageElement>(null)
   const previewCanvasRef = useRef<HTMLCanvasElement>(null)
   const quillRef = useRef(null)
@@ -97,7 +98,6 @@ function Signin() {
     // y: 0,
     // height: 30,
   })
-
   const [completedCrop, setCompletedCrop] = useState<Crop | null>(null)
 
   const onSelectFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -111,6 +111,20 @@ function Signin() {
   }, [])
 
   console.log(text)
+
+  const onChangeImage = useCallback(() => {
+    setText(pre => {
+      return pre + `<img src="${imageUrl}">`
+    })
+  }, [imageUrl])
+
+  const onSaveTextByLocalStorage = useCallback(() => {
+    localStorage.setItem("text", text)
+  }, [text])
+
+  const onLoadTextByLocalStorage = useCallback(() => {
+    setText(localStorage.getItem("text") || "")
+  }, [])
 
   const onResizeImage = useCallback(
     async (e: ChangeEvent<HTMLInputElement>) => {
@@ -261,7 +275,6 @@ function Signin() {
     <Layout>
       <div>
         <ReactQuill
-          // ref={quillRef}
           theme="snow"
           modules={modules}
           formats={formats}
@@ -270,6 +283,17 @@ function Signin() {
             return setText(e)
           }}
         />
+        <input
+          type="text"
+          onChange={e => {
+            return setImageUrl(e.target.value)
+          }}
+        />
+        <div className="flex justify-around">
+          <button onClick={onChangeImage}>Image</button>
+          <button onClick={onSaveTextByLocalStorage}>SAVE</button>
+          <button onClick={onLoadTextByLocalStorage}>LOAD</button>
+        </div>
         <div>
           CropImage
           <input type="file" accept="image/*" onChange={onSelectFile} />
