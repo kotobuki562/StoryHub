@@ -79,6 +79,9 @@ const QueryEpisodeById = (t: ObjectDefinitionBlock<"Query">) => {
         where: {
           id: args.id,
         },
+        select: {
+          publish: true,
+        },
       })
     },
   })

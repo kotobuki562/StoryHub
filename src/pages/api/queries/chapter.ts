@@ -3,7 +3,7 @@ import { nonNull, nullable, stringArg } from "nexus"
 import prisma from "src/lib/prisma"
 import { authArgs, defaultArgs, isSafe } from "src/pages/api/index.page"
 
-const episodeArgs = {
+const chapterArgs = {
   searchTitle: nullable(stringArg()),
   serchSeasonId: nullable(stringArg()),
 }
@@ -12,7 +12,7 @@ const QueryChapters = (t: ObjectDefinitionBlock<"Query">) => {
   return t.list.field("QueryChapters", {
     type: "Chapter",
     args: {
-      ...episodeArgs,
+      ...chapterArgs,
       ...defaultArgs,
     },
     resolve: async (_parent, args) => {
@@ -42,7 +42,7 @@ const QueryMyChapters = (t: ObjectDefinitionBlock<"Query">) => {
   return t.list.field("QueryMyChapters", {
     type: "Chapter",
     args: {
-      ...episodeArgs,
+      ...chapterArgs,
       ...authArgs,
       ...defaultArgs,
     },
@@ -78,6 +78,9 @@ const QueryChapterById = (t: ObjectDefinitionBlock<"Query">) => {
       return prisma.character.findUnique({
         where: {
           id: args.id,
+        },
+        select: {
+          publish: true,
         },
       })
     },

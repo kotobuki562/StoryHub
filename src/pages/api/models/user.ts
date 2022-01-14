@@ -101,18 +101,6 @@ const User = objectType({
           : []
       },
     })
-    t.list.field("categories", {
-      type: "Category",
-      resolve: (parent, args, ctx) => {
-        return parent.id
-          ? prisma.category.findMany({
-              where: {
-                user_id: parent.id,
-              },
-            })
-          : []
-      },
-    })
   },
 })
 

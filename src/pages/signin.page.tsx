@@ -1,5 +1,5 @@
 import "react-image-crop/dist/ReactCrop.css"
-
+import "react-quill/dist/quill.snow.css"
 import jwt from "jsonwebtoken"
 import Router, { useRouter } from "next/router"
 import type { ChangeEvent } from "react"
@@ -8,43 +8,86 @@ import type { Crop } from "react-image-crop"
 import ReactCrop from "react-image-crop"
 import supabase from "src/lib/supabase"
 import { uuidv4 } from "src/tools/uuidv4"
+import Resizer from "react-image-file-resizer"
 
 import Layout from "../components/Layout"
+import dynamic from "next/dynamic"
+const ReactQuill = dynamic(() => import("react-quill"), {
+  ssr: false,
+})
 
-const generateDownload = (canvas: HTMLCanvasElement, crop: Crop) => {
-  if (!crop || !canvas) {
-    return
-  }
-  canvas.toBlob(
-    blob => {
-      if (blob) {
-        const previewUrl = window.URL.createObjectURL(blob)
-        const anchor = document.createElement("a")
-        anchor.download = "cropPreview.png"
-        anchor.href = URL.createObjectURL(blob)
-        anchor.click()
-        window.URL.revokeObjectURL(previewUrl)
-      }
-    },
-    "image/png",
-    1
-  )
+const modules = {
+  toolbar: {
+    container: [
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [{ size: ["small", false, "large", "huge"] }, { color: [] }],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" },
+        { align: [] },
+      ],
+      ["link", "image", "video"],
+      ["clean"],
+    ],
+    // handlers: { image: this.imageHandler },
+  },
+  clipboard: { matchVisual: false },
 }
+
+const formats = [
+  "header",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "blockquote",
+  "size",
+  "color",
+  "list",
+  "bullet",
+  "indent",
+  "link",
+  "image",
+  "video",
+  "align",
+]
+
+const resizeFile = (
+  file: Blob
+): Promise<string | Blob | File | ProgressEvent<FileReader>> =>
+  new Promise(resolve => {
+    Resizer.imageFileResizer(
+      file,
+      400,
+      400,
+      "JPEG",
+      70,
+      0,
+      uri => {
+        resolve(uri)
+      },
+      "base64"
+    )
+  })
 
 function Signin() {
   const [password, setPassword] = useState("")
   const [email, setEmail] = useState("")
+  const [text, setText] = useState("aaa")
   const [preview, setPreview] = useState<Blob | null>(null)
   const [upImg, setUpImg] = useState<string>("")
   const imgRef = useRef<HTMLImageElement>(null)
   const previewCanvasRef = useRef<HTMLCanvasElement>(null)
+  const quillRef = useRef(null)
   const [crop, setCrop] = useState<Crop>({
     // 正方形にするために、縦横比を維持して、縦横の最小値を設定する
     aspect: 1,
     width: 30,
     height: 30,
-    x: 0,
-    y: 0,
+    x: 30,
+    y: 30,
     unit: "%",
 
     // unit: "%",
@@ -66,6 +109,39 @@ function Signin() {
       reader.readAsDataURL(e.target.files[0])
     }
   }, [])
+
+  console.log(text)
+
+  const onResizeImage = useCallback(
+    async (e: ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files.length > 0) {
+        const file = e.target.files[0]
+        const resizedFile = await resizeFile(file)
+        // resizeFileはbase64なので、Fileに変換する
+        var bin = atob(`${resizedFile}`.replace(/^.*,/, ""))
+        var buffer = new Uint8Array(bin.length)
+        for (var i = 0; i < bin.length; i++) {
+          buffer[i] = bin.charCodeAt(i)
+        }
+        // Blobを作成
+        try {
+          var blob = new Blob([buffer.buffer], {
+            type: "image/png",
+          })
+        } catch (e) {
+          return false
+        }
+        const reader = new FileReader()
+        reader.addEventListener("load", () => {
+          return setUpImg(reader.result as string)
+        })
+        console.log(blob)
+
+        reader.readAsDataURL(blob)
+      }
+    },
+    []
+  )
 
   const onLoad = useCallback((img: HTMLImageElement) => {
     // @ts-ignore
@@ -135,7 +211,7 @@ function Signin() {
             // blobをsupabaseにアップロードする
             return await supabase.storage
               .from("avatars")
-              .upload(`public/${userId}`, blob, {
+              .upload(`public/${userId}/avatar`, blob, {
                 cacheControl: "3600",
                 upsert: false,
               })
@@ -184,8 +260,23 @@ function Signin() {
   return (
     <Layout>
       <div>
+        <ReactQuill
+          // ref={quillRef}
+          theme="snow"
+          modules={modules}
+          formats={formats}
+          value={text}
+          onChange={e => {
+            return setText(e)
+          }}
+        />
         <div>
+          CropImage
           <input type="file" accept="image/*" onChange={onSelectFile} />
+        </div>
+        <div>
+          ResizeImage
+          <input type="file" accept="image/*" onChange={onResizeImage} />
         </div>
         {/* @ts-ignore */}
         <ReactCrop

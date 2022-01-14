@@ -73,6 +73,16 @@ import {
   QueryChaptersCountByPublish,
   QueryChaptersCountByUnPublish,
 } from "src/pages/api/queries/chapter"
+import {
+  QueryPages,
+  QueryPage,
+  QueryPageCountByChapterId,
+} from "src/pages/api/queries/page"
+import {
+  QueryCategories,
+  QueryCategory,
+  QueryCategoryCount,
+} from "src/pages/api/queries/category"
 import { QueryMe, QueryUserById, QueryUsers } from "src/pages/api/queries/user"
 import { SubscriptionServer } from "subscriptions-transport-ws"
 
@@ -149,6 +159,16 @@ const Query = objectType({
     QueryMyChapterById(t)
     QueryChaptersCountByPublish(t)
     QueryChaptersCountByUnPublish(t)
+
+    // ページのクエリ
+    QueryPages(t)
+    QueryPage(t)
+    QueryPageCountByChapterId(t)
+
+    // カテゴリーのクエリ
+    QueryCategories(t)
+    QueryCategory(t)
+    QueryCategoryCount(t)
 
     // 全て取得する
     t.list.field("categories", {

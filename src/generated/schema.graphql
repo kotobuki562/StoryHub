@@ -6,8 +6,6 @@ type Category {
   category_title: String
   created_at: DateTime
   id: Int
-  user: User
-  user_id: String
 }
 
 type Chapter {
@@ -105,6 +103,9 @@ type Page {
 }
 
 type Query {
+  QueryCategories(page: Int!, pageSize: Int!): [Category]
+  QueryCategory(id: String!, page: Int!, pageSize: Int!): Category
+  QueryCategoryCount(page: Int!, pageSize: Int!): Int
   QueryChapterById(id: String!): Chapter
   QueryChapters(page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String): [Chapter]
   QueryChaptersCountByPublish: Int
@@ -122,7 +123,10 @@ type Query {
   QueryMySeasons(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Season]
   QueryMyStories(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Story]
   QueryMyStoryById(accessToken: String!, id: String!, userId: String!): Story
+  QueryPage(id: String!, page: Int!, pageSize: Int!): Page
+  QueryPageCountByChapterId(chapterId: String!): Int
   QueryPageReviews(page: String = "1"): [Review]
+  QueryPages(page: Int!, pageSize: Int!, serchSeasonId: String): [Page]
   QuerySeasonById(id: String!): Season
   QuerySeasons(page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String): [Season]
   QuerySeasonsCountByPublish: Int
@@ -219,7 +223,6 @@ type Terminology {
 }
 
 type User {
-  categories: [Category]
   created_at: DateTime
   favorites: [Favorite]
   follows: [Follow]
