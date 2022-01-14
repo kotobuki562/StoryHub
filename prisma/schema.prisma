@@ -1,0 +1,185 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("NEXT_PUBLIC_TEST_DATABASE_URL")
+  // url      = env("NEXT_PUBLIC_DATABASE_URL")
+}
+
+model User {
+  id              String            @id @unique @default(uuid())
+  user_name       String?
+  user_deal       String?
+  links           Json?
+  image           String?
+  created_at      DateTime          @default(now())
+  updated_at      DateTime?
+  stories         Story[]
+  reviews         Review[]
+  follows         Follow[]
+  favorites       Favorite[]
+  SettingMaterial SettingMaterial[]
+}
+
+model Review {
+  id           String    @id @unique @default(uuid())
+  user_id      String
+  story_id     String?
+  review_title String
+  review_body  String
+  stars        Int       @default(0)
+  publish      Boolean   @default(false) @db.Boolean
+  created_at   DateTime  @default(now())
+  updated_at   DateTime?
+  user         User?     @relation(fields: [user_id], references: [id])
+  story        Story?    @relation(fields: [story_id], references: [id])
+}
+
+model Follow {
+  id         Int      @id @unique @default(autoincrement())
+  user_id    String
+  follow_id  String?
+  created_at DateTime @default(now())
+  user       User?    @relation(fields: [user_id], references: [id])
+}
+
+model SettingMaterial {
+  id                     String        @id @default(uuid())
+  user_id                String
+  story_id               String?
+  setting_material_title String
+  setting_material_deal  String
+  setting_material_image String?
+  publish                Boolean       @default(false) @db.Boolean
+  created_at             DateTime      @default(now())
+  updated_at             DateTime?
+  user                   User?         @relation(fields: [user_id], references: [id])
+  story                  Story?        @relation(fields: [story_id], references: [id])
+  Character              Character[]
+  Object                 Object[]
+  Terminology            Terminology[]
+}
+
+model Character {
+  id                  String          @id @default(uuid())
+  setting_material_id String
+  character_name      String
+  character_sex       String
+  character_category  String
+  character_deal      String
+  character_image     String?
+  isSpoiler           Boolean         @default(false) @db.Boolean
+  publish             Boolean         @default(false) @db.Boolean
+  created_at          DateTime        @default(now())
+  updated_at          DateTime?
+  settingMaterial     SettingMaterial @relation(fields: [setting_material_id], references: [id])
+}
+
+model Object {
+  id                  String          @id @default(uuid())
+  setting_material_id String
+  object_name         String
+  object_deal         String
+  object_image        String?
+  isSpoiler           Boolean         @default(false) @db.Boolean
+  publish             Boolean         @default(false) @db.Boolean
+  created_at          DateTime        @default(now())
+  updated_at          DateTime?
+  settingMaterial     SettingMaterial @relation(fields: [setting_material_id], references: [id])
+}
+
+model Terminology {
+  id                  String          @id @default(uuid())
+  setting_material_id String
+  terminology_name    String
+  terminology_deal    String
+  isSpoiler           Boolean         @default(false) @db.Boolean
+  publish             Boolean         @default(false) @db.Boolean
+  created_at          DateTime        @default(now())
+  updated_at          DateTime?
+  settingMaterial     SettingMaterial @relation(fields: [setting_material_id], references: [id])
+}
+
+model Favorite {
+  id         Int      @id @unique @default(autoincrement())
+  user_id    String
+  story_id   String
+  created_at DateTime @default(now())
+  user       User?    @relation(fields: [user_id], references: [id])
+  story      Story?   @relation(fields: [story_id], references: [id])
+}
+
+model Story {
+  id                  String            @id @unique @default(uuid())
+  user_id             String
+  story_title         String
+  story_synopsis      String?
+  story_image         String?
+  story_categories    String[]
+  viewing_restriction String?
+  publish             Boolean           @default(false) @db.Boolean
+  created_at          DateTime          @default(now())
+  updated_at          DateTime?
+  seasons             Season[]
+  reviews             Review[]
+  favorites           Favorite[]
+  user                User?             @relation(fields: [user_id], references: [id])
+  SettingMaterial     SettingMaterial[]
+}
+
+model Season {
+  id                String    @id @unique @default(uuid())
+  story_id          String
+  season_title      String
+  season_image      String?
+  season_synopsis   String?
+  season_categories String[]
+  publish           Boolean   @default(false) @db.Boolean
+  created_at        DateTime  @default(now())
+  updated_at        DateTime?
+  episodes          Episode[]
+  story             Story?    @relation(fields: [story_id], references: [id])
+}
+
+model Episode {
+  id               String    @id @unique @default(uuid())
+  season_id        String
+  episode_title    String
+  episode_image    String?
+  episode_synopsis String?
+  publish          Boolean   @default(false) @db.Boolean
+  created_at       DateTime  @default(now())
+  updated_at       DateTime?
+  chapters         Chapter[]
+  season           Season?   @relation(fields: [season_id], references: [id])
+}
+
+model Chapter {
+  id            String    @id @unique @default(uuid())
+  episode_id    String
+  chapter_title String
+  chapter_image String?
+  publish       Boolean   @default(false) @db.Boolean
+  created_at    DateTime  @default(now())
+  updated_at    DateTime?
+  pages         Page[]
+  episode       Episode?  @relation(fields: [episode_id], references: [id])
+}
+
+model Page {
+  id         String    @id @unique @default(uuid())
+  chapter_id String
+  page_body  String
+  created_at DateTime  @default(now())
+  updated_at DateTime?
+  chapter    Chapter?  @relation(fields: [chapter_id], references: [id])
+}
+
+model Category {
+  id             Int      @id @unique @default(autoincrement())
+  category_title String
+  created_at     DateTime @default(now())
+}

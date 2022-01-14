@@ -1,11 +1,24 @@
-import React, { useState } from "react"
-import Layout from "../components/Layout"
+import { useMutation } from "@apollo/client"
+import gql from "graphql-tag"
 import Router, { useRouter } from "next/router"
-import supabase from "src/lib/supabase"
+import React, { useState } from "react"
 
-function Signin(props) {
-  const [password, setPassword] = useState("")
+import Layout from "../components/Layout"
+
+const SignupMutation = gql`
+  mutation Mutation($email: String!, $userName: String) {
+    signupUser(email: $email, user_name: $userName) {
+      id
+      user_name
+    }
+  }
+`
+
+function Signup(props) {
+  const [name, setName] = useState("")
   const [email, setEmail] = useState("")
+
+  const [signup] = useMutation(SignupMutation)
 
   return (
     <Layout>
@@ -13,33 +26,41 @@ function Signin(props) {
         <form
           onSubmit={async e => {
             e.preventDefault()
-            await supabase.auth
-              .signIn({
+            await signup({
+              variables: {
                 email,
-                password,
-              })
-              .then(res => {
-                console.log(res)
-              })
+                user_name: name,
+              },
+            })
             Router.push("/")
           }}
         >
           <h1>Signup user</h1>
           <input
             autoFocus
-            onChange={e => setPassword(e.target.value)}
-            placeholder="Password"
-            type="password"
-            value={password}
+            onChange={e => {
+              return setName(e.target.value)
+            }}
+            placeholder="Name"
+            type="text"
+            value={name}
           />
           <input
-            onChange={e => setEmail(e.target.value)}
+            onChange={e => {
+              return setEmail(e.target.value)
+            }}
             placeholder="Email address)"
             type="text"
             value={email}
           />
-          <input disabled={!password || !email} type="submit" value="Signup" />
-          <a className="back" href="#" onClick={() => Router.push("/")}>
+          <input disabled={!name || !email} type="submit" value="Signup" />
+          <a
+            className="back"
+            href="#"
+            onClick={() => {
+              return Router.push("/")
+            }}
+          >
             or Cancel
           </a>
         </form>
@@ -74,4 +95,4 @@ function Signin(props) {
   )
 }
 
-export default Signin
+export default Signup

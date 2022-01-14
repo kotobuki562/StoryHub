@@ -6,14 +6,52 @@ type Category {
   category_title: String
   created_at: DateTime
   id: Int
-  user: User
-  user_id: String
+}
+
+type Chapter {
+  chapter_image: String
+  chapter_title: String
+  created_at: DateTime
+  episode: Episode
+  episode_id: String
+  id: ID
+  pages(pageAccessToken: String, pagePage: Int!, pagePageSize: Int!, pageUserId: String): [Page]
+  publish: Boolean
+  updated_at: DateTime
+}
+
+type Character {
+  character_category: String
+  character_deal: String
+  character_image: String
+  character_name: String
+  character_sex: String
+  created_at: DateTime
+  id: ID
+  isSpoiler: Boolean
+  publish: Boolean
+  settingMaterial: SettingMaterial
+  setting_material_id: String
+  updated_at: DateTime
 }
 
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
+
+type Episode {
+  chapters(chapterAccessToken: String, chapterPage: Int!, chapterPageSize: Int!, chapterUserId: String): [Chapter]
+  created_at: DateTime
+  episode_image: String
+  episode_synopsis: String
+  episode_title: String
+  id: ID
+  publish: Boolean
+  season: Season
+  season_id: String
+  updated_at: DateTime
+}
 
 type Favorite {
   created_at: DateTime
@@ -33,52 +71,165 @@ type Follow {
 }
 
 type Mutation {
-  createDraft(authorEmail: String, content: String, title: String!): Post
-  deletePost(postId: String): Post
-  publish(postId: String): Post
-  signupUser(email: String!, user_name: String): User
+  createStory(acessToken: String!, publish: Boolean!, storyCategories: [String!]!, storyImage: String, storySynopsis: String, storyTitle: String!, viewingRestriction: String): Story
+  createUser(accessToken: String!, image: String, links: [String], userDeal: String!, userName: String!): User
+  deleteStory(storyId: String!): Story
+  deleteUser(accessToken: String!): User
+  signupUser(email: String!, password: String!, userName: String): User
+  updateStory(publish: Boolean!, storyCategories: [String!]!, storyId: String!, storyImage: String, storySynopsis: String, storyTitle: String, viewingRestriction: String): Story
+  updateUser(accessToken: String!, image: String, links: [String], userDeal: String!, userName: String!): User
 }
 
-type Post {
-  author: User
-  content: String
-  id: Int
-  published: Boolean
-  title: String
+type Object {
+  created_at: DateTime
+  id: ID
+  isSpoiler: Boolean
+  object_deal: String
+  object_image: String
+  object_name: String
+  publish: Boolean
+  settingMaterial: SettingMaterial
+  setting_material_id: String
+  updated_at: DateTime
+}
+
+type Page {
+  chapter: Chapter
+  chapter_id: String
+  created_at: DateTime
+  id: ID
+  page_body: String
+  updated_at: DateTime
 }
 
 type Query {
+  QueryCategories(page: Int!, pageSize: Int!): [Category]
+  QueryCategory(id: String!, page: Int!, pageSize: Int!): Category
+  QueryCategoryCount(page: Int!, pageSize: Int!): Int
+  QueryChapterById(id: String!): Chapter
+  QueryChapters(page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String): [Chapter]
+  QueryChaptersCountByPublish: Int
+  QueryChaptersCountByUnPublish: Int
+  QueryEpisodeById(id: String!): Episode
+  QueryEpisodes(page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String): [Episode]
+  QueryEpisodesCountByPublish: Int
+  QueryEpisodesCountByUnPublish: Int
+  QueryMe(accessToken: String!): User
+  QueryMyChapterById(accessToken: String!, id: String!, page: Int!, pageSize: Int!, userId: String!): Chapter
+  QueryMyChapters(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String, userId: String!): [Chapter]
+  QueryMyEpisodeById(accessToken: String!, id: String!, page: Int!, pageSize: Int!, userId: String!): Episode
+  QueryMyEpisodes(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String, userId: String!): [Episode]
+  QueryMySeasonById(accessToken: String!, id: String!, page: Int!, pageSize: Int!, userId: String!): Season
+  QueryMySeasons(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Season]
+  QueryMyStories(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Story]
+  QueryMyStoryById(accessToken: String!, id: String!, userId: String!): Story
+  QueryPage(id: String!, page: Int!, pageSize: Int!): Page
+  QueryPageCountByChapterId(chapterId: String!): Int
+  QueryPageReviews(page: String = "1"): [Review]
+  QueryPages(page: Int!, pageSize: Int!, serchSeasonId: String): [Page]
+  QuerySeasonById(id: String!): Season
+  QuerySeasons(page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String): [Season]
+  QuerySeasonsCountByPublish: Int
+  QuerySeasonsCountByUnPublish: Int
+  QueryStories(page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String): [Story]
+  QueryStoriesCountByPublish: Int
+  QueryStoriesCountByUnPublish: Int
+  QueryStoryById(id: String!): Story
+  QueryUserById(id: String!): User
+  QueryUsers(page: Int!, pageSize: Int!, searchUserName: String): [User]
   categories: [Category]
-  drafts: [Post]
-  feed: [Post]
   filterFavoritesByStoryId(storyId: String!): [Favorite]
   filterFavoritesByUserId(userId: String!): [Favorite]
   filterFollowsByFollowId(followId: String!): [Follow]
   filterFollowsByUserId(userId: String!): [Follow]
-  filterPosts(searchString: String): [Post]
+  filterReviewsByStoryId(storyId: String!): [Review]
+  filterReviewsByUserId(userId: String!): [Review]
   filterStoriesByUserId(userId: String!): [Story]
-  post(postId: String!): Post
-  stories: [Story]
-  users: [User]
+  reviews: [Review]
+}
+
+type Review {
+  created_at: DateTime
+  id: ID
+  publish: Boolean
+  review_body: String
+  review_title: String
+  stars: Int
+  story: Story
+  story_id: String
+  updated_at: DateTime
+  user: User
+  user_id: String
+}
+
+type Season {
+  created_at: DateTime
+  episodes(episodeAccessToken: String, episodePage: Int!, episodePageSize: Int!, episodeUserId: String): [Episode]
+  id: ID
+  publish: Boolean
+  season_categories: [String]
+  season_image: String
+  season_synopsis: String
+  season_title: String
+  story: Story
+  story_id: String
+  updated_at: DateTime
+}
+
+type SettingMaterial {
+  character(storyAccessToken: String, storyPage: Int!, storyPageSize: Int!): [Character]
+  created_at: DateTime
+  id: ID
+  object(reviewAccessToken: String, reviewPage: Int!, reviewPageSize: Int!): [Object]
+  publish: Boolean
+  setting_material_deal: String
+  setting_material_image: String
+  setting_material_title: String
+  story(storyAccessToken: String, storyPage: Int!, storyPageSize: Int!): Story
+  story_id: String
+  terminology(terminologyAccessToken: String, terminologyPage: Int!, terminologyPageSize: Int!): [Terminology]
+  updated_at: DateTime
+  user: User
+  user_id: String
 }
 
 type Story {
   created_at: DateTime
+  favorites: [Favorite]
   id: ID
   publish: Boolean
+  reviews: [Review]
+  seasons(seasonAccessToken: String, seasonPage: Int!, seasonPageSize: Int!, seasonUserId: String): [Season]
+  story_categories: [String]
   story_image: String
   story_synopsis: String
   story_title: String
   updated_at: DateTime
   user: User
   user_id: String
+  viewing_restriction: String
+}
+
+type Terminology {
+  created_at: DateTime
+  id: ID
+  isSpoiler: Boolean
+  publish: Boolean
+  settingMaterial: SettingMaterial
+  setting_material_id: String
+  terminology_deal: String
+  terminology_name: String
+  updated_at: DateTime
 }
 
 type User {
   created_at: DateTime
+  favorites: [Favorite]
+  follows: [Follow]
   id: ID
   image: String
-  stories: [Story]
+  reviews(reviewAccessToken: String, reviewPage: Int!, reviewPageSize: Int!): [Review]
+  stories(storyAccessToken: String, storyPage: Int!, storyPageSize: Int!): [Story]
   updated_at: DateTime
   user_deal: String
   user_name: String
