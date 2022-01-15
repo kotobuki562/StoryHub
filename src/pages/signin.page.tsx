@@ -9,8 +9,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import type { Crop } from "react-image-crop"
 import ReactCrop from "react-image-crop"
 import Resizer from "react-image-file-resizer"
-import supabase from "src/lib/supabase"
-import { uuidv4 } from "src/tools/uuidv4"
+import { supabase } from "src/lib/supabase"
 
 import Layout from "../components/Layout"
 
@@ -100,6 +99,9 @@ const Signin = () => {
     // height: 30,
   })
   const [completedCrop, setCompletedCrop] = useState<Crop | null>(null)
+  const user = supabase.auth.user()
+  // eslint-disable-next-line no-console
+  console.log(user)
 
   const onSelectFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -219,23 +221,23 @@ const Signin = () => {
           if (blob) {
             // blobをsupabaseにアップロードする
             return await supabase.storage
-              .from("avatars")
-              .upload(`public/${userId}/avatar`, blob, {
+              .from("management")
+              .upload(`${userId}/avatar`, blob, {
                 cacheControl: "3600",
                 upsert: false,
               })
               .then(async () => {
                 await supabase.storage
-                  .from("avatars")
-                  .download(`public/${userId}`)
+                  .from("management")
+                  .download(`${userId}/avatar`)
                   .then(res => {
                     setPreview(res.data)
                   })
               })
               .then(async () => {
                 const { error, publicURL } = supabase.storage
-                  .from("avatars")
-                  .getPublicUrl(`public/${userId}`)
+                  .from("management")
+                  .getPublicUrl(`${userId}/avatar`)
                 // eslint-disable-next-line no-console
                 console.log(publicURL, error)
               })
@@ -319,7 +321,7 @@ const Signin = () => {
             onClick={async () =>
               await uploadPreview(
                 previewCanvasRef.current as HTMLCanvasElement,
-                uuidv4(),
+                `${user?.id}`,
                 crop
               )
             }

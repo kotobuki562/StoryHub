@@ -88,9 +88,6 @@ const QuerySettingMaterialById = (t: ObjectDefinitionBlock<"Query">) => {
         where: {
           id: args.id,
         },
-        select: {
-          publish: true,
-        },
       })
       return settingMaterial
     },

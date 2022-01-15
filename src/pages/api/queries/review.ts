@@ -77,9 +77,6 @@ const QueryReviewById = (t: ObjectDefinitionBlock<"Query">) =>
         where: {
           id,
         },
-        select: {
-          publish: true,
-        },
       })
       return review
     },

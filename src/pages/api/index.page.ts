@@ -12,7 +12,6 @@ import {
   stringArg,
 } from "nexus"
 import path from "path"
-import prisma from "src/lib/prisma"
 import { Category } from "src/pages/api/models/category"
 import { Chapter } from "src/pages/api/models/chapter"
 import { Character } from "src/pages/api/models/character"
@@ -48,6 +47,14 @@ import {
   QueryMyChapters,
 } from "src/pages/api/queries/chapter"
 import {
+  QueryCharacterById,
+  QueryCharacters,
+  QueryCharactersCountByPublish,
+  QueryCharactersCountByUnPublish,
+  QueryMyCharacterById,
+  QueryMyCharacters,
+} from "src/pages/api/queries/character"
+import {
   QueryEpisodeById,
   QueryEpisodes,
   QueryEpisodesCountByPublish,
@@ -55,7 +62,21 @@ import {
   QueryMyEpisodeById,
   QueryMyEpisodes,
 } from "src/pages/api/queries/episode"
+import {
+  QueryFavoritesByStory,
+  QueryFavoritesByUser,
+  QueryMyFavoritesByStory,
+  QueryMyFavoritesByUser,
+} from "src/pages/api/queries/favorite"
 import { QueryFollowers, QueryFollowing } from "src/pages/api/queries/follow"
+import {
+  QueryMyObjectById,
+  QueryMyObjects,
+  QueryObjectById,
+  QueryObjects,
+  QueryObjectsCountByPublish,
+  QueryObjectsCountByUnPublish,
+} from "src/pages/api/queries/object"
 import {
   QueryPage,
   QueryPageCountByChapterId,
@@ -93,6 +114,14 @@ import {
   QueryStoriesCountByUnPublish,
   QueryStoryById,
 } from "src/pages/api/queries/story"
+import {
+  QueryMyTerminologies,
+  QueryMyTerminologyById,
+  QueryTerminologies,
+  QueryTerminologiesCountByPublish,
+  QueryTerminologiesCountByUnPublish,
+  QueryTerminologyById,
+} from "src/pages/api/queries/terminology"
 import { QueryMe, QueryUserById, QueryUsers } from "src/pages/api/queries/user"
 
 import { context } from "./context"
@@ -197,60 +226,35 @@ const Query = objectType({
     QuerySettingMaterialsCountByPublish(t)
     QuerySettingMaterialsCountByUnPublish(t)
 
-    t.list.field("filterFollowsByUserId", {
-      type: "Follow",
-      args: {
-        userId: nonNull(stringArg()),
-      },
-      resolve: (_parent, args) =>
-        prisma.follow.findMany({
-          where: { user_id: args.userId },
-        }),
-    })
+    // キャラクターのクエリ
+    QueryCharacters(t)
+    QueryCharacterById(t)
+    QueryMyCharacters(t)
+    QueryMyCharacterById(t)
+    QueryCharactersCountByPublish(t)
+    QueryCharactersCountByUnPublish(t)
 
-    t.list.field("filterFollowsByFollowId", {
-      type: "Follow",
-      args: {
-        followId: nonNull(stringArg()),
-      },
-      resolve: (_parent, args) =>
-        prisma.follow.findMany({
-          where: { follow_id: args.followId },
-        }),
-    })
+    // オブジェクトのクエリ
+    QueryObjects(t)
+    QueryObjectById(t)
+    QueryMyObjects(t)
+    QueryMyObjectById(t)
+    QueryObjectsCountByPublish(t)
+    QueryObjectsCountByUnPublish(t)
 
-    t.list.field("filterFavoritesByUserId", {
-      type: "Favorite",
-      args: {
-        userId: nonNull(stringArg()),
-      },
-      resolve: (_parent, args) =>
-        prisma.favorite.findMany({
-          where: { user_id: args.userId },
-        }),
-    })
+    // 専門用語のクエリ
+    QueryTerminologies(t)
+    QueryTerminologyById(t)
+    QueryMyTerminologies(t)
+    QueryMyTerminologyById(t)
+    QueryTerminologiesCountByPublish(t)
+    QueryTerminologiesCountByUnPublish(t)
 
-    t.list.field("filterFavoritesByStoryId", {
-      type: "Favorite",
-      args: {
-        storyId: nonNull(stringArg()),
-      },
-      resolve: (_parent, args) =>
-        prisma.favorite.findMany({
-          where: { story_id: args.storyId },
-        }),
-    })
-    // UserIdに紐づくStoryを取得
-    t.list.field("filterStoriesByUserId", {
-      type: "Story",
-      args: {
-        userId: nonNull(stringArg()),
-      },
-      resolve: (_parent, args) =>
-        prisma.story.findMany({
-          where: { user_id: args.userId },
-        }),
-    })
+    // ファボのクエリ
+    QueryFavoritesByUser(t)
+    QueryFavoritesByStory(t)
+    QueryMyFavoritesByUser(t)
+    QueryMyFavoritesByStory(t)
   },
 })
 
