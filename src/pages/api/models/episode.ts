@@ -6,7 +6,7 @@ import { isSafe } from "../index.page"
 const chapterArgs = {
   chapterAccessToken: nullable(stringArg()),
   chapterUserId: nullable(stringArg()),
-  chapterPage: nonNull(intArg()),
+  page: nonNull(intArg()),
   chapterPageSize: nonNull(intArg()),
 }
 
@@ -24,14 +24,10 @@ const Episode = objectType({
     t.list.field("chapters", {
       type: "Chapter",
       args: chapterArgs,
-      resolve: (parent, args, ctx) => {
-        const {
-          chapterAccessToken,
-          chapterUserId,
-          chapterPage,
-          chapterPageSize,
-        } = args
-        const skip = chapterPageSize * (chapterPage - 1)
+      resolve: (parent, args) => {
+        const { chapterAccessToken, chapterPageSize, chapterUserId, page } =
+          args
+        const skip = chapterPageSize * (page - 1)
         return chapterAccessToken &&
           chapterUserId &&
           isSafe(chapterAccessToken, chapterUserId)
@@ -57,15 +53,14 @@ const Episode = objectType({
     })
     t.field("season", {
       type: "Season",
-      resolve: (parent, args, ctx) => {
-        return parent.season_id
+      resolve: parent =>
+        parent.season_id
           ? prisma.season.findUnique({
               where: {
                 id: parent.season_id,
               },
             })
-          : null
-      },
+          : null,
     })
   },
 })

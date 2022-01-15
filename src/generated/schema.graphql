@@ -15,7 +15,7 @@ type Chapter {
   episode: Episode
   episode_id: String
   id: ID
-  pages(pageAccessToken: String, pagePage: Int!, pagePageSize: Int!, pageUserId: String): [Page]
+  pages(page: Int!, pageAccessToken: String, pagePageSize: Int!, pageUserId: String): [Page]
   publish: Boolean
   updated_at: DateTime
 }
@@ -41,7 +41,7 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 scalar DateTime
 
 type Episode {
-  chapters(chapterAccessToken: String, chapterPage: Int!, chapterPageSize: Int!, chapterUserId: String): [Chapter]
+  chapters(chapterAccessToken: String, chapterPageSize: Int!, chapterUserId: String, page: Int!): [Chapter]
   created_at: DateTime
   episode_image: String
   episode_synopsis: String
@@ -103,9 +103,7 @@ type Page {
 }
 
 type Query {
-  QueryCategories(page: Int!, pageSize: Int!): [Category]
-  QueryCategory(id: String!, page: Int!, pageSize: Int!): Category
-  QueryCategoryCount(page: Int!, pageSize: Int!): Int
+  QueryCategories: [Category]
   QueryChapterById(id: String!): Chapter
   QueryChapters(page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String): [Chapter]
   QueryChaptersCountByPublish: Int
@@ -114,38 +112,47 @@ type Query {
   QueryEpisodes(page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String): [Episode]
   QueryEpisodesCountByPublish: Int
   QueryEpisodesCountByUnPublish: Int
+  QueryFollowers(accessToken: String!): [Follow]
+  QueryFollowing(accessToken: String!): [Follow]
   QueryMe(accessToken: String!): User
   QueryMyChapterById(accessToken: String!, id: String!, page: Int!, pageSize: Int!, userId: String!): Chapter
   QueryMyChapters(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String, userId: String!): [Chapter]
   QueryMyEpisodeById(accessToken: String!, id: String!, page: Int!, pageSize: Int!, userId: String!): Episode
   QueryMyEpisodes(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String, userId: String!): [Episode]
+  QueryMyReviewById(accessToken: String!, id: String!, userId: String!): Review
+  QueryMyReviews(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchUserId: String): [Review]
   QueryMySeasonById(accessToken: String!, id: String!, page: Int!, pageSize: Int!, userId: String!): Season
   QueryMySeasons(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Season]
+  QueryMySettingMaterialById(accessToken: String!, id: String!, userId: String!): SettingMaterial
+  QueryMySettingMaterials(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, serchStoryId: String): [SettingMaterial]
   QueryMyStories(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Story]
   QueryMyStoryById(accessToken: String!, id: String!, userId: String!): Story
   QueryPage(id: String!, page: Int!, pageSize: Int!): Page
   QueryPageCountByChapterId(chapterId: String!): Int
-  QueryPageReviews(page: String = "1"): [Review]
   QueryPages(page: Int!, pageSize: Int!, serchSeasonId: String): [Page]
+  QueryPublishReviewsCount: Int
+  QueryReviewById(id: String!): Review
+  QueryReviews(page: Int!, pageSize: Int!, searchTitle: String, serchUserId: String): [Review]
   QuerySeasonById(id: String!): Season
   QuerySeasons(page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String): [Season]
   QuerySeasonsCountByPublish: Int
   QuerySeasonsCountByUnPublish: Int
+  QuerySettingMaterialById(id: String!): SettingMaterial
+  QuerySettingMaterials(page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, serchStoryId: String): [SettingMaterial]
+  QuerySettingMaterialsCountByPublish: Int
+  QuerySettingMaterialsCountByUnPublish: Int
   QueryStories(page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String): [Story]
   QueryStoriesCountByPublish: Int
   QueryStoriesCountByUnPublish: Int
   QueryStoryById(id: String!): Story
+  QueryUnPublishReviewsCount: Int
   QueryUserById(id: String!): User
   QueryUsers(page: Int!, pageSize: Int!, searchUserName: String): [User]
-  categories: [Category]
   filterFavoritesByStoryId(storyId: String!): [Favorite]
   filterFavoritesByUserId(userId: String!): [Favorite]
   filterFollowsByFollowId(followId: String!): [Follow]
   filterFollowsByUserId(userId: String!): [Follow]
-  filterReviewsByStoryId(storyId: String!): [Review]
-  filterReviewsByUserId(userId: String!): [Review]
   filterStoriesByUserId(userId: String!): [Story]
-  reviews: [Review]
 }
 
 type Review {
@@ -164,7 +171,7 @@ type Review {
 
 type Season {
   created_at: DateTime
-  episodes(episodeAccessToken: String, episodePage: Int!, episodePageSize: Int!, episodeUserId: String): [Episode]
+  episodes(episodeAccessToken: String, episodePageSize: Int!, episodeUserId: String, page: Int!): [Episode]
   id: ID
   publish: Boolean
   season_categories: [String]
@@ -199,7 +206,7 @@ type Story {
   id: ID
   publish: Boolean
   reviews: [Review]
-  seasons(seasonAccessToken: String, seasonPage: Int!, seasonPageSize: Int!, seasonUserId: String): [Season]
+  seasons(page: Int!, seasonAccessToken: String, seasonPageSize: Int!, seasonUserId: String): [Season]
   story_categories: [String]
   story_image: String
   story_synopsis: String

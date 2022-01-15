@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client"
+import type { Prisma } from "@prisma/client"
 import faker from "@withshepherd/faker"
 
 const createSeasons = (): Prisma.SeasonCreateInput[] => {

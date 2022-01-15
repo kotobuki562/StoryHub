@@ -276,8 +276,6 @@ export interface NexusGenFieldTypes {
   }
   Query: { // field return type
     QueryCategories: Array<NexusGenRootTypes['Category'] | null> | null; // [Category]
-    QueryCategory: NexusGenRootTypes['Category'] | null; // Category
-    QueryCategoryCount: number | null; // Int
     QueryChapterById: NexusGenRootTypes['Chapter'] | null; // Chapter
     QueryChapters: Array<NexusGenRootTypes['Chapter'] | null> | null; // [Chapter]
     QueryChaptersCountByPublish: number | null; // Int
@@ -286,38 +284,47 @@ export interface NexusGenFieldTypes {
     QueryEpisodes: Array<NexusGenRootTypes['Episode'] | null> | null; // [Episode]
     QueryEpisodesCountByPublish: number | null; // Int
     QueryEpisodesCountByUnPublish: number | null; // Int
+    QueryFollowers: Array<NexusGenRootTypes['Follow'] | null> | null; // [Follow]
+    QueryFollowing: Array<NexusGenRootTypes['Follow'] | null> | null; // [Follow]
     QueryMe: NexusGenRootTypes['User'] | null; // User
     QueryMyChapterById: NexusGenRootTypes['Chapter'] | null; // Chapter
     QueryMyChapters: Array<NexusGenRootTypes['Chapter'] | null> | null; // [Chapter]
     QueryMyEpisodeById: NexusGenRootTypes['Episode'] | null; // Episode
     QueryMyEpisodes: Array<NexusGenRootTypes['Episode'] | null> | null; // [Episode]
+    QueryMyReviewById: NexusGenRootTypes['Review'] | null; // Review
+    QueryMyReviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
     QueryMySeasonById: NexusGenRootTypes['Season'] | null; // Season
     QueryMySeasons: Array<NexusGenRootTypes['Season'] | null> | null; // [Season]
+    QueryMySettingMaterialById: NexusGenRootTypes['SettingMaterial'] | null; // SettingMaterial
+    QueryMySettingMaterials: Array<NexusGenRootTypes['SettingMaterial'] | null> | null; // [SettingMaterial]
     QueryMyStories: Array<NexusGenRootTypes['Story'] | null> | null; // [Story]
     QueryMyStoryById: NexusGenRootTypes['Story'] | null; // Story
     QueryPage: NexusGenRootTypes['Page'] | null; // Page
     QueryPageCountByChapterId: number | null; // Int
-    QueryPageReviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
     QueryPages: Array<NexusGenRootTypes['Page'] | null> | null; // [Page]
+    QueryPublishReviewsCount: number | null; // Int
+    QueryReviewById: NexusGenRootTypes['Review'] | null; // Review
+    QueryReviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
     QuerySeasonById: NexusGenRootTypes['Season'] | null; // Season
     QuerySeasons: Array<NexusGenRootTypes['Season'] | null> | null; // [Season]
     QuerySeasonsCountByPublish: number | null; // Int
     QuerySeasonsCountByUnPublish: number | null; // Int
+    QuerySettingMaterialById: NexusGenRootTypes['SettingMaterial'] | null; // SettingMaterial
+    QuerySettingMaterials: Array<NexusGenRootTypes['SettingMaterial'] | null> | null; // [SettingMaterial]
+    QuerySettingMaterialsCountByPublish: number | null; // Int
+    QuerySettingMaterialsCountByUnPublish: number | null; // Int
     QueryStories: Array<NexusGenRootTypes['Story'] | null> | null; // [Story]
     QueryStoriesCountByPublish: number | null; // Int
     QueryStoriesCountByUnPublish: number | null; // Int
     QueryStoryById: NexusGenRootTypes['Story'] | null; // Story
+    QueryUnPublishReviewsCount: number | null; // Int
     QueryUserById: NexusGenRootTypes['User'] | null; // User
     QueryUsers: Array<NexusGenRootTypes['User'] | null> | null; // [User]
-    categories: Array<NexusGenRootTypes['Category'] | null> | null; // [Category]
     filterFavoritesByStoryId: Array<NexusGenRootTypes['Favorite'] | null> | null; // [Favorite]
     filterFavoritesByUserId: Array<NexusGenRootTypes['Favorite'] | null> | null; // [Favorite]
     filterFollowsByFollowId: Array<NexusGenRootTypes['Follow'] | null> | null; // [Follow]
     filterFollowsByUserId: Array<NexusGenRootTypes['Follow'] | null> | null; // [Follow]
-    filterReviewsByStoryId: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
-    filterReviewsByUserId: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
     filterStoriesByUserId: Array<NexusGenRootTypes['Story'] | null> | null; // [Story]
-    reviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
   }
   Review: { // field return type
     created_at: NexusGenScalars['DateTime'] | null; // DateTime
@@ -491,8 +498,6 @@ export interface NexusGenFieldTypeNames {
   }
   Query: { // field return type name
     QueryCategories: 'Category'
-    QueryCategory: 'Category'
-    QueryCategoryCount: 'Int'
     QueryChapterById: 'Chapter'
     QueryChapters: 'Chapter'
     QueryChaptersCountByPublish: 'Int'
@@ -501,38 +506,47 @@ export interface NexusGenFieldTypeNames {
     QueryEpisodes: 'Episode'
     QueryEpisodesCountByPublish: 'Int'
     QueryEpisodesCountByUnPublish: 'Int'
+    QueryFollowers: 'Follow'
+    QueryFollowing: 'Follow'
     QueryMe: 'User'
     QueryMyChapterById: 'Chapter'
     QueryMyChapters: 'Chapter'
     QueryMyEpisodeById: 'Episode'
     QueryMyEpisodes: 'Episode'
+    QueryMyReviewById: 'Review'
+    QueryMyReviews: 'Review'
     QueryMySeasonById: 'Season'
     QueryMySeasons: 'Season'
+    QueryMySettingMaterialById: 'SettingMaterial'
+    QueryMySettingMaterials: 'SettingMaterial'
     QueryMyStories: 'Story'
     QueryMyStoryById: 'Story'
     QueryPage: 'Page'
     QueryPageCountByChapterId: 'Int'
-    QueryPageReviews: 'Review'
     QueryPages: 'Page'
+    QueryPublishReviewsCount: 'Int'
+    QueryReviewById: 'Review'
+    QueryReviews: 'Review'
     QuerySeasonById: 'Season'
     QuerySeasons: 'Season'
     QuerySeasonsCountByPublish: 'Int'
     QuerySeasonsCountByUnPublish: 'Int'
+    QuerySettingMaterialById: 'SettingMaterial'
+    QuerySettingMaterials: 'SettingMaterial'
+    QuerySettingMaterialsCountByPublish: 'Int'
+    QuerySettingMaterialsCountByUnPublish: 'Int'
     QueryStories: 'Story'
     QueryStoriesCountByPublish: 'Int'
     QueryStoriesCountByUnPublish: 'Int'
     QueryStoryById: 'Story'
+    QueryUnPublishReviewsCount: 'Int'
     QueryUserById: 'User'
     QueryUsers: 'User'
-    categories: 'Category'
     filterFavoritesByStoryId: 'Favorite'
     filterFavoritesByUserId: 'Favorite'
     filterFollowsByFollowId: 'Follow'
     filterFollowsByUserId: 'Follow'
-    filterReviewsByStoryId: 'Review'
-    filterReviewsByUserId: 'Review'
     filterStoriesByUserId: 'Story'
-    reviews: 'Review'
   }
   Review: { // field return type name
     created_at: 'DateTime'
@@ -620,8 +634,8 @@ export interface NexusGenFieldTypeNames {
 export interface NexusGenArgTypes {
   Chapter: {
     pages: { // args
+      page: number; // Int!
       pageAccessToken?: string | null; // String
-      pagePage: number; // Int!
       pagePageSize: number; // Int!
       pageUserId?: string | null; // String
     }
@@ -629,9 +643,9 @@ export interface NexusGenArgTypes {
   Episode: {
     chapters: { // args
       chapterAccessToken?: string | null; // String
-      chapterPage: number; // Int!
       chapterPageSize: number; // Int!
       chapterUserId?: string | null; // String
+      page: number; // Int!
     }
   }
   Mutation: {
@@ -680,19 +694,6 @@ export interface NexusGenArgTypes {
     }
   }
   Query: {
-    QueryCategories: { // args
-      page: number; // Int!
-      pageSize: number; // Int!
-    }
-    QueryCategory: { // args
-      id: string; // String!
-      page: number; // Int!
-      pageSize: number; // Int!
-    }
-    QueryCategoryCount: { // args
-      page: number; // Int!
-      pageSize: number; // Int!
-    }
     QueryChapterById: { // args
       id: string; // String!
     }
@@ -710,6 +711,12 @@ export interface NexusGenArgTypes {
       pageSize: number; // Int!
       searchTitle?: string | null; // String
       serchSeasonId?: string | null; // String
+    }
+    QueryFollowers: { // args
+      accessToken: string; // String!
+    }
+    QueryFollowing: { // args
+      accessToken: string; // String!
     }
     QueryMe: { // args
       accessToken: string; // String!
@@ -744,6 +751,18 @@ export interface NexusGenArgTypes {
       serchSeasonId?: string | null; // String
       userId: string; // String!
     }
+    QueryMyReviewById: { // args
+      accessToken: string; // String!
+      id: string; // String!
+      userId: string; // String!
+    }
+    QueryMyReviews: { // args
+      accessToken: string; // String!
+      page: number; // Int!
+      pageSize: number; // Int!
+      searchTitle?: string | null; // String
+      serchUserId?: string | null; // String
+    }
     QueryMySeasonById: { // args
       accessToken: string; // String!
       id: string; // String!
@@ -759,6 +778,20 @@ export interface NexusGenArgTypes {
       searchTitle?: string | null; // String
       searchUserId?: string | null; // String
       userId: string; // String!
+    }
+    QueryMySettingMaterialById: { // args
+      accessToken: string; // String!
+      id: string; // String!
+      userId: string; // String!
+    }
+    QueryMySettingMaterials: { // args
+      accessToken: string; // String!
+      page: number; // Int!
+      pageSize: number; // Int!
+      searchCategory?: string | null; // String
+      searchTitle?: string | null; // String
+      searchUserId?: string | null; // String
+      serchStoryId?: string | null; // String
     }
     QueryMyStories: { // args
       accessToken: string; // String!
@@ -782,13 +815,19 @@ export interface NexusGenArgTypes {
     QueryPageCountByChapterId: { // args
       chapterId: string; // String!
     }
-    QueryPageReviews: { // args
-      page: string | null; // String
-    }
     QueryPages: { // args
       page: number; // Int!
       pageSize: number; // Int!
       serchSeasonId?: string | null; // String
+    }
+    QueryReviewById: { // args
+      id: string; // String!
+    }
+    QueryReviews: { // args
+      page: number; // Int!
+      pageSize: number; // Int!
+      searchTitle?: string | null; // String
+      serchUserId?: string | null; // String
     }
     QuerySeasonById: { // args
       id: string; // String!
@@ -799,6 +838,17 @@ export interface NexusGenArgTypes {
       searchCategory?: string | null; // String
       searchTitle?: string | null; // String
       searchUserId?: string | null; // String
+    }
+    QuerySettingMaterialById: { // args
+      id: string; // String!
+    }
+    QuerySettingMaterials: { // args
+      page: number; // Int!
+      pageSize: number; // Int!
+      searchCategory?: string | null; // String
+      searchTitle?: string | null; // String
+      searchUserId?: string | null; // String
+      serchStoryId?: string | null; // String
     }
     QueryStories: { // args
       page: number; // Int!
@@ -830,12 +880,6 @@ export interface NexusGenArgTypes {
     filterFollowsByUserId: { // args
       userId: string; // String!
     }
-    filterReviewsByStoryId: { // args
-      storyId: string; // String!
-    }
-    filterReviewsByUserId: { // args
-      userId: string; // String!
-    }
     filterStoriesByUserId: { // args
       userId: string; // String!
     }
@@ -843,9 +887,9 @@ export interface NexusGenArgTypes {
   Season: {
     episodes: { // args
       episodeAccessToken?: string | null; // String
-      episodePage: number; // Int!
       episodePageSize: number; // Int!
       episodeUserId?: string | null; // String
+      page: number; // Int!
     }
   }
   SettingMaterial: {
@@ -872,8 +916,8 @@ export interface NexusGenArgTypes {
   }
   Story: {
     seasons: { // args
+      page: number; // Int!
       seasonAccessToken?: string | null; // String
-      seasonPage: number; // Int!
       seasonPageSize: number; // Int!
       seasonUserId?: string | null; // String
     }

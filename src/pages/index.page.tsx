@@ -1,47 +1,33 @@
 import { useQuery } from "@apollo/client"
 import gql from "graphql-tag"
 import Link from "next/link"
+import { NexusGenObjects } from "src/generated/nexus-typegen"
 
 import Layout from "../components/Layout"
 
-const FeedQuery = gql`
-  query FeedQuery {
-    feed {
-      id
-      title
-      content
-      published
-      author {
-        id
-        name
-      }
+const StoriesQuery = gql`
+  query QueryStories($page: Int!, $pageSize: Int!) {
+    QueryStories(page: $page, pageSize: $pageSize) {
+      story_title
+      story_synopsis
+      story_categories
+      story_image
+      created_at
+      viewing_restriction
     }
   }
 `
 
-const Post = ({ post }) => {
-  return (
-    <Link href="/p/[id]" as={`/p/${post.id}`}>
-      <a>
-        <h2>{post.title}</h2>
-        <small>By {post.author.name}</small>
-        <p>{post.content}</p>
-        <style jsx>{`
-          a {
-            text-decoration: none;
-            color: inherit;
-            padding: 2rem;
-            display: block;
-          }
-        `}</style>
-      </a>
-    </Link>
-  )
+type QueryStory = {
+  QueryStories: NexusGenObjects["Story"][]
 }
 
 const Blog = () => {
-  const { loading, error, data } = useQuery(FeedQuery, {
-    fetchPolicy: "cache-and-network",
+  const { loading, error, data } = useQuery<QueryStory>(StoriesQuery, {
+    variables: {
+      page: 1,
+      pageSize: 10,
+    },
   })
 
   if (loading) {
@@ -56,29 +42,21 @@ const Blog = () => {
       <div className="page">
         <h1>My Blog</h1>
         <main>
-          {data.feed.map(post => {
+          {data?.QueryStories.map(story => {
             return (
-              <div key={post.id} className="post">
-                <Post post={post} />
+              <div key={story.id}>
+                <h2>{story.story_title}</h2>
+                <p>{story.story_synopsis}</p>
+                <img
+                  src={`${story.story_image}`}
+                  alt={`${story.story_title}`}
+                />
               </div>
             )
           })}
+          <pre>{JSON.stringify(data, null, 2)}</pre>
         </main>
       </div>
-      <style jsx>{`
-        .post {
-          background: white;
-          transition: box-shadow 0.1s ease-in;
-        }
-
-        .post:hover {
-          box-shadow: 1px 1px 3px #aaa;
-        }
-
-        .post + .post {
-          margin-top: 2rem;
-        }
-      `}</style>
     </Layout>
   )
 }

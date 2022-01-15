@@ -9,8 +9,8 @@ const seasonArgs = {
   searchCategory: nullable(stringArg()),
 }
 
-const QuerySeasons = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.list.field("QuerySeasons", {
+const QuerySeasons = (t: ObjectDefinitionBlock<"Query">) =>
+  t.list.field("QuerySeasons", {
     type: "Season",
     args: {
       ...seasonArgs,
@@ -25,7 +25,7 @@ const QuerySeasons = (t: ObjectDefinitionBlock<"Query">) => {
         orderBy: { created_at: "desc" },
         where: {
           ...(args.searchTitle && {
-            season_title: { contains: args.searchTitle },
+            season_title: { search: args.searchTitle },
           }),
           ...(args.searchUserId && { user_id: args.searchUserId }),
           publish: true,
@@ -34,10 +34,9 @@ const QuerySeasons = (t: ObjectDefinitionBlock<"Query">) => {
       return seasons
     },
   })
-}
 
-const QueryMySeasons = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.list.field("QueryMySeasons", {
+const QueryMySeasons = (t: ObjectDefinitionBlock<"Query">) =>
+  t.list.field("QueryMySeasons", {
     type: "Season",
     args: {
       ...seasonArgs,
@@ -54,7 +53,7 @@ const QueryMySeasons = (t: ObjectDefinitionBlock<"Query">) => {
             orderBy: { created_at: "desc" },
             where: {
               ...(args.searchTitle && {
-                season_title: { contains: args.searchTitle },
+                season_title: { search: args.searchTitle },
               }),
               ...(args.searchUserId && { user_id: args.searchUserId }),
             },
@@ -62,72 +61,63 @@ const QueryMySeasons = (t: ObjectDefinitionBlock<"Query">) => {
         : null
     },
   })
-}
 
-const QuerySeasonById = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.field("QuerySeasonById", {
+const QuerySeasonById = (t: ObjectDefinitionBlock<"Query">) =>
+  t.field("QuerySeasonById", {
     type: "Season",
     args: {
       id: nonNull(stringArg()),
     },
-    resolve: (_parent, args) => {
-      return prisma.season.findUnique({
+    resolve: (_parent, args) =>
+      prisma.season.findUnique({
         where: {
           id: args.id,
         },
         select: {
           publish: true,
         },
-      })
-    },
+      }),
   })
-}
 
-const QueryMySeasonById = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.field("QueryMySeasonById", {
+const QueryMySeasonById = (t: ObjectDefinitionBlock<"Query">) =>
+  t.field("QueryMySeasonById", {
     type: "Season",
     args: {
       id: nonNull(stringArg()),
       ...authArgs,
       ...defaultArgs,
     },
-    resolve: (_parent, args) => {
-      return isSafe(args.accessToken, args.userId)
+    resolve: (_parent, args) =>
+      isSafe(args.accessToken, args.userId)
         ? prisma.season.findUnique({
             where: {
               id: args.id,
             },
           })
-        : null
-    },
+        : null,
   })
-}
 
-const QuerySeasonsCountByPublish = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.field("QuerySeasonsCountByPublish", {
+const QuerySeasonsCountByPublish = (t: ObjectDefinitionBlock<"Query">) =>
+  t.field("QuerySeasonsCountByPublish", {
     type: "Int",
-    resolve: (_parent, args) => {
-      return prisma.season.count({
+    resolve: (_parent, _args) =>
+      prisma.season.count({
         where: {
           publish: true,
         },
-      })
-    },
+      }),
   })
-}
 
-const QuerySeasonsCountByUnPublish = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.field("QuerySeasonsCountByUnPublish", {
+const QuerySeasonsCountByUnPublish = (t: ObjectDefinitionBlock<"Query">) =>
+  t.field("QuerySeasonsCountByUnPublish", {
     type: "Int",
-    resolve: (_parent, args) => {
-      return prisma.season.count({
+    resolve: (_parent, _args) =>
+      prisma.season.count({
         where: {
           publish: false,
         },
-      })
-    },
+      }),
   })
-}
 
 export {
   QueryMySeasonById,

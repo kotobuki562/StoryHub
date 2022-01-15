@@ -1,5 +1,5 @@
-import type { ObjectDefinitionBlock } from "nexus/dist/core"
 import { nonNull, nullable, stringArg } from "nexus"
+import type { ObjectDefinitionBlock } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
 import { defaultArgs } from "src/pages/api/index.page"
 
@@ -7,8 +7,8 @@ const pageArgs = {
   serchSeasonId: nullable(stringArg()),
 }
 
-const QueryPages = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.list.field("QueryPages", {
+const QueryPages = (t: ObjectDefinitionBlock<"Query">) =>
+  t.list.field("QueryPages", {
     type: "Page",
     args: {
       ...pageArgs,
@@ -30,39 +30,34 @@ const QueryPages = (t: ObjectDefinitionBlock<"Query">) => {
       return pages
     },
   })
-}
 
-const QueryPage = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.field("QueryPage", {
+const QueryPage = (t: ObjectDefinitionBlock<"Query">) =>
+  t.field("QueryPage", {
     type: "Page",
     args: {
       id: nonNull(stringArg()),
       ...defaultArgs,
     },
-    resolve: (_parent, args) => {
-      return prisma.page.findUnique({
+    resolve: (_parent, args) =>
+      prisma.page.findUnique({
         where: {
           id: args.id,
         },
-      })
-    },
+      }),
   })
-}
 
-const QueryPageCountByChapterId = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.field("QueryPageCountByChapterId", {
+const QueryPageCountByChapterId = (t: ObjectDefinitionBlock<"Query">) =>
+  t.field("QueryPageCountByChapterId", {
     type: "Int",
     args: {
       chapterId: nonNull(stringArg()),
     },
-    resolve: (_parent, args) => {
-      return prisma.page.count({
+    resolve: (_parent, args) =>
+      prisma.page.count({
         where: {
           chapter_id: args.chapterId,
         },
-      })
-    },
+      }),
   })
-}
 
-export { QueryPages, QueryPage, QueryPageCountByChapterId }
+export { QueryPage, QueryPageCountByChapterId, QueryPages }

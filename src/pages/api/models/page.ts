@@ -20,15 +20,14 @@ const Page = objectType({
     t.nullable.date("updated_at")
     t.field("chapter", {
       type: "Chapter",
-      resolve: (parent, args, ctx) => {
-        return parent.chapter_id
+      resolve: parent =>
+        parent.chapter_id
           ? prisma.chapter.findUnique({
               where: {
                 id: parent.chapter_id,
               },
             })
-          : null
-      },
+          : null,
     })
   },
 })

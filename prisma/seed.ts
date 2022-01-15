@@ -1,17 +1,20 @@
-import { PrismaClient, Prisma } from "@prisma/client"
+/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Prisma, PrismaClient } from "@prisma/client"
+
 import {
-  createSeasons,
   createCategories,
-  createUsers,
-  createStories,
-  createEpisodes,
   createChapters,
+  createEpisodes,
   createPages,
+  createSeasons,
+  createStories,
+  createUsers,
 } from "./fakers"
 
 const prisma = new PrismaClient()
 
-export async function main() {
+export const main = async () => {
   try {
     console.log(`Start seeding ...`)
     for (const u of createCategories()) {

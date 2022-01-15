@@ -5,8 +5,8 @@ import prisma from "src/lib/prisma"
 
 import { decodeUserId, defaultArgs } from "../index.page"
 
-const QueryUsers = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.list.field("QueryUsers", {
+const QueryUsers = (t: ObjectDefinitionBlock<"Query">) =>
+  t.list.field("QueryUsers", {
     type: "User",
     args: {
       searchUserName: nullable(stringArg()),
@@ -21,13 +21,12 @@ const QueryUsers = (t: ObjectDefinitionBlock<"Query">) => {
         orderBy: { created_at: "desc" },
         where: {
           ...(args.searchUserName && {
-            user_name: { contains: args.searchUserName },
+            user_name: { search: args.searchUserName },
           }),
         },
       })
     },
   })
-}
 
 const QueryUserById = (t: ObjectDefinitionBlock<"Query">) => {
   t.field("QueryUserById", {
@@ -35,26 +34,23 @@ const QueryUserById = (t: ObjectDefinitionBlock<"Query">) => {
     args: {
       id: nonNull(stringArg()),
     },
-    resolve: (_, args) => {
-      return prisma.user.findUnique({
+    resolve: (_, args) =>
+      prisma.user.findUnique({
         where: { id: args.id },
-      })
-    },
+      }),
   })
 }
 
-const QueryMe = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.field("QueryMe", {
+const QueryMe = (t: ObjectDefinitionBlock<"Query">) =>
+  t.field("QueryMe", {
     type: "User",
     args: {
       accessToken: nonNull(stringArg()),
     },
-    resolve: (_, args) => {
-      return prisma.user.findUnique({
+    resolve: (_, args) =>
+      prisma.user.findUnique({
         where: { id: `${decodeUserId(args.accessToken)}` },
-      })
-    },
+      }),
   })
-}
 
 export { QueryMe, QueryUserById, QueryUsers }

@@ -28,13 +28,12 @@ export const Object = objectType({
     t.nullable.date("updated_at")
     t.field("settingMaterial", {
       type: "SettingMaterial",
-      resolve: (parent, args, ctx) => {
-        return prisma.settingMaterial.findUnique({
+      resolve: parent =>
+        prisma.settingMaterial.findUnique({
           where: {
             id: `${parent.setting_material_id}`,
           },
-        })
-      },
+        }),
     })
   },
 })

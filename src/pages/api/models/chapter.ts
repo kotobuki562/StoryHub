@@ -6,7 +6,7 @@ import { isSafe } from "../index.page"
 const pageArgs = {
   pageAccessToken: nullable(stringArg()),
   pageUserId: nullable(stringArg()),
-  pagePage: nonNull(intArg()),
+  page: nonNull(intArg()),
   pagePageSize: nonNull(intArg()),
 }
 
@@ -23,9 +23,9 @@ const Chapter = objectType({
     t.list.field("pages", {
       type: "Page",
       args: pageArgs,
-      resolve: (parent, args, ctx) => {
-        const { pageAccessToken, pageUserId, pagePage, pagePageSize } = args
-        const skip = pagePageSize * (pagePage - 1)
+      resolve: (parent, args) => {
+        const { page, pageAccessToken, pagePageSize, pageUserId } = args
+        const skip = pagePageSize * (page - 1)
         if (
           pageAccessToken &&
           pageUserId &&
@@ -54,15 +54,14 @@ const Chapter = objectType({
     })
     t.field("episode", {
       type: "Episode",
-      resolve: (parent, args, ctx) => {
-        return parent.episode_id
+      resolve: parent =>
+        parent.episode_id
           ? prisma.episode.findUnique({
               where: {
                 id: parent.episode_id,
               },
             })
-          : null
-      },
+          : null,
     })
   },
 })
