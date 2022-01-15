@@ -372,7 +372,31 @@ const Signin = () => {
             type="text"
             value={email}
           />
-          <input disabled={!password || !email} type="submit" value="Signup" />
+          <input disabled={!password || !email} type="submit" value="Signin" />
+        </form>
+        <form
+          onSubmit={async e => {
+            e.preventDefault()
+            await supabase.auth.api
+              .updateUser(`${supabase.auth.session()?.access_token}`, {
+                password: password,
+              })
+              .then(res => {
+                // eslint-disable-next-line no-console
+                console.log(res)
+                Router.push("/")
+              })
+          }}
+        >
+          <h1>Reset Password</h1>
+          <input
+            autoFocus
+            onChange={e => setPassword(e.target.value)}
+            placeholder="Password"
+            type="password"
+            value={password}
+          />
+          <input disabled={!password} type="submit" value="Reset" />
         </form>
       </div>
       <style jsx>{`

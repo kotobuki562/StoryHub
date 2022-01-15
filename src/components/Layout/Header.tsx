@@ -4,19 +4,23 @@ import {
   BookmarkIcon,
   BookOpenIcon,
   ChevronDownIcon,
+  ChevronUpIcon,
   FireIcon,
   HomeIcon,
+  LoginIcon,
+  LogoutIcon,
+  MailIcon,
   PhotographIcon,
+  UserAddIcon,
   UserCircleIcon,
   UserGroupIcon,
 } from "@heroicons/react/solid"
-import type { User } from "@supabase/supabase-js"
 import cc from "classcat"
 import gql from "graphql-tag"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import type { VFC } from "react"
-import { memo, useMemo } from "react"
+import { memo, useCallback, useMemo, useState } from "react"
+import { Accordion } from "src/components/blocks/Accodion"
 import { Menu } from "src/components/blocks/Menu"
 import type { NexusGenObjects } from "src/generated/nexus-typegen"
 import { supabase } from "src/lib/supabase"
@@ -89,8 +93,11 @@ const userLinks = [
 ]
 
 const HeaderComp = () => {
+  const [isOpenUserAccodion, setOpenUserAccodion] = useState<boolean>(false)
+  const [isOpenUserActionAccodion, setOpenUserActionAccodion] =
+    useState<boolean>(false)
+  const userInfo = supabase.auth.user()
   const accessToken = useMemo(() => supabase.auth.session()?.access_token, [])
-
   const { data: user } = useQuery<QueryMe>(Me, {
     variables: {
       accessToken,
@@ -114,8 +121,26 @@ const HeaderComp = () => {
     }
   }, [router.asPath])
 
+  const onToggleUserAccodion = useCallback(() => {
+    setOpenUserAccodion(pre => !pre)
+  }, [])
+
+  const onToggleUserActionAccodion = useCallback(() => {
+    setOpenUserActionAccodion(pre => !pre)
+  }, [])
+
+  const handleSignOut = useCallback(() => {
+    supabase.auth.signOut().then(() => {
+      router.push("/signin")
+    })
+  }, [router])
+
+  const handleSendResetPasswordEmail = useCallback(() => {
+    supabase.auth.api.resetPasswordForEmail(`${userInfo?.email}`)
+  }, [userInfo?.email])
+
   return (
-    <nav className="flex sticky top-0 justify-between items-center py-2 px-4 bg-white">
+    <nav className="flex sticky top-0 z-10 justify-between items-center py-2 px-4 bg-white">
       <div className="flex items-center">
         <div className="mr-4">
           <img
@@ -139,7 +164,7 @@ const HeaderComp = () => {
                 <Link key={label} href={href}>
                   <a
                     className={cc([
-                      "py-2 px-4 w-[200px] text-lg flex font-bold items-center hover:bg-slate-100 justify-between rounded-xl duration-200",
+                      "py-2 px-4 w-[200px] text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 justify-between rounded-xl duration-200",
                       router.asPath === href && "bg-slate-100 text-purple-400",
                     ])}
                   >
@@ -154,7 +179,7 @@ const HeaderComp = () => {
       </div>
       <div className="group flex items-center">
         <Menu
-          position={-75}
+          position={-80}
           viewer={
             <div className="flex items-center py-2 px-4 font-black group-hover:bg-slate-100 rounded-xl duration-200">
               <div className="mr-2">
@@ -169,35 +194,130 @@ const HeaderComp = () => {
             </div>
           }
         >
-          <div className="flex flex-col">
+          <div className="flex flex-col w-[230px]">
             {user && (
-              <div className="flex items-center py-2 px-4">
-                <div className="mr-2">
-                  <img
-                    className="w-8 h-8 rounded-full"
-                    src={user.QueryMe.image || "/img/Vector.png"}
-                    alt={user.QueryMe.user_name || "avatar"}
-                  />
+              <>
+                <div className="py-2 px-4 mb-4 border-b border-slate-200">
+                  <p className="mb-2 text-sm text-slate-400">
+                    ログイン中のアカウント:
+                  </p>
+                  <div className="flex">
+                    <div className="mr-2 w-10">
+                      <img
+                        className="w-10 h-10 rounded-full"
+                        src={user.QueryMe.image || "/img/Vector.png"}
+                        alt={user.QueryMe.user_name || "avatar"}
+                      />
+                    </div>
+                    <div className="overflow-scroll no-scrollbar">
+                      <p className="font-bold">{user.QueryMe.user_name}</p>
+                      <p className="text-sm text-slate-400">
+                        {userInfo?.email}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-bold">{user.QueryMe.user_name}</p>
+                <div className="mb-4">
+                  <Accordion
+                    isOpen={isOpenUserAccodion}
+                    onToggle={onToggleUserAccodion}
+                    toggleButton={
+                      <div
+                        className={cc([
+                          "py-2 px-4 w-full text-lg flex font-bold items-center bg-slate-100 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                          isOpenUserAccodion && "text-purple-400",
+                        ])}
+                      >
+                        <p>User Pages</p>
+                        <div className="w-8">
+                          {isOpenUserAccodion ? (
+                            <ChevronUpIcon className="w-8 h-8" />
+                          ) : (
+                            <ChevronDownIcon className="w-8 h-8" />
+                          )}
+                        </div>
+                      </div>
+                    }
+                  >
+                    {userLinks.map(({ href, icon, label }) => (
+                      <Link key={label} href={href}>
+                        <a
+                          className={cc([
+                            "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                            router.asPath === href &&
+                              "bg-slate-100 text-purple-400",
+                          ])}
+                        >
+                          <p>{label}</p>
+                          <div className="w-8">{icon}</div>
+                        </a>
+                      </Link>
+                    ))}
+                  </Accordion>
                 </div>
+
+                <Accordion
+                  isOpen={isOpenUserActionAccodion}
+                  onToggle={onToggleUserActionAccodion}
+                  toggleButton={
+                    <div
+                      className={cc([
+                        "py-2 px-4 w-full text-lg flex font-bold bg-slate-100 items-center hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                        isOpenUserActionAccodion && "text-purple-400",
+                      ])}
+                    >
+                      <p>User Actions</p>
+                      <div className="w-8">
+                        {isOpenUserActionAccodion ? (
+                          <ChevronUpIcon className="w-8 h-8" />
+                        ) : (
+                          <ChevronDownIcon className="w-8 h-8" />
+                        )}
+                      </div>
+                    </div>
+                  }
+                >
+                  <button
+                    className="flex justify-between items-center py-2 px-4 w-full text-lg font-bold hover:text-white hover:bg-purple-500 rounded-xl duration-200"
+                    onClick={handleSignOut}
+                  >
+                    <p>Sign Out</p>
+                    <div className="w-8">
+                      <LogoutIcon className="w-8 h-8" />
+                    </div>
+                  </button>
+                  <button
+                    className="flex justify-between items-center py-2 px-4 w-full text-lg font-bold hover:text-white hover:bg-purple-500 rounded-xl duration-200"
+                    onClick={handleSendResetPasswordEmail}
+                  >
+                    <p>Password Reset</p>
+                    <div className="w-8">
+                      <MailIcon className="w-8 h-8" />
+                    </div>
+                  </button>
+                </Accordion>
+              </>
+            )}
+            {!user && (
+              <div>
+                <Link href="/signin">
+                  <a className="flex justify-between items-center py-2 px-4 w-full text-lg font-bold hover:text-white hover:bg-purple-500 rounded-xl duration-200">
+                    <p>Login</p>
+                    <div className="w-8">
+                      <LoginIcon className="w-8 h-8" />
+                    </div>
+                  </a>
+                </Link>
+                <Link href="/signup">
+                  <a className="flex justify-between items-center py-2 px-4 w-full text-lg font-bold hover:text-white hover:bg-purple-500 rounded-xl duration-200">
+                    <p>Sign Up</p>
+                    <div className="w-8">
+                      <UserAddIcon className="w-8 h-8" />
+                    </div>
+                  </a>
+                </Link>
               </div>
             )}
-
-            {userLinks.map(({ href, icon, label }) => (
-              <Link key={label} href={href}>
-                <a
-                  className={cc([
-                    "py-2 px-4 w-[200px] text-lg flex font-bold items-center hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
-                    router.asPath === href && "bg-slate-100 text-purple-400",
-                  ])}
-                >
-                  <p>{label}</p>
-                  <div className="w-8">{icon}</div>
-                </a>
-              </Link>
-            ))}
           </div>
         </Menu>
       </div>

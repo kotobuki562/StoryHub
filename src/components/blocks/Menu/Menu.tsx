@@ -20,12 +20,6 @@ export const Menu: VFC<Props> = memo(({ children, position, viewer }) => {
   const handleClick = useCallback(() => {
     setHidden(pre => !pre)
   }, [])
-  const handleMouseOver = useCallback(() => {
-    setHidden(false)
-  }, [])
-  const handleMouseOut = useCallback(() => {
-    setHidden(true)
-  }, [])
 
   useEffect(() => {
     if (popoverRef.current) {
@@ -50,20 +44,11 @@ export const Menu: VFC<Props> = memo(({ children, position, viewer }) => {
 
   return (
     <div className="relative cursor-pointer">
-      <div
-        onClick={handleClick}
-        onMouseOver={handleMouseOver}
-        onMouseOut={handleMouseOut}
-        className="flex flex-col items-center"
-      >
+      <div onClick={handleClick} className="flex flex-col items-center">
         {viewer}
       </div>
 
-      <div
-        onMouseOver={handleMouseOver}
-        onMouseOut={handleMouseOut}
-        ref={popoverRef}
-      >
+      <div ref={popoverRef}>
         <div
           className={`absolute z-10 bg-white rounded-lg shadow-lg`}
           style={{

@@ -15,9 +15,7 @@ const LayoutComp: VFC<LayoutProps> = props => {
   const [isLoading, setIsLoading] = useState(true)
 
   supabase.auth.onAuthStateChange((_, session) => {
-    if (session?.user && (pathname === "/signin" || pathname === "/signup")) {
-      push("/")
-    } else if (!session?.user && pathname !== "/signup" && pathname !== "/") {
+    if (!session?.user && pathname !== "/signup" && pathname !== "/") {
       push("/signin")
     }
   })
@@ -25,9 +23,7 @@ const LayoutComp: VFC<LayoutProps> = props => {
   useEffect(() => {
     ;(async () => {
       const user = supabase.auth.user()
-      if (user && (pathname === "/signin" || pathname === "/signup")) {
-        await push("/")
-      } else if (!user && pathname !== "/signup" && pathname !== "/") {
+      if (!user && pathname !== "/signup" && pathname !== "/") {
         await push("/signin")
       }
       setIsLoading(false)
