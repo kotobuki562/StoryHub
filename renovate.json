@@ -1,5 +1,33 @@
 {
-  "extends": [
-    "config:base"
-  ]
+  "extends": ["config:base"],
+  "schedule": ["after 10pm and before 5am every weekday", "every weekend"],
+  "timezone": "Asia/Tokyo",
+  "pin": {
+    "automerge": true
+  },
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["major"],
+      "addLabels": ["renovate/Major"]
+    },
+    {
+      "matchUpdateTypes": ["patch"],
+      "addLabels": ["renovate/Patch"]
+    },
+    {
+      "matchUpdateTypes": ["minor"],
+      "addLabels": ["renovate/Minor"]
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "labels": ["renovate/security"],
+    "assignees": []
+  },
+  "updateNotScheduled": true,
+  "rebaseWhen": "conflicted",
+  "digest": {
+    "enabled": false
+  },
+  "assigneesFromCodeOwners": true,
+  "additionalBranchPrefix": "{{parentDir}}-"
 }
