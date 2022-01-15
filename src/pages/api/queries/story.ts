@@ -82,9 +82,6 @@ const QueryStoryById = (t: ObjectDefinitionBlock<"Query">) =>
     resolve: (_parent, args) =>
       prisma.story.findUnique({
         where: { id: args.id },
-        select: {
-          publish: true,
-        },
       }),
   })
 

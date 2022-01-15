@@ -9,10 +9,8 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import type { Crop } from "react-image-crop"
 import ReactCrop from "react-image-crop"
 import Resizer from "react-image-file-resizer"
-import supabase from "src/lib/supabase"
-import { uuidv4 } from "src/tools/uuidv4"
-
-import Layout from "../components/Layout"
+import { Layout } from "src/components/Layout/Layout"
+import { supabase } from "src/lib/supabase"
 
 const ReactQuill = dynamic(() => import("react-quill"), {
   ssr: false,
@@ -100,6 +98,7 @@ const Signin = () => {
     // height: 30,
   })
   const [completedCrop, setCompletedCrop] = useState<Crop | null>(null)
+  const user = supabase.auth.user()
 
   const onSelectFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -202,13 +201,6 @@ const Signin = () => {
     }
   }, [completedCrop])
 
-  // if (auth?.access_token) {
-  //   const decode = jwt.decode(`${auth?.access_token}`)
-
-  //   // auth?.access_tokenを取得して、jwt.verifyで認証する
-  //   console.log(decode?.sub)
-  // }
-
   const uploadPreview = useCallback(
     async (canvas: HTMLCanvasElement, userId: string, crop: Crop) => {
       if (!userId || !canvas || !crop) {
@@ -219,23 +211,23 @@ const Signin = () => {
           if (blob) {
             // blobをsupabaseにアップロードする
             return await supabase.storage
-              .from("avatars")
-              .upload(`public/${userId}/avatar`, blob, {
+              .from("management")
+              .upload(`${userId}/avatar`, blob, {
                 cacheControl: "3600",
                 upsert: false,
               })
               .then(async () => {
                 await supabase.storage
-                  .from("avatars")
-                  .download(`public/${userId}`)
+                  .from("management")
+                  .download(`${userId}/avatar`)
                   .then(res => {
                     setPreview(res.data)
                   })
               })
               .then(async () => {
                 const { error, publicURL } = supabase.storage
-                  .from("avatars")
-                  .getPublicUrl(`public/${userId}`)
+                  .from("management")
+                  .getPublicUrl(`${userId}/avatar`)
                 // eslint-disable-next-line no-console
                 console.log(publicURL, error)
               })
@@ -319,7 +311,7 @@ const Signin = () => {
             onClick={async () =>
               await uploadPreview(
                 previewCanvasRef.current as HTMLCanvasElement,
-                uuidv4(),
+                `${user?.id}`,
                 crop
               )
             }
@@ -380,7 +372,31 @@ const Signin = () => {
             type="text"
             value={email}
           />
-          <input disabled={!password || !email} type="submit" value="Signup" />
+          <input disabled={!password || !email} type="submit" value="Signin" />
+        </form>
+        <form
+          onSubmit={async e => {
+            e.preventDefault()
+            await supabase.auth.api
+              .updateUser(`${supabase.auth.session()?.access_token}`, {
+                password: password,
+              })
+              .then(res => {
+                // eslint-disable-next-line no-console
+                console.log(res)
+                Router.push("/")
+              })
+          }}
+        >
+          <h1>Reset Password</h1>
+          <input
+            autoFocus
+            onChange={e => setPassword(e.target.value)}
+            placeholder="Password"
+            type="password"
+            value={password}
+          />
+          <input disabled={!password} type="submit" value="Reset" />
         </form>
       </div>
       <style jsx>{`

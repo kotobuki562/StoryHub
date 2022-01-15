@@ -1,7 +1,7 @@
 import { list, nonNull, nullable, stringArg } from "nexus"
 import type { ObjectDefinitionBlock } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
-import supabase from "src/lib/supabase"
+import { supabase } from "src/lib/supabase"
 
 import { decodeUserId } from "../index.page"
 
