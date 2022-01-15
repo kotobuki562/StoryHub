@@ -9,9 +9,8 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import type { Crop } from "react-image-crop"
 import ReactCrop from "react-image-crop"
 import Resizer from "react-image-file-resizer"
+import { Layout } from "src/components/Layout/Layout"
 import { supabase } from "src/lib/supabase"
-
-import Layout from "../components/Layout"
 
 const ReactQuill = dynamic(() => import("react-quill"), {
   ssr: false,
@@ -100,8 +99,6 @@ const Signin = () => {
   })
   const [completedCrop, setCompletedCrop] = useState<Crop | null>(null)
   const user = supabase.auth.user()
-  // eslint-disable-next-line no-console
-  console.log(user)
 
   const onSelectFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -203,13 +200,6 @@ const Signin = () => {
       )
     }
   }, [completedCrop])
-
-  // if (auth?.access_token) {
-  //   const decode = jwt.decode(`${auth?.access_token}`)
-
-  //   // auth?.access_tokenを取得して、jwt.verifyで認証する
-  //   console.log(decode?.sub)
-  // }
 
   const uploadPreview = useCallback(
     async (canvas: HTMLCanvasElement, userId: string, crop: Crop) => {

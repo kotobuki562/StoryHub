@@ -1,3 +1,5 @@
+/* eslint-disable import/no-default-export */
+/* eslint-disable react/destructuring-assignment */
 import "src/styles/index.css"
 
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client"
@@ -8,12 +10,10 @@ const client = new ApolloClient({
   uri: "/api",
 })
 
-const MyApp = (props: AppProps) => {
-  return (
-    <ApolloProvider client={client}>
-      <props.Component {...props.pageProps} />
-    </ApolloProvider>
-  )
-}
+const MyApp = (props: AppProps) => (
+  <ApolloProvider client={client}>
+    <props.Component {...props.pageProps} />
+  </ApolloProvider>
+)
 
 export default MyApp

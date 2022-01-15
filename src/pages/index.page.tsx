@@ -1,9 +1,8 @@
 import { useQuery } from "@apollo/client"
 import gql from "graphql-tag"
 import Link from "next/link"
-import { NexusGenObjects } from "src/generated/nexus-typegen"
-
-import Layout from "../components/Layout"
+import { Layout } from "src/components/Layout/Layout"
+import type { NexusGenObjects } from "src/generated/nexus-typegen"
 
 const StoriesQuery = gql`
   query QueryStories($page: Int!, $pageSize: Int!) {
@@ -19,18 +18,23 @@ const StoriesQuery = gql`
 `
 
 type QueryStory = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   QueryStories: NexusGenObjects["Story"][]
 }
 
 const Blog = () => {
-  const { loading, error, data } = useQuery<QueryStory>(StoriesQuery, {
+  const {
+    data,
+    error,
+    loading: isLoading,
+  } = useQuery<QueryStory>(StoriesQuery, {
     variables: {
       page: 1,
       pageSize: 10,
     },
   })
 
-  if (loading) {
+  if (isLoading) {
     return <div>Loading ...</div>
   }
   if (error) {
@@ -42,19 +46,13 @@ const Blog = () => {
       <div className="page">
         <h1>My Blog</h1>
         <main>
-          {data?.QueryStories.map(story => {
-            return (
-              <div key={story.id}>
-                <h2>{story.story_title}</h2>
-                <p>{story.story_synopsis}</p>
-                <img
-                  src={`${story.story_image}`}
-                  alt={`${story.story_title}`}
-                />
-              </div>
-            )
-          })}
-          <pre>{JSON.stringify(data, null, 2)}</pre>
+          {data?.QueryStories.map(story => (
+            <div key={story.id}>
+              <h2>{story.story_title}</h2>
+              <p>{story.story_synopsis}</p>
+              <img src={`${story.story_image}`} alt={`${story.story_title}`} />
+            </div>
+          ))}
         </main>
       </div>
     </Layout>
