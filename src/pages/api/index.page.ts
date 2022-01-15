@@ -38,11 +38,7 @@ import {
   signupUser,
   updateUser,
 } from "src/pages/api/mutations/user"
-import {
-  QueryCategories,
-  QueryCategory,
-  QueryCategoryCount,
-} from "src/pages/api/queries/category"
+import { QueryCategories } from "src/pages/api/queries/category"
 import {
   QueryChapterById,
   QueryChapters,
@@ -81,6 +77,14 @@ import {
   QuerySeasonsCountByPublish,
   QuerySeasonsCountByUnPublish,
 } from "src/pages/api/queries/season"
+import {
+  QueryMySettingMaterialById,
+  QueryMySettingMaterials,
+  QuerySettingMaterialById,
+  QuerySettingMaterials,
+  QuerySettingMaterialsCountByPublish,
+  QuerySettingMaterialsCountByUnPublish,
+} from "src/pages/api/queries/settingMaterial"
 import {
   QueryMyStories,
   QueryMyStoryById,
@@ -172,8 +176,6 @@ const Query = objectType({
 
     // カテゴリーのクエリ
     QueryCategories(t)
-    QueryCategory(t)
-    QueryCategoryCount(t)
 
     // レビューのクエリ
     QueryReviews(t)
@@ -186,6 +188,14 @@ const Query = objectType({
     // フォローのクエリ
     QueryFollowers(t)
     QueryFollowing(t)
+
+    // 設定のクエリ
+    QuerySettingMaterials(t)
+    QuerySettingMaterialById(t)
+    QueryMySettingMaterials(t)
+    QueryMySettingMaterialById(t)
+    QuerySettingMaterialsCountByPublish(t)
+    QuerySettingMaterialsCountByUnPublish(t)
 
     t.list.field("filterFollowsByUserId", {
       type: "Follow",

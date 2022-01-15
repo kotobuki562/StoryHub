@@ -3,9 +3,9 @@ import { nonNull, nullable, stringArg } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
 import {
   authArgs,
+  decodeUserId,
   defaultArgs,
   isSafe,
-  decodeUserId,
 } from "src/pages/api/index.page"
 
 const reviewArgs = {
@@ -13,8 +13,8 @@ const reviewArgs = {
   serchUserId: nullable(stringArg()),
 }
 
-const QueryReviews = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.list.field("QueryReviews", {
+const QueryReviews = (t: ObjectDefinitionBlock<"Query">) =>
+  t.list.field("QueryReviews", {
     type: "Review",
     args: {
       ...reviewArgs,
@@ -40,10 +40,9 @@ const QueryReviews = (t: ObjectDefinitionBlock<"Query">) => {
       return reviews
     },
   })
-}
 
-const QueryMyReviews = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.list.field("QueryMyReviews", {
+const QueryMyReviews = (t: ObjectDefinitionBlock<"Query">) =>
+  t.list.field("QueryMyReviews", {
     type: "Review",
     args: {
       accessToken: nonNull(stringArg()),
@@ -66,10 +65,9 @@ const QueryMyReviews = (t: ObjectDefinitionBlock<"Query">) => {
       })
     },
   })
-}
 
-const QueryReviewById = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.field("QueryReviewById", {
+const QueryReviewById = (t: ObjectDefinitionBlock<"Query">) =>
+  t.field("QueryReviewById", {
     type: "Review",
     args: {
       id: nonNull(stringArg()),
@@ -86,16 +84,15 @@ const QueryReviewById = (t: ObjectDefinitionBlock<"Query">) => {
       return review
     },
   })
-}
 
-const QueryMyReviewById = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.field("QueryMyReviewById", {
+const QueryMyReviewById = (t: ObjectDefinitionBlock<"Query">) =>
+  t.field("QueryMyReviewById", {
     type: "Review",
     args: {
       id: nonNull(stringArg()),
       ...authArgs,
     },
-    resolve: async (_parent, { id, accessToken, userId }) => {
+    resolve: async (_parent, { accessToken, id, userId }) => {
       const review = await prisma.review.findUnique({
         where: {
           id,
@@ -104,12 +101,11 @@ const QueryMyReviewById = (t: ObjectDefinitionBlock<"Query">) => {
       return isSafe(accessToken, userId) ? review : null
     },
   })
-}
 
-const QueryPublishReviewsCount = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.field("QueryPublishReviewsCount", {
+const QueryPublishReviewsCount = (t: ObjectDefinitionBlock<"Query">) =>
+  t.field("QueryPublishReviewsCount", {
     type: "Int",
-    resolve: async (_parent, args) => {
+    resolve: async (_parent, _args) => {
       const count = await prisma.review.count({
         where: {
           publish: true,
@@ -118,12 +114,11 @@ const QueryPublishReviewsCount = (t: ObjectDefinitionBlock<"Query">) => {
       return count
     },
   })
-}
 
-const QueryUnPublishReviewsCount = (t: ObjectDefinitionBlock<"Query">) => {
-  return t.field("QueryUnPublishReviewsCount", {
+const QueryUnPublishReviewsCount = (t: ObjectDefinitionBlock<"Query">) =>
+  t.field("QueryUnPublishReviewsCount", {
     type: "Int",
-    resolve: async (_parent, args) => {
+    resolve: async (_parent, _args) => {
       const count = await prisma.review.count({
         where: {
           publish: false,
@@ -132,13 +127,12 @@ const QueryUnPublishReviewsCount = (t: ObjectDefinitionBlock<"Query">) => {
       return count
     },
   })
-}
 
 export {
-  QueryReviews,
-  QueryMyReviews,
-  QueryReviewById,
   QueryMyReviewById,
+  QueryMyReviews,
   QueryPublishReviewsCount,
+  QueryReviewById,
+  QueryReviews,
   QueryUnPublishReviewsCount,
 }

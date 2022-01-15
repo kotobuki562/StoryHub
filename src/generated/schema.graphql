@@ -103,9 +103,7 @@ type Page {
 }
 
 type Query {
-  QueryCategories(page: Int!, pageSize: Int!): [Category]
-  QueryCategory(id: String!, page: Int!, pageSize: Int!): Category
-  QueryCategoryCount(page: Int!, pageSize: Int!): Int
+  QueryCategories: [Category]
   QueryChapterById(id: String!): Chapter
   QueryChapters(page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String): [Chapter]
   QueryChaptersCountByPublish: Int
@@ -125,6 +123,8 @@ type Query {
   QueryMyReviews(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchUserId: String): [Review]
   QueryMySeasonById(accessToken: String!, id: String!, page: Int!, pageSize: Int!, userId: String!): Season
   QueryMySeasons(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Season]
+  QueryMySettingMaterialById(accessToken: String!, id: String!, userId: String!): SettingMaterial
+  QueryMySettingMaterials(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, serchStoryId: String): [SettingMaterial]
   QueryMyStories(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Story]
   QueryMyStoryById(accessToken: String!, id: String!, userId: String!): Story
   QueryPage(id: String!, page: Int!, pageSize: Int!): Page
@@ -137,6 +137,10 @@ type Query {
   QuerySeasons(page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String): [Season]
   QuerySeasonsCountByPublish: Int
   QuerySeasonsCountByUnPublish: Int
+  QuerySettingMaterialById(id: String!): SettingMaterial
+  QuerySettingMaterials(page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, serchStoryId: String): [SettingMaterial]
+  QuerySettingMaterialsCountByPublish: Int
+  QuerySettingMaterialsCountByUnPublish: Int
   QueryStories(page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String): [Story]
   QueryStoriesCountByPublish: Int
   QueryStoriesCountByUnPublish: Int

@@ -1,17 +1,19 @@
+/* eslint-disable import/no-default-export */
 import "react-image-crop/dist/ReactCrop.css"
 import "react-quill/dist/quill.snow.css"
-import jwt from "jsonwebtoken"
-import Router, { useRouter } from "next/router"
+
+import dynamic from "next/dynamic"
+import Router from "next/router"
 import type { ChangeEvent } from "react"
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import type { Crop } from "react-image-crop"
 import ReactCrop from "react-image-crop"
+import Resizer from "react-image-file-resizer"
 import supabase from "src/lib/supabase"
 import { uuidv4 } from "src/tools/uuidv4"
-import Resizer from "react-image-file-resizer"
 
 import Layout from "../components/Layout"
-import dynamic from "next/dynamic"
+
 const ReactQuill = dynamic(() => import("react-quill"), {
   ssr: false,
 })
@@ -72,7 +74,7 @@ const resizeFile = (
     )
   })
 
-function Signin() {
+const Signin = () => {
   const [password, setPassword] = useState("")
   const [email, setEmail] = useState("")
   const [text, setText] = useState("")
@@ -81,7 +83,6 @@ function Signin() {
   const [imageUrl, setImageUrl] = useState<string>("")
   const imgRef = useRef<HTMLImageElement>(null)
   const previewCanvasRef = useRef<HTMLCanvasElement>(null)
-  const quillRef = useRef(null)
   const [crop, setCrop] = useState<Crop>({
     // 正方形にするために、縦横比を維持して、縦横の最小値を設定する
     aspect: 1,
@@ -103,19 +104,13 @@ function Signin() {
   const onSelectFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader()
-      reader.addEventListener("load", () => {
-        return setUpImg(reader.result as string)
-      })
+      reader.addEventListener("load", () => setUpImg(reader.result as string))
       reader.readAsDataURL(e.target.files[0])
     }
   }, [])
 
-  console.log(text)
-
   const onChangeImage = useCallback(() => {
-    setText(pre => {
-      return pre + `<img src="${imageUrl}">`
-    })
+    setText(pre => pre + `<img src="${imageUrl}">`)
   }, [imageUrl])
 
   const onSaveTextByLocalStorage = useCallback(() => {
@@ -132,32 +127,32 @@ function Signin() {
         const file = e.target.files[0]
         const resizedFile = await resizeFile(file)
         // resizeFileはbase64なので、Fileに変換する
-        var bin = atob(`${resizedFile}`.replace(/^.*,/, ""))
-        var buffer = new Uint8Array(bin.length)
-        for (var i = 0; i < bin.length; i++) {
+        const bin = window.atob(`${resizedFile}`.replace(/^.*,/, ""))
+        const buffer = new Uint8Array(bin.length)
+        for (let i = 0; i < bin.length; i++) {
           buffer[i] = bin.charCodeAt(i)
         }
         // Blobを作成
         try {
-          var blob = new Blob([buffer.buffer], {
+          const blobData = new Blob([buffer.buffer], {
             type: "image/png",
           })
+          const reader = new FileReader()
+          reader.addEventListener("load", () =>
+            setUpImg(reader.result as string)
+          )
+
+          reader.readAsDataURL(blobData)
         } catch (e) {
           return false
         }
-        const reader = new FileReader()
-        reader.addEventListener("load", () => {
-          return setUpImg(reader.result as string)
-        })
-        console.log(blob)
-
-        reader.readAsDataURL(blob)
       }
     },
     []
   )
 
   const onLoad = useCallback((img: HTMLImageElement) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     imgRef.current = img
   }, [])
@@ -229,8 +224,7 @@ function Signin() {
                 cacheControl: "3600",
                 upsert: false,
               })
-              .then(async res => {
-                console.log(res)
+              .then(async () => {
                 await supabase.storage
                   .from("avatars")
                   .download(`public/${userId}`)
@@ -239,9 +233,10 @@ function Signin() {
                   })
               })
               .then(async () => {
-                const { publicURL, error } = supabase.storage
+                const { error, publicURL } = supabase.storage
                   .from("avatars")
                   .getPublicUrl(`public/${userId}`)
+                // eslint-disable-next-line no-console
                 console.log(publicURL, error)
               })
           }
@@ -262,6 +257,7 @@ function Signin() {
         sortBy: { column: "name", order: "asc" },
       })
       .then(res => {
+        // eslint-disable-next-line no-console
         console.log(res)
       })
   }
@@ -279,16 +275,9 @@ function Signin() {
           modules={modules}
           formats={formats}
           value={text}
-          onChange={e => {
-            return setText(e)
-          }}
+          onChange={e => setText(e)}
         />
-        <input
-          type="text"
-          onChange={e => {
-            return setImageUrl(e.target.value)
-          }}
-        />
+        <input type="text" onChange={e => setImageUrl(e.target.value)} />
         <div className="flex justify-around">
           <button onClick={onChangeImage}>Image</button>
           <button onClick={onSaveTextByLocalStorage}>SAVE</button>
@@ -302,7 +291,7 @@ function Signin() {
           ResizeImage
           <input type="file" accept="image/*" onChange={onResizeImage} />
         </div>
-        {/* @ts-ignore */}
+
         <ReactCrop
           src={upImg}
           onImageLoaded={onLoad}
@@ -321,19 +310,19 @@ function Signin() {
           />
         </div>
         <p>
-          Note that the download below won't work in this sandbox due to the
-          iframe missing 'allow-downloads'. It's just for your reference.
+          {`Note that the download below won't work in this sandbox due to the
+          iframe missing 'allow-downloads'. It's just for your reference.`}
         </p>
         {previewCanvasRef.current && (
           <button
             type="button"
-            onClick={async () => {
-              return await uploadPreview(
+            onClick={async () =>
+              await uploadPreview(
                 previewCanvasRef.current as HTMLCanvasElement,
                 uuidv4(),
                 crop
               )
-            }}
+            }
           >
             Download cropped image
           </button>
@@ -371,6 +360,7 @@ function Signin() {
                 password,
               })
               .then(res => {
+                // eslint-disable-next-line no-console
                 console.log(res)
               })
             Router.push("/")
@@ -379,31 +369,18 @@ function Signin() {
           <h1>Signup user</h1>
           <input
             autoFocus
-            onChange={e => {
-              return setPassword(e.target.value)
-            }}
+            onChange={e => setPassword(e.target.value)}
             placeholder="Password"
             type="password"
             value={password}
           />
           <input
-            onChange={e => {
-              return setEmail(e.target.value)
-            }}
+            onChange={e => setEmail(e.target.value)}
             placeholder="Email address)"
             type="text"
             value={email}
           />
           <input disabled={!password || !email} type="submit" value="Signup" />
-          <a
-            className="back"
-            href="#"
-            onClick={() => {
-              return Router.push("/")
-            }}
-          >
-            or Cancel
-          </a>
         </form>
       </div>
       <style jsx>{`
