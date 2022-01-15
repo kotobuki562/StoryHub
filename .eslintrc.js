@@ -1,9 +1,20 @@
 module.exports = {
   root: true,
   parser: "@typescript-eslint/parser",
-  parserOptions: { project: "./tsconfig.json" },
-  settings: { tailwindcss: { groupByResponsive: true } },
+  parserOptions: { project: "./tsconfig.json", ecmaFeatures: { jsx: true } },
+  settings: {
+    react: { version: "detect" },
+    tailwindcss: {
+      config: "tailwind.config.js",
+      removeDuplicates: true,
+      prependCustom: false,
+      whitelist: ["prose-light"],
+    },
+  },
+  env: { es2021: true, browser: true, jest: true, node: true },
   plugins: [
+    "@typescript-eslint",
+    "import",
     "simple-import-sort",
     "sort-destructure-keys",
     "tailwindcss",
@@ -46,6 +57,13 @@ module.exports = {
         checkInlineFunction: true,
       },
     ],
+    "react/prop-types": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-handler-names": "off",
+    "react/display-name": "off",
+    "react/destructuring-assignment": ["error", "never"],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
     "react/destructuring-assignment": ["error", "always"],
     // sort
     "import/newline-after-import": "error",
@@ -69,7 +87,10 @@ module.exports = {
     "@typescript-eslint/naming-convention": [
       "error",
       { selector: ["typeAlias", "typeParameter"], format: ["PascalCase"] },
-      { selector: ["property", "method"], format: ["camelCase"] },
+      {
+        selector: ["property", "method"],
+        format: ["camelCase", "snake_case"],
+      },
       {
         selector: "variable",
         types: ["boolean"],

@@ -29,8 +29,8 @@ const createStory = (t: ObjectDefinitionBlock<"Mutation">) => {
       publish: nonNull(booleanArg()),
       acessToken: nonNull(stringArg()),
     },
-    resolve: (_, args, ctx) => {
-      return prisma.story.create({
+    resolve: (_, args, _ctx) =>
+      prisma.story.create({
         data: {
           story_title: `${args.storyTitle}`,
           story_synopsis: `${args.storySynopsis}`,
@@ -40,8 +40,7 @@ const createStory = (t: ObjectDefinitionBlock<"Mutation">) => {
           publish: args.publish,
           user_id: `${decodeUserId(args.acessToken)}`,
         },
-      })
-    },
+      }),
   })
 }
 
@@ -57,8 +56,8 @@ const updateStory = (t: ObjectDefinitionBlock<"Mutation">) => {
       viewingRestriction: nullable(stringArg()),
       publish: nonNull(booleanArg()),
     },
-    resolve: (_, args, ctx) => {
-      return prisma.story.update({
+    resolve: (_, args) =>
+      prisma.story.update({
         where: {
           id: `${args.storyId}`,
         },
@@ -70,8 +69,7 @@ const updateStory = (t: ObjectDefinitionBlock<"Mutation">) => {
           viewing_restriction: `${args.viewingRestriction}`,
           publish: args.publish,
         },
-      })
-    },
+      }),
   })
 }
 
@@ -81,13 +79,12 @@ const deleteStory = (t: ObjectDefinitionBlock<"Mutation">) => {
     args: {
       storyId: nonNull(stringArg()),
     },
-    resolve: (_, args, ctx) => {
-      return prisma.story.delete({
+    resolve: (_, args) =>
+      prisma.story.delete({
         where: {
           id: `${args.storyId}`,
         },
-      })
-    },
+      }),
   })
 }
 

@@ -15,21 +15,19 @@ const Review = objectType({
     t.nullable.date("updated_at")
     t.field("user", {
       type: "User",
-      resolve: (parent, args, ctx) => {
-        return prisma.user.findUnique({
+      resolve: parent =>
+        prisma.user.findUnique({
           where: { id: `${parent.user_id}` },
-        })
-      },
+        }),
     })
     t.field("story", {
       type: "Story",
-      resolve: (parent, args, ctx) => {
-        return parent.story_id
+      resolve: parent =>
+        parent.story_id
           ? prisma.story.findUnique({
               where: { id: parent.story_id },
             })
-          : null
-      },
+          : null,
     })
   },
 })

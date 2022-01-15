@@ -25,7 +25,7 @@ const QueryChapters = (t: ObjectDefinitionBlock<"Query">) => {
         orderBy: { created_at: "asc" },
         where: {
           ...(args.searchTitle && {
-            chapter_title: { contains: args.searchTitle },
+            chapter_title: { search: args.searchTitle },
           }),
           ...(args.serchSeasonId && {
             episode_id: args.serchSeasonId,
@@ -56,7 +56,7 @@ const QueryMyChapters = (t: ObjectDefinitionBlock<"Query">) => {
             orderBy: { created_at: "asc" },
             where: {
               ...(args.searchTitle && {
-                chapter_title: { contains: args.searchTitle },
+                chapter_title: { search: args.searchTitle },
                 ...(args.serchSeasonId && {
                   episode_id: args.serchSeasonId,
                 }),

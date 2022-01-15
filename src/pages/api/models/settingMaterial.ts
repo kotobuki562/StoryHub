@@ -52,29 +52,27 @@ export const SettingMaterial = objectType({
     t.nullable.date("updated_at")
     t.field("user", {
       type: "User",
-      resolve: (parent, args, ctx) => {
-        return prisma.user.findUnique({
+      resolve: parent =>
+        prisma.user.findUnique({
           where: {
             id: `${parent.user_id}`,
           },
-        })
-      },
+        }),
     })
     t.field("story", {
       type: "Story",
       args: characterArgs,
-      resolve: (parent, args, ctx) => {
-        return prisma.story.findUnique({
+      resolve: parent =>
+        prisma.story.findUnique({
           where: {
             id: `${parent.story_id}`,
           },
-        })
-      },
+        }),
     })
     t.list.field("character", {
       type: "Character",
       args: characterArgs,
-      resolve: (parent, args, ctx) => {
+      resolve: (parent, args) => {
         const { storyAccessToken, storyPage, storyPageSize } = args
         const skip = storyPageSize * (Number(storyPage) - 1)
         return storyAccessToken && isSafe(storyAccessToken, `${parent.user_id}`)
@@ -100,7 +98,7 @@ export const SettingMaterial = objectType({
     t.list.field("object", {
       type: "Object",
       args: objectArgs,
-      resolve: (parent, args, ctx) => {
+      resolve: (parent, args) => {
         const { reviewAccessToken, reviewPage, reviewPageSize } = args
         const skip = reviewPageSize * (Number(reviewPage) - 1)
         return reviewAccessToken &&
@@ -127,7 +125,7 @@ export const SettingMaterial = objectType({
     t.list.field("terminology", {
       type: "Terminology",
       args: terminologyArgs,
-      resolve: (parent, args, ctx) => {
+      resolve: (parent, args) => {
         const { terminologyAccessToken, terminologyPage, terminologyPageSize } =
           args
         const skip = terminologyPageSize * (Number(terminologyPage) - 1)

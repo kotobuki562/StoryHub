@@ -28,7 +28,7 @@ const User = objectType({
     t.list.field("stories", {
       type: "Story",
       args: postArgs,
-      resolve: (parent, args, ctx) => {
+      resolve: (parent, args) => {
         const { storyAccessToken, storyPage, storyPageSize } = args
         const skip = storyPageSize * (Number(storyPage) - 1)
         return storyAccessToken && isSafe(storyAccessToken, `${parent.id}`)
@@ -54,7 +54,7 @@ const User = objectType({
     t.list.field("reviews", {
       type: "Review",
       args: reviewArgs,
-      resolve: (parent, args, ctx) => {
+      resolve: (parent, args) => {
         const { reviewAccessToken, reviewPage, reviewPageSize } = args
         const skip = reviewPageSize * (Number(reviewPage) - 1)
         return reviewAccessToken && isSafe(reviewAccessToken, `${parent.id}`)
@@ -79,27 +79,25 @@ const User = objectType({
     })
     t.list.field("follows", {
       type: "Follow",
-      resolve: (parent, args, ctx) => {
-        return parent.id
+      resolve: parent =>
+        parent.id
           ? prisma.follow.findMany({
               where: {
                 user_id: parent.id,
               },
             })
-          : []
-      },
+          : [],
     })
     t.list.field("favorites", {
       type: "Favorite",
-      resolve: (parent, args, ctx) => {
-        return parent.id
+      resolve: parent =>
+        parent.id
           ? prisma.favorite.findMany({
               where: {
                 user_id: parent.id,
               },
             })
-          : []
-      },
+          : [],
     })
   },
 })

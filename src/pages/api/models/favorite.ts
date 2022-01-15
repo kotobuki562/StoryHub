@@ -10,23 +10,21 @@ const Favorite = objectType({
     t.date("created_at")
     t.field("user", {
       type: "User",
-      resolve: (parent, args, ctx) => {
-        return parent.user_id
+      resolve: parent =>
+        parent.user_id
           ? prisma.user.findUnique({
               where: { id: parent.user_id },
             })
-          : null
-      },
+          : null,
     })
     t.field("story", {
       type: "Story",
-      resolve: (parent, args, ctx) => {
-        return parent.story_id
+      resolve: parent =>
+        parent.story_id
           ? prisma.story.findUnique({
               where: { id: parent.story_id },
             })
-          : null
-      },
+          : null,
     })
   },
 })

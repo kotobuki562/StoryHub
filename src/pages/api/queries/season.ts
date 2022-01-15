@@ -25,7 +25,7 @@ const QuerySeasons = (t: ObjectDefinitionBlock<"Query">) => {
         orderBy: { created_at: "desc" },
         where: {
           ...(args.searchTitle && {
-            season_title: { contains: args.searchTitle },
+            season_title: { search: args.searchTitle },
           }),
           ...(args.searchUserId && { user_id: args.searchUserId }),
           publish: true,
@@ -54,7 +54,7 @@ const QueryMySeasons = (t: ObjectDefinitionBlock<"Query">) => {
             orderBy: { created_at: "desc" },
             where: {
               ...(args.searchTitle && {
-                season_title: { contains: args.searchTitle },
+                season_title: { search: args.searchTitle },
               }),
               ...(args.searchUserId && { user_id: args.searchUserId }),
             },

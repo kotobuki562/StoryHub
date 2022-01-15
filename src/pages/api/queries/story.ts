@@ -25,7 +25,7 @@ const QueryStories = (t: ObjectDefinitionBlock<"Query">) => {
         orderBy: { created_at: "desc" },
         where: {
           ...(args.searchTitle && {
-            story_title: { contains: args.searchTitle },
+            story_title: { search: args.searchTitle },
           }),
           ...(args.searchUserId && { user_id: args.searchUserId }),
           ...(args.searchCategory && {
@@ -59,7 +59,7 @@ const QueryMyStories = (t: ObjectDefinitionBlock<"Query">) => {
             orderBy: { created_at: "desc" },
             where: {
               ...(args.searchTitle && {
-                story_title: { contains: args.searchTitle },
+                story_title: { search: args.searchTitle },
               }),
               ...(args.searchUserId && { user_id: args.searchUserId }),
               ...(args.searchCategory && {

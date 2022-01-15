@@ -1,4 +1,3 @@
-import { makeExecutableSchema } from "@graphql-tools/schema"
 import { ApolloServer } from "apollo-server-micro"
 import { DateTimeResolver } from "graphql-scalars"
 import jwt from "jsonwebtoken"
@@ -9,13 +8,11 @@ import {
   intArg,
   makeSchema,
   nonNull,
-  nullable,
   objectType,
   stringArg,
 } from "nexus"
 import path from "path"
 import prisma from "src/lib/prisma"
-import supabase from "src/lib/supabase"
 import { Category } from "src/pages/api/models/category"
 import { Chapter } from "src/pages/api/models/chapter"
 import { Character } from "src/pages/api/models/character"
@@ -42,6 +39,19 @@ import {
   updateUser,
 } from "src/pages/api/mutations/user"
 import {
+  QueryCategories,
+  QueryCategory,
+  QueryCategoryCount,
+} from "src/pages/api/queries/category"
+import {
+  QueryChapterById,
+  QueryChapters,
+  QueryChaptersCountByPublish,
+  QueryChaptersCountByUnPublish,
+  QueryMyChapterById,
+  QueryMyChapters,
+} from "src/pages/api/queries/chapter"
+import {
   QueryEpisodeById,
   QueryEpisodes,
   QueryEpisodesCountByPublish,
@@ -49,6 +59,20 @@ import {
   QueryMyEpisodeById,
   QueryMyEpisodes,
 } from "src/pages/api/queries/episode"
+import { QueryFollowers, QueryFollowing } from "src/pages/api/queries/follow"
+import {
+  QueryPage,
+  QueryPageCountByChapterId,
+  QueryPages,
+} from "src/pages/api/queries/page"
+import {
+  QueryMyReviewById,
+  QueryMyReviews,
+  QueryPublishReviewsCount,
+  QueryReviewById,
+  QueryReviews,
+  QueryUnPublishReviewsCount,
+} from "src/pages/api/queries/review"
 import {
   QueryMySeasonById,
   QueryMySeasons,
@@ -65,26 +89,7 @@ import {
   QueryStoriesCountByUnPublish,
   QueryStoryById,
 } from "src/pages/api/queries/story"
-import {
-  QueryChapters,
-  QueryMyChapters,
-  QueryChapterById,
-  QueryMyChapterById,
-  QueryChaptersCountByPublish,
-  QueryChaptersCountByUnPublish,
-} from "src/pages/api/queries/chapter"
-import {
-  QueryPages,
-  QueryPage,
-  QueryPageCountByChapterId,
-} from "src/pages/api/queries/page"
-import {
-  QueryCategories,
-  QueryCategory,
-  QueryCategoryCount,
-} from "src/pages/api/queries/category"
 import { QueryMe, QueryUserById, QueryUsers } from "src/pages/api/queries/user"
-import { SubscriptionServer } from "subscriptions-transport-ws"
 
 import { context } from "./context"
 
@@ -170,79 +175,27 @@ const Query = objectType({
     QueryCategory(t)
     QueryCategoryCount(t)
 
-    // 全て取得する
-    t.list.field("categories", {
-      type: "Category",
-      resolve: (_parent, _args) => {
-        return prisma.category.findMany()
-      },
-    })
+    // レビューのクエリ
+    QueryReviews(t)
+    QueryMyReviews(t)
+    QueryReviewById(t)
+    QueryMyReviewById(t)
+    QueryPublishReviewsCount(t)
+    QueryUnPublishReviewsCount(t)
 
-    t.list.field("reviews", {
-      type: "Review",
-      resolve: (_parent, _args) => {
-        return prisma.review.findMany({
-          where: { publish: true },
-        })
-      },
-    })
-
-    t.list.field("QueryPageReviews", {
-      type: "Review",
-      args: {
-        page: stringArg({ default: "1" }),
-      },
-      resolve: async (_parent, args) => {
-        const { page } = args
-        const pageSize = 10
-        const skip = pageSize * (Number(page) - 1)
-        const reviews = await prisma.review.findMany({
-          skip,
-          take: pageSize,
-          orderBy: { created_at: "desc" },
-        })
-        return reviews
-      },
-    })
-
-    t.list.field("filterReviewsByUserId", {
-      type: "Review",
-      args: {
-        userId: nonNull(stringArg()),
-      },
-      resolve: async (_parent, args) => {
-        return await prisma.review.findMany({
-          where: {
-            user_id: args.userId,
-          },
-        })
-      },
-    })
-
-    t.list.field("filterReviewsByStoryId", {
-      type: "Review",
-      args: {
-        storyId: nonNull(stringArg()),
-      },
-      resolve: async (_parent, args) => {
-        return await prisma.review.findMany({
-          where: {
-            story_id: args.storyId,
-          },
-        })
-      },
-    })
+    // フォローのクエリ
+    QueryFollowers(t)
+    QueryFollowing(t)
 
     t.list.field("filterFollowsByUserId", {
       type: "Follow",
       args: {
         userId: nonNull(stringArg()),
       },
-      resolve: (_parent, args) => {
-        return prisma.follow.findMany({
+      resolve: (_parent, args) =>
+        prisma.follow.findMany({
           where: { user_id: args.userId },
-        })
-      },
+        }),
     })
 
     t.list.field("filterFollowsByFollowId", {
@@ -250,11 +203,10 @@ const Query = objectType({
       args: {
         followId: nonNull(stringArg()),
       },
-      resolve: (_parent, args) => {
-        return prisma.follow.findMany({
+      resolve: (_parent, args) =>
+        prisma.follow.findMany({
           where: { follow_id: args.followId },
-        })
-      },
+        }),
     })
 
     t.list.field("filterFavoritesByUserId", {
@@ -262,11 +214,10 @@ const Query = objectType({
       args: {
         userId: nonNull(stringArg()),
       },
-      resolve: (_parent, args) => {
-        return prisma.favorite.findMany({
+      resolve: (_parent, args) =>
+        prisma.favorite.findMany({
           where: { user_id: args.userId },
-        })
-      },
+        }),
     })
 
     t.list.field("filterFavoritesByStoryId", {
@@ -274,11 +225,10 @@ const Query = objectType({
       args: {
         storyId: nonNull(stringArg()),
       },
-      resolve: (_parent, args) => {
-        return prisma.favorite.findMany({
+      resolve: (_parent, args) =>
+        prisma.favorite.findMany({
           where: { story_id: args.storyId },
-        })
-      },
+        }),
     })
     // UserIdに紐づくStoryを取得
     t.list.field("filterStoriesByUserId", {
@@ -286,11 +236,10 @@ const Query = objectType({
       args: {
         userId: nonNull(stringArg()),
       },
-      resolve: (_parent, args) => {
-        return prisma.story.findMany({
+      resolve: (_parent, args) =>
+        prisma.story.findMany({
           where: { user_id: args.userId },
-        })
-      },
+        }),
     })
   },
 })
@@ -359,7 +308,7 @@ const apolloServer = new ApolloServer({ schema, context: context })
 
 let apolloServerHandler: NextApiHandler
 
-async function getApolloServerHandler() {
+const getApolloServerHandler = async () => {
   if (!apolloServerHandler) {
     await apolloServer.start()
 
@@ -385,5 +334,7 @@ const handler: NextApiHandler = async (
   return apolloServerHandler(req, res)
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+// eslint-disable-next-line import/no-default-export
 export default cors()(handler)

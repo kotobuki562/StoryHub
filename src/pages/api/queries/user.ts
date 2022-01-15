@@ -21,7 +21,7 @@ const QueryUsers = (t: ObjectDefinitionBlock<"Query">) => {
         orderBy: { created_at: "desc" },
         where: {
           ...(args.searchUserName && {
-            user_name: { contains: args.searchUserName },
+            user_name: { search: args.searchUserName },
           }),
         },
       })

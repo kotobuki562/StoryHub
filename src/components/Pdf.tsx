@@ -2,11 +2,8 @@ import {
   Document,
   Font,
   Page,
-  PDFDownloadLink,
-  PDFViewer,
   StyleSheet,
   Text,
-  usePDF,
   View,
 } from "@react-pdf/renderer"
 
