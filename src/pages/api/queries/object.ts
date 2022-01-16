@@ -1,7 +1,7 @@
 import { nonNull, nullable, stringArg } from "nexus"
 import type { ObjectDefinitionBlock } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
-import { authArgs, defaultArgs, isSafe } from "src/pages/api/index.page"
+import { authArgs, isSafe } from "src/pages/api/index.page"
 
 const objectArgs = {
   searchTitle: nullable(stringArg()),
@@ -13,14 +13,9 @@ const QueryObjects = (t: ObjectDefinitionBlock<"Query">) => {
     type: "Object",
     args: {
       ...objectArgs,
-      ...defaultArgs,
     },
     resolve: async (_parent, args) => {
-      const { page, pageSize } = args
-      const skip = pageSize * (Number(page) - 1)
       const objects = await prisma.object.findMany({
-        skip,
-        take: pageSize,
         orderBy: { created_at: "desc" },
         where: {
           ...(args.searchTitle && {
@@ -42,15 +37,11 @@ const QueryMyObjects = (t: ObjectDefinitionBlock<"Query">) => {
     type: "Object",
     args: {
       ...objectArgs,
-      ...defaultArgs,
+
       ...authArgs,
     },
     resolve: async (_parent, args) => {
-      const { page, pageSize } = args
-      const skip = pageSize * (Number(page) - 1)
       const objects = await prisma.object.findMany({
-        skip,
-        take: pageSize,
         orderBy: { created_at: "desc" },
         where: {
           ...(args.searchTitle && {

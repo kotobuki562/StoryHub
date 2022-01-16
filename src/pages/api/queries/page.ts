@@ -1,7 +1,6 @@
 import { nonNull, nullable, stringArg } from "nexus"
 import type { ObjectDefinitionBlock } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
-import { defaultArgs } from "src/pages/api/index.page"
 
 const pageArgs = {
   serchSeasonId: nullable(stringArg()),
@@ -12,14 +11,9 @@ const QueryPages = (t: ObjectDefinitionBlock<"Query">) =>
     type: "Page",
     args: {
       ...pageArgs,
-      ...defaultArgs,
     },
     resolve: async (_parent, args) => {
-      const { page, pageSize } = args
-      const skip = pageSize * (Number(page) - 1)
       const pages = await prisma.page.findMany({
-        skip,
-        take: pageSize,
         orderBy: { created_at: "asc" },
         where: {
           ...(args.serchSeasonId && {
@@ -36,7 +30,6 @@ const QueryPage = (t: ObjectDefinitionBlock<"Query">) =>
     type: "Page",
     args: {
       id: nonNull(stringArg()),
-      ...defaultArgs,
     },
     resolve: (_parent, args) =>
       prisma.page.findUnique({

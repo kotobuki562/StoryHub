@@ -1,7 +1,7 @@
 import { nonNull, nullable, stringArg } from "nexus"
 import type { ObjectDefinitionBlock } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
-import { authArgs, defaultArgs, isSafe } from "src/pages/api/index.page"
+import { authArgs, isSafe } from "src/pages/api/index.page"
 
 const chapterArgs = {
   searchTitle: nullable(stringArg()),
@@ -13,15 +13,9 @@ const QueryChapters = (t: ObjectDefinitionBlock<"Query">) =>
     type: "Chapter",
     args: {
       ...chapterArgs,
-      ...defaultArgs,
     },
     resolve: async (_parent, args) => {
-      const { page, pageSize } = args
-      const skip = pageSize * (Number(page) - 1)
       const seasons = await prisma.chapter.findMany({
-        skip,
-        take: pageSize,
-        // 古い順
         orderBy: { created_at: "asc" },
         where: {
           ...(args.searchTitle && {
@@ -43,15 +37,10 @@ const QueryMyChapters = (t: ObjectDefinitionBlock<"Query">) =>
     args: {
       ...chapterArgs,
       ...authArgs,
-      ...defaultArgs,
     },
-    resolve: (_parent, args) => {
-      const { page, pageSize } = args
-      const skip = pageSize * (Number(page) - 1)
-      return isSafe(args.accessToken, args.userId)
+    resolve: (_parent, args) =>
+      isSafe(args.accessToken, args.userId)
         ? prisma.chapter.findMany({
-            skip,
-            take: pageSize,
             orderBy: { created_at: "asc" },
             where: {
               ...(args.searchTitle && {
@@ -62,8 +51,7 @@ const QueryMyChapters = (t: ObjectDefinitionBlock<"Query">) =>
               }),
             },
           })
-        : null
-    },
+        : null,
   })
 
 const QueryChapterById = (t: ObjectDefinitionBlock<"Query">) =>
@@ -89,7 +77,6 @@ const QueryMyChapterById = (t: ObjectDefinitionBlock<"Query">) =>
     args: {
       id: nonNull(stringArg()),
       ...authArgs,
-      ...defaultArgs,
     },
     resolve: (_parent, args) =>
       isSafe(args.accessToken, args.userId)

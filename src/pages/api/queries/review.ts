@@ -1,12 +1,7 @@
 import type { ObjectDefinitionBlock } from "nexus/dist/core"
 import { nonNull, nullable, stringArg } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
-import {
-  authArgs,
-  decodeUserId,
-  defaultArgs,
-  isSafe,
-} from "src/pages/api/index.page"
+import { authArgs, decodeUserId, isSafe } from "src/pages/api/index.page"
 
 const reviewArgs = {
   searchTitle: nullable(stringArg()),
@@ -18,14 +13,9 @@ const QueryReviews = (t: ObjectDefinitionBlock<"Query">) =>
     type: "Review",
     args: {
       ...reviewArgs,
-      ...defaultArgs,
     },
     resolve: async (_parent, args) => {
-      const { page, pageSize } = args
-      const skip = pageSize * (Number(page) - 1)
       const reviews = await prisma.review.findMany({
-        skip,
-        take: pageSize,
         orderBy: { created_at: "desc" },
         where: {
           ...(args.searchTitle && {
@@ -47,14 +37,9 @@ const QueryMyReviews = (t: ObjectDefinitionBlock<"Query">) =>
     args: {
       accessToken: nonNull(stringArg()),
       ...reviewArgs,
-      ...defaultArgs,
     },
-    resolve: (_parent, args) => {
-      const { page, pageSize } = args
-      const skip = pageSize * (Number(page) - 1)
-      return prisma.review.findMany({
-        skip,
-        take: pageSize,
+    resolve: (_parent, args) =>
+      prisma.review.findMany({
         orderBy: { created_at: "desc" },
         where: {
           ...(args.searchTitle && {
@@ -62,8 +47,7 @@ const QueryMyReviews = (t: ObjectDefinitionBlock<"Query">) =>
           }),
           user_id: `${decodeUserId(args.accessToken)}`,
         },
-      })
-    },
+      }),
   })
 
 const QueryReviewById = (t: ObjectDefinitionBlock<"Query">) =>

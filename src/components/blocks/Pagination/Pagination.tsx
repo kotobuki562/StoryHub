@@ -6,33 +6,26 @@ import { memo } from "react"
 
 type PagenationInfo = {
   totalCount: number
-  isCategory?: boolean
-  categoryId?: string
+  usecase: "story" | "review" | "settingMaterial"
+  page: number
 }
 export const PaginationComp: VFC<PagenationInfo> = ({
-  categoryId,
-  isCategory,
+  page,
   totalCount,
+  usecase,
 }) => {
   const router = useRouter()
-  const PER_PAGE = 6
 
   const range = (start: number, end: number) =>
     [...Array(end - start + 1)].map((_, i) => start + i)
 
   return (
     <ul className="flex flex-wrap">
-      {range(1, Math.ceil(totalCount / PER_PAGE)).map((number, index) => {
+      {range(1, Math.ceil(totalCount / page)).map((number, index) => {
         const nowPage = router.query.id
         return (
           <li className="flex flex-col items-center mr-2" key={index}>
-            <Link
-              href={
-                isCategory
-                  ? `/Articles/category/${categoryId}/page/${number}`
-                  : `/Articles/page/${number}`
-              }
-            >
+            <Link href={`/${usecase}/page/${number}`}>
               <a
                 className={cc([
                   "flex flex-col items-center py-3 px-5 rounded-xl duration-200",

@@ -1,4 +1,4 @@
-import { intArg, nonNull, nullable, objectType, stringArg } from "nexus"
+import { nullable, objectType, stringArg } from "nexus"
 import prisma from "src/lib/prisma"
 
 import { isSafe } from "../index.page"
@@ -6,8 +6,6 @@ import { isSafe } from "../index.page"
 const pageArgs = {
   pageAccessToken: nullable(stringArg()),
   pageUserId: nullable(stringArg()),
-  page: nonNull(intArg()),
-  pagePageSize: nonNull(intArg()),
 }
 
 const Chapter = objectType({
@@ -24,17 +22,15 @@ const Chapter = objectType({
       type: "Page",
       args: pageArgs,
       resolve: (parent, args) => {
-        const { page, pageAccessToken, pagePageSize, pageUserId } = args
-        const skip = pagePageSize * (page - 1)
+        const { pageAccessToken, pageUserId } = args
+
         if (
           pageAccessToken &&
           pageUserId &&
           isSafe(pageAccessToken, pageUserId)
         ) {
           return prisma.page.findMany({
-            skip,
-            take: pagePageSize,
-            orderBy: { created_at: "desc" },
+            orderBy: { created_at: "asc" },
             where: {
               chapter_id: `${parent.id}`,
             },
@@ -42,9 +38,7 @@ const Chapter = objectType({
         }
         return parent.publish
           ? prisma.page.findMany({
-              skip,
-              take: pagePageSize,
-              orderBy: { created_at: "desc" },
+              orderBy: { created_at: "asc" },
               where: {
                 chapter_id: `${parent.id}`,
               },

@@ -4,6 +4,7 @@ import Head from "next/head"
 import type { ReactNode, VFC } from "react"
 import { useEffect, useState } from "react"
 import { memo } from "react"
+import { LoadingLogo } from "src/components/Loading"
 import { supabase } from "src/lib/supabase"
 
 import { Header } from "./Header"
@@ -27,7 +28,12 @@ const LayoutComp: VFC<LayoutProps> = props => {
   const [isLoading, setIsLoading] = useState(true)
 
   supabase.auth.onAuthStateChange((_, session) => {
-    if (!session?.user && pathname !== "/signup" && pathname !== "/") {
+    if (
+      !session?.user &&
+      pathname !== "/signup" &&
+      pathname !== "/" &&
+      pathname !== "/story/[storyId]"
+    ) {
       push("/signin")
     }
   })
@@ -35,7 +41,12 @@ const LayoutComp: VFC<LayoutProps> = props => {
   useEffect(() => {
     ;(async () => {
       const user = supabase.auth.user()
-      if (!user && pathname !== "/signup" && pathname !== "/") {
+      if (
+        !user &&
+        pathname !== "/signup" &&
+        pathname !== "/" &&
+        pathname !== "/story/[storyId]"
+      ) {
         await push("/signin")
       }
       setIsLoading(false)
@@ -79,7 +90,13 @@ const LayoutComp: VFC<LayoutProps> = props => {
       </Head>
       <div className="text-slate-800">
         <Header />
-        {isLoading ? <div>Loading...</div> : <div>{props.children}</div>}
+        {isLoading ? (
+          <div className="flex flex-col justify-center items-center p-8 w-full h-screen">
+            <LoadingLogo />
+          </div>
+        ) : (
+          <div>{props.children}</div>
+        )}
       </div>
     </>
   )
