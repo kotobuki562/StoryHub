@@ -8,3 +8,7 @@ export type QueryStories = {
 export type QueryStoryById = {
   QueryStoryById: NexusGenFieldTypes["Story"]
 }
+
+export type QueryStoriesCountByPublish = {
+  QueryStoriesCountByPublish: number
+}

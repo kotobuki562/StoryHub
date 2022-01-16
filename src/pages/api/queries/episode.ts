@@ -1,7 +1,7 @@
 import type { ObjectDefinitionBlock } from "nexus/dist/core"
 import { nonNull, nullable, stringArg } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
-import { authArgs, defaultArgs, isSafe } from "src/pages/api/index.page"
+import { authArgs, isSafe } from "src/pages/api/index.page"
 
 const episodeArgs = {
   searchTitle: nullable(stringArg()),
@@ -13,14 +13,9 @@ const QueryEpisodes = (t: ObjectDefinitionBlock<"Query">) =>
     type: "Episode",
     args: {
       ...episodeArgs,
-      ...defaultArgs,
     },
     resolve: async (_parent, args) => {
-      const { page, pageSize } = args
-      const skip = pageSize * (Number(page) - 1)
       const seasons = await prisma.episode.findMany({
-        skip,
-        take: pageSize,
         orderBy: { created_at: "desc" },
         where: {
           ...(args.searchTitle && {
@@ -43,15 +38,10 @@ const QueryMyEpisodes = (t: ObjectDefinitionBlock<"Query">) =>
     args: {
       ...episodeArgs,
       ...authArgs,
-      ...defaultArgs,
     },
-    resolve: (_parent, args) => {
-      const { page, pageSize } = args
-      const skip = pageSize * (Number(page) - 1)
-      return isSafe(args.accessToken, args.userId)
+    resolve: (_parent, args) =>
+      isSafe(args.accessToken, args.userId)
         ? prisma.episode.findMany({
-            skip,
-            take: pageSize,
             orderBy: { created_at: "desc" },
             where: {
               ...(args.searchTitle && {
@@ -62,8 +52,7 @@ const QueryMyEpisodes = (t: ObjectDefinitionBlock<"Query">) =>
               }),
             },
           })
-        : null
-    },
+        : null,
   })
 
 const QueryEpisodeById = (t: ObjectDefinitionBlock<"Query">) =>
@@ -86,7 +75,6 @@ const QueryMyEpisodeById = (t: ObjectDefinitionBlock<"Query">) =>
     args: {
       id: nonNull(stringArg()),
       ...authArgs,
-      ...defaultArgs,
     },
     resolve: (_parent, args) =>
       isSafe(args.accessToken, args.userId)

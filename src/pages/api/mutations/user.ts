@@ -1,4 +1,4 @@
-import { list, nonNull, nullable, stringArg } from "nexus"
+import { nonNull, nullable, stringArg } from "nexus"
 import type { ObjectDefinitionBlock } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
 import { supabase } from "src/lib/supabase"
@@ -39,7 +39,6 @@ const createUser = (t: ObjectDefinitionBlock<"Mutation">) => {
     args: {
       userName: nonNull(stringArg()),
       userDeal: nonNull(stringArg()),
-      links: nullable(list(stringArg())),
       image: nullable(stringArg()),
       accessToken: nonNull(stringArg()),
     },
@@ -49,7 +48,6 @@ const createUser = (t: ObjectDefinitionBlock<"Mutation">) => {
           id: `${decodeUserId(args.accessToken)}`,
           user_name: `${args.userName}`,
           user_deal: `${args.userDeal}`,
-          links: `${args.links}`,
           image: `${args.image}`,
         },
       }),
@@ -62,7 +60,6 @@ const updateUser = (t: ObjectDefinitionBlock<"Mutation">) => {
     args: {
       userName: nonNull(stringArg()),
       userDeal: nonNull(stringArg()),
-      links: nullable(list(stringArg())),
       image: nullable(stringArg()),
       accessToken: nonNull(stringArg()),
     },
@@ -74,8 +71,8 @@ const updateUser = (t: ObjectDefinitionBlock<"Mutation">) => {
         data: {
           user_name: `${args.userName}`,
           user_deal: `${args.userDeal}`,
-          links: `${args.links}`,
           image: `${args.image}`,
+          updated_at: new Date(),
         },
       }),
   })

@@ -668,18 +668,14 @@ export interface NexusGenFieldTypeNames {
 export interface NexusGenArgTypes {
   Chapter: {
     pages: { // args
-      page: number; // Int!
       pageAccessToken?: string | null; // String
-      pagePageSize: number; // Int!
       pageUserId?: string | null; // String
     }
   }
   Episode: {
     chapters: { // args
       chapterAccessToken?: string | null; // String
-      chapterPageSize: number; // Int!
       chapterUserId?: string | null; // String
-      page: number; // Int!
     }
   }
   Mutation: {
@@ -695,7 +691,6 @@ export interface NexusGenArgTypes {
     createUser: { // args
       accessToken: string; // String!
       image?: string | null; // String
-      links?: Array<string | null> | null; // [String]
       userDeal: string; // String!
       userName: string; // String!
     }
@@ -722,7 +717,6 @@ export interface NexusGenArgTypes {
     updateUser: { // args
       accessToken: string; // String!
       image?: string | null; // String
-      links?: Array<string | null> | null; // [String]
       userDeal: string; // String!
       userName: string; // String!
     }
@@ -732,8 +726,6 @@ export interface NexusGenArgTypes {
       id: string; // String!
     }
     QueryChapters: { // args
-      page: number; // Int!
-      pageSize: number; // Int!
       searchTitle?: string | null; // String
       serchSeasonId?: string | null; // String
     }
@@ -741,8 +733,6 @@ export interface NexusGenArgTypes {
       id: string; // String!
     }
     QueryCharacters: { // args
-      page: number; // Int!
-      pageSize: number; // Int!
       searchTitle?: string | null; // String
       serchSettingMaterialId?: string | null; // String
     }
@@ -750,19 +740,13 @@ export interface NexusGenArgTypes {
       id: string; // String!
     }
     QueryEpisodes: { // args
-      page: number; // Int!
-      pageSize: number; // Int!
       searchTitle?: string | null; // String
       serchSeasonId?: string | null; // String
     }
     QueryFavoritesByStory: { // args
-      page: number; // Int!
-      pageSize: number; // Int!
       storyId: string; // String!
     }
     QueryFavoritesByUser: { // args
-      page: number; // Int!
-      pageSize: number; // Int!
       userId: string; // String!
     }
     QueryFollowers: { // args
@@ -777,14 +761,10 @@ export interface NexusGenArgTypes {
     QueryMyChapterById: { // args
       accessToken: string; // String!
       id: string; // String!
-      page: number; // Int!
-      pageSize: number; // Int!
       userId: string; // String!
     }
     QueryMyChapters: { // args
       accessToken: string; // String!
-      page: number; // Int!
-      pageSize: number; // Int!
       searchTitle?: string | null; // String
       serchSeasonId?: string | null; // String
       userId: string; // String!
@@ -796,8 +776,6 @@ export interface NexusGenArgTypes {
     }
     QueryMyCharacters: { // args
       accessToken: string; // String!
-      page: number; // Int!
-      pageSize: number; // Int!
       searchTitle?: string | null; // String
       serchSettingMaterialId?: string | null; // String
       userId: string; // String!
@@ -805,28 +783,20 @@ export interface NexusGenArgTypes {
     QueryMyEpisodeById: { // args
       accessToken: string; // String!
       id: string; // String!
-      page: number; // Int!
-      pageSize: number; // Int!
       userId: string; // String!
     }
     QueryMyEpisodes: { // args
       accessToken: string; // String!
-      page: number; // Int!
-      pageSize: number; // Int!
       searchTitle?: string | null; // String
       serchSeasonId?: string | null; // String
       userId: string; // String!
     }
     QueryMyFavoritesByStory: { // args
       accessToken: string; // String!
-      page: number; // Int!
-      pageSize: number; // Int!
       storyId: string; // String!
     }
     QueryMyFavoritesByUser: { // args
       accessToken: string; // String!
-      page: number; // Int!
-      pageSize: number; // Int!
     }
     QueryMyObjectById: { // args
       accessToken: string; // String!
@@ -835,8 +805,6 @@ export interface NexusGenArgTypes {
     }
     QueryMyObjects: { // args
       accessToken: string; // String!
-      page: number; // Int!
-      pageSize: number; // Int!
       searchTitle?: string | null; // String
       serchSettingMaterialId?: string | null; // String
       userId: string; // String!
@@ -848,22 +816,16 @@ export interface NexusGenArgTypes {
     }
     QueryMyReviews: { // args
       accessToken: string; // String!
-      page: number; // Int!
-      pageSize: number; // Int!
       searchTitle?: string | null; // String
       serchUserId?: string | null; // String
     }
     QueryMySeasonById: { // args
       accessToken: string; // String!
       id: string; // String!
-      page: number; // Int!
-      pageSize: number; // Int!
       userId: string; // String!
     }
     QueryMySeasons: { // args
       accessToken: string; // String!
-      page: number; // Int!
-      pageSize: number; // Int!
       searchCategory?: string | null; // String
       searchTitle?: string | null; // String
       searchUserId?: string | null; // String
@@ -914,30 +876,22 @@ export interface NexusGenArgTypes {
       objectId: string; // String!
     }
     QueryObjects: { // args
-      page: number; // Int!
-      pageSize: number; // Int!
       searchTitle?: string | null; // String
       serchSettingMaterialId?: string | null; // String
     }
     QueryPage: { // args
       id: string; // String!
-      page: number; // Int!
-      pageSize: number; // Int!
     }
     QueryPageCountByChapterId: { // args
       chapterId: string; // String!
     }
     QueryPages: { // args
-      page: number; // Int!
-      pageSize: number; // Int!
       serchSeasonId?: string | null; // String
     }
     QueryReviewById: { // args
       id: string; // String!
     }
     QueryReviews: { // args
-      page: number; // Int!
-      pageSize: number; // Int!
       searchTitle?: string | null; // String
       serchUserId?: string | null; // String
     }
@@ -945,8 +899,6 @@ export interface NexusGenArgTypes {
       id: string; // String!
     }
     QuerySeasons: { // args
-      page: number; // Int!
-      pageSize: number; // Int!
       searchCategory?: string | null; // String
       searchTitle?: string | null; // String
       searchUserId?: string | null; // String
@@ -993,38 +945,26 @@ export interface NexusGenArgTypes {
   Season: {
     episodes: { // args
       episodeAccessToken?: string | null; // String
-      episodePageSize: number; // Int!
       episodeUserId?: string | null; // String
-      page: number; // Int!
     }
   }
   SettingMaterial: {
     character: { // args
       storyAccessToken?: string | null; // String
-      storyPage: number; // Int!
-      storyPageSize: number; // Int!
     }
     object: { // args
       reviewAccessToken?: string | null; // String
-      reviewPage: number; // Int!
-      reviewPageSize: number; // Int!
     }
     story: { // args
       storyAccessToken?: string | null; // String
-      storyPage: number; // Int!
-      storyPageSize: number; // Int!
     }
     terminology: { // args
       terminologyAccessToken?: string | null; // String
-      terminologyPage: number; // Int!
-      terminologyPageSize: number; // Int!
     }
   }
   Story: {
     seasons: { // args
-      page: number; // Int!
       seasonAccessToken?: string | null; // String
-      seasonPageSize: number; // Int!
       seasonUserId?: string | null; // String
     }
   }

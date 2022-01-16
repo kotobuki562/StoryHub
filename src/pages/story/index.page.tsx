@@ -3,10 +3,14 @@
 import gql from "graphql-tag"
 import type { NextPage } from "next"
 import { StoryCard } from "src/components/blocks/Card"
+import { Pagination } from "src/components/blocks/Pagination"
 import { Layout } from "src/components/Layout/Layout"
 import { client } from "src/lib/apollo"
 import { STORY_PAGE_SIZE } from "src/tools/page"
-import type { QueryStories } from "src/types/Story/query"
+import type {
+  QueryStories,
+  QueryStoriesCountByPublish,
+} from "src/types/Story/query"
 
 const StoriesQuery = gql`
   query QueryStories($page: Int!, $pageSize: Int!) {
@@ -26,8 +30,14 @@ const StoriesQuery = gql`
   }
 `
 
+const PublishStoriesQuery = gql`
+  query Query {
+    QueryStoriesCountByPublish
+  }
+`
 type HomePageProps = {
   stories: QueryStories
+  publishStoriesCount: number
 }
 
 export const getStaticProps = async () => {
@@ -38,16 +48,23 @@ export const getStaticProps = async () => {
       pageSize: STORY_PAGE_SIZE,
     },
   })
+  const totalCount = await client.query<QueryStoriesCountByPublish>({
+    query: PublishStoriesQuery,
+  })
 
   return {
     props: {
       stories: data.data,
+      publishStoriesCount: totalCount.data.QueryStoriesCountByPublish,
     },
     revalidate: 60,
   }
 }
 
-const HomePage: NextPage<HomePageProps> = ({ stories }) => (
+const HomePage: NextPage<HomePageProps> = ({
+  publishStoriesCount,
+  stories,
+}) => (
   <Layout
     meta={{
       pageName: `StoryHub | 妄想を、吐き出せ`,
@@ -61,6 +78,11 @@ const HomePage: NextPage<HomePageProps> = ({ stories }) => (
           <StoryCard key={story.id} {...story} />
         ))}
       </div>
+      <Pagination
+        totalCount={publishStoriesCount}
+        usecase="story"
+        page={STORY_PAGE_SIZE}
+      />
     </div>
   </Layout>
 )

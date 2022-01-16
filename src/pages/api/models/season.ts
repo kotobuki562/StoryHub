@@ -1,4 +1,4 @@
-import { intArg, nonNull, nullable, objectType, stringArg } from "nexus"
+import { nullable, objectType, stringArg } from "nexus"
 import prisma from "src/lib/prisma"
 
 import { isSafe } from "../index.page"
@@ -6,8 +6,6 @@ import { isSafe } from "../index.page"
 const episodeArgs = {
   episodeAccessToken: nullable(stringArg()),
   episodeUserId: nullable(stringArg()),
-  page: nonNull(intArg()),
-  episodePageSize: nonNull(intArg()),
 }
 
 const Season = objectType({
@@ -26,23 +24,17 @@ const Season = objectType({
       type: "Episode",
       args: episodeArgs,
       resolve: (parent, args) => {
-        const { episodeAccessToken, episodePageSize, episodeUserId, page } =
-          args
-        const skip = episodePageSize * (page - 1)
+        const { episodeAccessToken, episodeUserId } = args
         return episodeAccessToken &&
           episodeUserId &&
           isSafe(episodeAccessToken, episodeUserId)
           ? prisma.episode.findMany({
-              skip,
-              take: episodePageSize,
               orderBy: { created_at: "desc" },
               where: {
                 season_id: `${parent.id}`,
               },
             })
           : prisma.episode.findMany({
-              skip,
-              take: episodePageSize,
               orderBy: { created_at: "desc" },
               where: {
                 season_id: `${parent.id}`,

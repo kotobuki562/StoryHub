@@ -15,7 +15,7 @@ type Chapter {
   episode: Episode
   episode_id: String
   id: ID
-  pages(page: Int!, pageAccessToken: String, pagePageSize: Int!, pageUserId: String): [Page]
+  pages(pageAccessToken: String, pageUserId: String): [Page]
   publish: Boolean
   updated_at: DateTime
 }
@@ -41,7 +41,7 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 scalar DateTime
 
 type Episode {
-  chapters(chapterAccessToken: String, chapterPageSize: Int!, chapterUserId: String, page: Int!): [Chapter]
+  chapters(chapterAccessToken: String, chapterUserId: String): [Chapter]
   created_at: DateTime
   episode_image: String
   episode_synopsis: String
@@ -72,12 +72,12 @@ type Follow {
 
 type Mutation {
   createStory(acessToken: String!, publish: Boolean!, storyCategories: [String!]!, storyImage: String, storySynopsis: String, storyTitle: String!, viewingRestriction: String): Story
-  createUser(accessToken: String!, image: String, links: [String], userDeal: String!, userName: String!): User
+  createUser(accessToken: String!, image: String, userDeal: String!, userName: String!): User
   deleteStory(storyId: String!): Story
   deleteUser(accessToken: String!): User
   signupUser(email: String!, password: String!, userName: String): User
   updateStory(publish: Boolean!, storyCategories: [String!]!, storyId: String!, storyImage: String, storySynopsis: String, storyTitle: String, viewingRestriction: String): Story
-  updateUser(accessToken: String!, image: String, links: [String], userDeal: String!, userName: String!): User
+  updateUser(accessToken: String!, image: String, userDeal: String!, userName: String!): User
 }
 
 type Object {
@@ -105,36 +105,36 @@ type Page {
 type Query {
   QueryCategories: [Category]
   QueryChapterById(id: String!): Chapter
-  QueryChapters(page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String): [Chapter]
+  QueryChapters(searchTitle: String, serchSeasonId: String): [Chapter]
   QueryChaptersCountByPublish: Int
   QueryChaptersCountByUnPublish: Int
   QueryCharacterById(id: String!): Character
-  QueryCharacters(page: Int!, pageSize: Int!, searchTitle: String, serchSettingMaterialId: String): [Character]
+  QueryCharacters(searchTitle: String, serchSettingMaterialId: String): [Character]
   QueryCharactersCountByPublish: Int
   QueryCharactersCountByUnPublish: Int
   QueryEpisodeById(id: String!): Episode
-  QueryEpisodes(page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String): [Episode]
+  QueryEpisodes(searchTitle: String, serchSeasonId: String): [Episode]
   QueryEpisodesCountByPublish: Int
   QueryEpisodesCountByUnPublish: Int
-  QueryFavoritesByStory(page: Int!, pageSize: Int!, storyId: String!): [Favorite]
-  QueryFavoritesByUser(page: Int!, pageSize: Int!, userId: String!): [Favorite]
+  QueryFavoritesByStory(storyId: String!): [Favorite]
+  QueryFavoritesByUser(userId: String!): [Favorite]
   QueryFollowers(accessToken: String!): [Follow]
   QueryFollowing(accessToken: String!): [Follow]
   QueryMe(accessToken: String!): User
-  QueryMyChapterById(accessToken: String!, id: String!, page: Int!, pageSize: Int!, userId: String!): Chapter
-  QueryMyChapters(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String, userId: String!): [Chapter]
+  QueryMyChapterById(accessToken: String!, id: String!, userId: String!): Chapter
+  QueryMyChapters(accessToken: String!, searchTitle: String, serchSeasonId: String, userId: String!): [Chapter]
   QueryMyCharacterById(accessToken: String!, id: String!, userId: String!): Character
-  QueryMyCharacters(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchSettingMaterialId: String, userId: String!): [Character]
-  QueryMyEpisodeById(accessToken: String!, id: String!, page: Int!, pageSize: Int!, userId: String!): Episode
-  QueryMyEpisodes(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchSeasonId: String, userId: String!): [Episode]
-  QueryMyFavoritesByStory(accessToken: String!, page: Int!, pageSize: Int!, storyId: String!): [Favorite]
-  QueryMyFavoritesByUser(accessToken: String!, page: Int!, pageSize: Int!): [Favorite]
+  QueryMyCharacters(accessToken: String!, searchTitle: String, serchSettingMaterialId: String, userId: String!): [Character]
+  QueryMyEpisodeById(accessToken: String!, id: String!, userId: String!): Episode
+  QueryMyEpisodes(accessToken: String!, searchTitle: String, serchSeasonId: String, userId: String!): [Episode]
+  QueryMyFavoritesByStory(accessToken: String!, storyId: String!): [Favorite]
+  QueryMyFavoritesByUser(accessToken: String!): [Favorite]
   QueryMyObjectById(accessToken: String!, objectId: String!, userId: String!): Object
-  QueryMyObjects(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchSettingMaterialId: String, userId: String!): [Object]
+  QueryMyObjects(accessToken: String!, searchTitle: String, serchSettingMaterialId: String, userId: String!): [Object]
   QueryMyReviewById(accessToken: String!, id: String!, userId: String!): Review
-  QueryMyReviews(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchUserId: String): [Review]
-  QueryMySeasonById(accessToken: String!, id: String!, page: Int!, pageSize: Int!, userId: String!): Season
-  QueryMySeasons(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Season]
+  QueryMyReviews(accessToken: String!, searchTitle: String, serchUserId: String): [Review]
+  QueryMySeasonById(accessToken: String!, id: String!, userId: String!): Season
+  QueryMySeasons(accessToken: String!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Season]
   QueryMySettingMaterialById(accessToken: String!, id: String!, userId: String!): SettingMaterial
   QueryMySettingMaterials(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, serchStoryId: String): [SettingMaterial]
   QueryMyStories(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Story]
@@ -142,17 +142,17 @@ type Query {
   QueryMyTerminologies(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchSettingMaterialId: String, userId: String!): [Terminology]
   QueryMyTerminologyById(accessToken: String!, terminologyId: String!, userId: String!): Terminology
   QueryObjectById(objectId: String!): Object
-  QueryObjects(page: Int!, pageSize: Int!, searchTitle: String, serchSettingMaterialId: String): [Object]
+  QueryObjects(searchTitle: String, serchSettingMaterialId: String): [Object]
   QueryObjectsCountByPublish: Int
   QueryObjectsCountByUnPublish: Int
-  QueryPage(id: String!, page: Int!, pageSize: Int!): Page
+  QueryPage(id: String!): Page
   QueryPageCountByChapterId(chapterId: String!): Int
-  QueryPages(page: Int!, pageSize: Int!, serchSeasonId: String): [Page]
+  QueryPages(serchSeasonId: String): [Page]
   QueryPublishReviewsCount: Int
   QueryReviewById(id: String!): Review
-  QueryReviews(page: Int!, pageSize: Int!, searchTitle: String, serchUserId: String): [Review]
+  QueryReviews(searchTitle: String, serchUserId: String): [Review]
   QuerySeasonById(id: String!): Season
-  QuerySeasons(page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String): [Season]
+  QuerySeasons(searchCategory: String, searchTitle: String, searchUserId: String): [Season]
   QuerySeasonsCountByPublish: Int
   QuerySeasonsCountByUnPublish: Int
   QuerySettingMaterialById(id: String!): SettingMaterial
@@ -188,7 +188,7 @@ type Review {
 
 type Season {
   created_at: DateTime
-  episodes(episodeAccessToken: String, episodePageSize: Int!, episodeUserId: String, page: Int!): [Episode]
+  episodes(episodeAccessToken: String, episodeUserId: String): [Episode]
   id: ID
   publish: Boolean
   season_categories: [String]
@@ -201,17 +201,17 @@ type Season {
 }
 
 type SettingMaterial {
-  character(storyAccessToken: String, storyPage: Int!, storyPageSize: Int!): [Character]
+  character(storyAccessToken: String): [Character]
   created_at: DateTime
   id: ID
-  object(reviewAccessToken: String, reviewPage: Int!, reviewPageSize: Int!): [Object]
+  object(reviewAccessToken: String): [Object]
   publish: Boolean
   setting_material_deal: String
   setting_material_image: String
   setting_material_title: String
-  story(storyAccessToken: String, storyPage: Int!, storyPageSize: Int!): Story
+  story(storyAccessToken: String): Story
   story_id: String
-  terminology(terminologyAccessToken: String, terminologyPage: Int!, terminologyPageSize: Int!): [Terminology]
+  terminology(terminologyAccessToken: String): [Terminology]
   updated_at: DateTime
   user: User
   user_id: String
@@ -223,7 +223,7 @@ type Story {
   id: ID
   publish: Boolean
   reviews: [Review]
-  seasons(page: Int!, seasonAccessToken: String, seasonPageSize: Int!, seasonUserId: String): [Season]
+  seasons(seasonAccessToken: String, seasonUserId: String): [Season]
   story_categories: [String]
   story_image: String
   story_synopsis: String

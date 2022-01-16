@@ -1,24 +1,18 @@
-import { intArg, nonNull, nullable, objectType, stringArg } from "nexus"
+import { nullable, objectType, stringArg } from "nexus"
 import prisma from "src/lib/prisma"
 
 import { isSafe } from "../index.page"
 
 const characterArgs = {
   storyAccessToken: nullable(stringArg()),
-  storyPage: nonNull(intArg()),
-  storyPageSize: nonNull(intArg()),
 }
 
 const objectArgs = {
   reviewAccessToken: nullable(stringArg()),
-  reviewPage: nonNull(intArg()),
-  reviewPageSize: nonNull(intArg()),
 }
 
 const terminologyArgs = {
   terminologyAccessToken: nullable(stringArg()),
-  terminologyPage: nonNull(intArg()),
-  terminologyPageSize: nonNull(intArg()),
 }
 
 // model SettingMateria {
@@ -73,20 +67,15 @@ export const SettingMaterial = objectType({
       type: "Character",
       args: characterArgs,
       resolve: (parent, args) => {
-        const { storyAccessToken, storyPage, storyPageSize } = args
-        const skip = storyPageSize * (Number(storyPage) - 1)
+        const { storyAccessToken } = args
         return storyAccessToken && isSafe(storyAccessToken, `${parent.user_id}`)
           ? prisma.character.findMany({
-              skip,
-              take: storyPageSize,
               orderBy: { created_at: "desc" },
               where: {
                 setting_material_id: `${parent.id}`,
               },
             })
           : prisma.character.findMany({
-              skip,
-              take: storyPageSize,
               orderBy: { created_at: "desc" },
               where: {
                 setting_material_id: `${parent.id}`,
@@ -99,21 +88,16 @@ export const SettingMaterial = objectType({
       type: "Object",
       args: objectArgs,
       resolve: (parent, args) => {
-        const { reviewAccessToken, reviewPage, reviewPageSize } = args
-        const skip = reviewPageSize * (Number(reviewPage) - 1)
+        const { reviewAccessToken } = args
         return reviewAccessToken &&
           isSafe(reviewAccessToken, `${parent.user_id}`)
           ? prisma.object.findMany({
-              skip,
-              take: reviewPageSize,
               orderBy: { created_at: "desc" },
               where: {
                 setting_material_id: `${parent.id}`,
               },
             })
           : prisma.object.findMany({
-              skip,
-              take: reviewPageSize,
               orderBy: { created_at: "desc" },
               where: {
                 setting_material_id: `${parent.id}`,
@@ -126,22 +110,16 @@ export const SettingMaterial = objectType({
       type: "Terminology",
       args: terminologyArgs,
       resolve: (parent, args) => {
-        const { terminologyAccessToken, terminologyPage, terminologyPageSize } =
-          args
-        const skip = terminologyPageSize * (Number(terminologyPage) - 1)
+        const { terminologyAccessToken } = args
         return terminologyAccessToken &&
           isSafe(terminologyAccessToken, `${parent.user_id}`)
           ? prisma.terminology.findMany({
-              skip,
-              take: terminologyPageSize,
               orderBy: { created_at: "desc" },
               where: {
                 setting_material_id: `${parent.id}`,
               },
             })
           : prisma.terminology.findMany({
-              skip,
-              take: terminologyPageSize,
               orderBy: { created_at: "desc" },
               where: {
                 setting_material_id: `${parent.id}`,
