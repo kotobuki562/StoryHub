@@ -4826,6 +4826,11 @@ react-error-boundary@^3.1.4:
   dependencies:
     "@babel/runtime" "^7.12.5"
 
+react-hook-form@^7.24.0:
+  version "7.24.0"
+  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.24.0.tgz#d4d25eb7df6d36753ebb8b37d35cb36458fc5d79"
+  integrity sha512-N2GT4wmdcgP5bw72q/a+vKUBqy14iNQz+4vaFBJLz9Bw+KNYKUjTzcV/kHfOYbcboMeHP2zgf4i4wTmAwrXssg==
+
 react-hot-toast@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/react-hot-toast/-/react-hot-toast-2.2.0.tgz#ab6f4caed4214b9534f94bb8cfaaf21b051e62b9"

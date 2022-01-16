@@ -51,7 +51,7 @@ const DeleteMutation = gql`
 
 function Post() {
   const postId = useRouter().query.id
-  const { loading, error, data } = useQuery(PostQuery, {
+  const { data, error, loading } = useQuery(PostQuery, {
     variables: { postId },
   })
 

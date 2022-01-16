@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable import/no-default-export */
 import "react-image-crop/dist/ReactCrop.css"
 import "react-quill/dist/quill.snow.css"
@@ -262,6 +263,7 @@ const Signin = () => {
   return (
     <Layout>
       <div>
+        <img src="/img/StoryHubLogo.png" alt="Logo" />
         <ReactQuill
           theme="snow"
           modules={modules}
