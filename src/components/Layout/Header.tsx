@@ -30,6 +30,7 @@ import { supabase } from "src/lib/supabase"
 const Me = gql`
   query QueryMe($accessToken: String!) {
     QueryMe(accessToken: $accessToken) {
+      id
       user_name
       user_deal
       image
@@ -61,39 +62,6 @@ const mainLinks = [
   },
 ]
 
-const userLinks = [
-  {
-    href: "/user/[userId]",
-    label: "プロフィール",
-    icon: <UserCircleIcon className="w-6 h-6" />,
-  },
-  {
-    href: "/user/[userId]/story",
-    label: "ストーリー",
-    icon: <BookOpenIcon className="w-6 h-6" />,
-  },
-  {
-    href: "/user/[userId]/settingMaterial",
-    label: "設定資料",
-    icon: <PhotographIcon className="w-6 h-6" />,
-  },
-  {
-    href: "/user/[userId]/review",
-    label: "レビュー",
-    icon: <FireIcon className="w-6 h-6" />,
-  },
-  {
-    href: "/user/[userId]/follow",
-    label: "フォロー",
-    icon: <UserGroupIcon className="w-6 h-6" />,
-  },
-  {
-    href: "/user/[userId]/favorite",
-    label: "ブックマーク",
-    icon: <BookmarkIcon className="w-6 h-6" />,
-  },
-]
-
 const HeaderComp = () => {
   const [isOpenUserAccodion, setOpenUserAccodion] = useState<boolean>(false)
   const [isOpenUserActionAccodion, setOpenUserActionAccodion] =
@@ -109,6 +77,39 @@ const HeaderComp = () => {
       accessToken,
     },
   })
+
+  const userLinks = [
+    {
+      href: `/myPage/${user?.QueryMe.id}/profile`,
+      label: "プロフィール",
+      icon: <UserCircleIcon className="w-6 h-6" />,
+    },
+    {
+      href: `/myPage/${user?.QueryMe.id}/story`,
+      label: "ストーリー",
+      icon: <BookOpenIcon className="w-6 h-6" />,
+    },
+    {
+      href: `/myPage/${user?.QueryMe.id}/settingMaterial`,
+      label: "設定資料",
+      icon: <PhotographIcon className="w-6 h-6" />,
+    },
+    {
+      href: `/myPage/${user?.QueryMe.id}/review`,
+      label: "レビュー",
+      icon: <FireIcon className="w-6 h-6" />,
+    },
+    {
+      href: `/myPage/${user?.QueryMe.id}/follow`,
+      label: "フォロー",
+      icon: <UserGroupIcon className="w-6 h-6" />,
+    },
+    {
+      href: `/myPage/${user?.QueryMe.id}/favorite`,
+      label: "ブックマーク",
+      icon: <BookmarkIcon className="w-6 h-6" />,
+    },
+  ]
 
   const router = useRouter()
 

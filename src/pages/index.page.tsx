@@ -47,17 +47,6 @@ export const getStaticProps = async () => {
 }
 
 const HomePage: NextPage<HomePageProps> = ({ stories }) => (
-  // const {
-  //   data,
-  //   error,
-  //   loading: isLoading,
-  // } = useQuery<QueryStory>(StoriesQuery, {
-  //   variables: {
-  //     page: 1,
-  //     pageSize: 10,
-  //   },
-  //   fetchPolicy: "cache-and-network",
-  // })
 
   <Layout
     meta={{
