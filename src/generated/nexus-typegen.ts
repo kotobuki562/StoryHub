@@ -691,7 +691,6 @@ export interface NexusGenArgTypes {
     createUser: { // args
       accessToken: string; // String!
       image?: string | null; // String
-      links?: Array<string | null> | null; // [String]
       userDeal: string; // String!
       userName: string; // String!
     }
@@ -718,7 +717,6 @@ export interface NexusGenArgTypes {
     updateUser: { // args
       accessToken: string; // String!
       image?: string | null; // String
-      links?: Array<string | null> | null; // [String]
       userDeal: string; // String!
       userName: string; // String!
     }

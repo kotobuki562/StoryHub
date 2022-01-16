@@ -72,12 +72,12 @@ type Follow {
 
 type Mutation {
   createStory(acessToken: String!, publish: Boolean!, storyCategories: [String!]!, storyImage: String, storySynopsis: String, storyTitle: String!, viewingRestriction: String): Story
-  createUser(accessToken: String!, image: String, links: [String], userDeal: String!, userName: String!): User
+  createUser(accessToken: String!, image: String, userDeal: String!, userName: String!): User
   deleteStory(storyId: String!): Story
   deleteUser(accessToken: String!): User
   signupUser(email: String!, password: String!, userName: String): User
   updateStory(publish: Boolean!, storyCategories: [String!]!, storyId: String!, storyImage: String, storySynopsis: String, storyTitle: String, viewingRestriction: String): Story
-  updateUser(accessToken: String!, image: String, links: [String], userDeal: String!, userName: String!): User
+  updateUser(accessToken: String!, image: String, userDeal: String!, userName: String!): User
 }
 
 type Object {

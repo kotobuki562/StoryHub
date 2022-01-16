@@ -5,6 +5,7 @@ import gql from "graphql-tag"
 import type { GetStaticPropsContext, NextPage } from "next"
 import { Layout } from "src/components/Layout/Layout"
 import { client } from "src/lib/apollo"
+import { STORY_PAGE_SIZE } from "src/tools/page"
 import type { QueryStories, QueryStoryById } from "src/types/Story/query"
 
 const StoriesQuery = gql`
@@ -42,16 +43,16 @@ type StoryPageProps = {
 }
 
 export const getStaticPaths = async () => {
-  const data = await client.query<QueryStories>({
+  const { data } = await client.query<QueryStories>({
     query: StoriesQuery,
     variables: {
       page: 1,
-      pageSize: 10,
+      pageSize: STORY_PAGE_SIZE,
     },
   })
 
   return {
-    paths: data.data.QueryStories.map(story => {
+    paths: data.QueryStories.map(story => {
       return {
         params: {
           storyId: story.id,

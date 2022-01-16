@@ -1,12 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable import/no-default-export */
 import gql from "graphql-tag"
-import type { NextPage } from "next"
+import type { GetStaticPropsContext, NextPage } from "next"
 import { StoryCard } from "src/components/blocks/Card"
+import { Pagination } from "src/components/blocks/Pagination"
 import { Layout } from "src/components/Layout/Layout"
 import { client } from "src/lib/apollo"
 import { STORY_PAGE_SIZE } from "src/tools/page"
-import type { QueryStories } from "src/types/Story/query"
+import type {
+  QueryStories,
+  QueryStoriesCountByPublish,
+} from "src/types/Story/query"
 
 const StoriesQuery = gql`
   query QueryStories($page: Int!, $pageSize: Int!) {
@@ -26,28 +30,63 @@ const StoriesQuery = gql`
   }
 `
 
+const PublishStoriesQuery = gql`
+  query Query {
+    QueryStoriesCountByPublish
+  }
+`
 type HomePageProps = {
   stories: QueryStories
+  publishStoriesCount: number
 }
 
-export const getStaticProps = async () => {
+export const getStaticPaths = async () => {
+  const totalCount = await client.query<QueryStoriesCountByPublish>({
+    query: PublishStoriesQuery,
+  })
+
+  const range = (start: number, end: number) =>
+    [...Array(end - start + 1)].map((_, i) => start + i)
+  const paths = range(
+    1,
+    Math.ceil(totalCount.data.QueryStoriesCountByPublish / STORY_PAGE_SIZE)
+  ).map(repo => {
+    return {
+      params: {
+        storyPageId: repo.toString(),
+      },
+    }
+  })
+  return { paths, fallback: false }
+}
+
+export const getStaticProps = async (context: GetStaticPropsContext) => {
+  const { params } = context
+
   const data = await client.query<QueryStories>({
     query: StoriesQuery,
     variables: {
-      page: 1,
+      page: Number(params?.storyPageId),
       pageSize: STORY_PAGE_SIZE,
     },
+  })
+  const totalCount = await client.query<QueryStoriesCountByPublish>({
+    query: PublishStoriesQuery,
   })
 
   return {
     props: {
       stories: data.data,
+      publishStoriesCount: totalCount.data.QueryStoriesCountByPublish,
     },
     revalidate: 60,
   }
 }
 
-const HomePage: NextPage<HomePageProps> = ({ stories }) => (
+const HomePage: NextPage<HomePageProps> = ({
+  publishStoriesCount,
+  stories,
+}) => (
   <Layout
     meta={{
       pageName: `StoryHub | 妄想を、吐き出せ`,
@@ -61,6 +100,11 @@ const HomePage: NextPage<HomePageProps> = ({ stories }) => (
           <StoryCard key={story.id} {...story} />
         ))}
       </div>
+      <Pagination
+        totalCount={publishStoriesCount}
+        usecase="story"
+        page={STORY_PAGE_SIZE}
+      />
     </div>
   </Layout>
 )

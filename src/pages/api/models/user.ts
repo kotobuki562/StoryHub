@@ -21,7 +21,6 @@ const User = objectType({
     t.id("id")
     t.string("user_name")
     t.string("user_deal")
-    // t.string("links")
     t.string("image")
     t.date("created_at")
     t.nullable.date("updated_at")
