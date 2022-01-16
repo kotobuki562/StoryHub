@@ -2,13 +2,9 @@
 /* eslint-disable react/destructuring-assignment */
 import "src/styles/index.css"
 
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client"
+import { ApolloProvider } from "@apollo/client"
 import type { AppProps } from "next/app"
-
-const client = new ApolloClient({
-  cache: new InMemoryCache(),
-  uri: "/api",
-})
+import { client } from "src/lib/apollo"
 
 const MyApp = (props: AppProps) => (
   <ApolloProvider client={client}>

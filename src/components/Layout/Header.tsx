@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useQuery } from "@apollo/client"
 import {
+  BellIcon,
   BookmarkIcon,
   BookOpenIcon,
   ChevronDownIcon,
@@ -11,6 +12,7 @@ import {
   LogoutIcon,
   MailIcon,
   PhotographIcon,
+  SearchIcon,
   UserAddIcon,
   UserCircleIcon,
   UserGroupIcon,
@@ -96,6 +98,10 @@ const HeaderComp = () => {
   const [isOpenUserAccodion, setOpenUserAccodion] = useState<boolean>(false)
   const [isOpenUserActionAccodion, setOpenUserActionAccodion] =
     useState<boolean>(false)
+  const [isHiddenMainManu, setHiddenMainManu] = useState<boolean>(true)
+  const [isHiddenUserManu, setHiddenUserManu] = useState<boolean>(true)
+  const [isHiddenNotification, setHiddenNotification] = useState<boolean>(true)
+  const [isHiddenSearch, setHiddenSearch] = useState<boolean>(true)
   const userInfo = supabase.auth.user()
   const accessToken = useMemo(() => supabase.auth.session()?.access_token, [])
   const { data: user } = useQuery<QueryMe>(Me, {
@@ -129,6 +135,22 @@ const HeaderComp = () => {
     setOpenUserActionAccodion(pre => !pre)
   }, [])
 
+  const onToggleMainManu = useCallback(() => {
+    setHiddenMainManu(pre => !pre)
+  }, [])
+
+  const onToggleUserManu = useCallback(() => {
+    setHiddenUserManu(pre => !pre)
+  }, [])
+
+  const onToggleNotification = useCallback(() => {
+    setHiddenNotification(pre => !pre)
+  }, [])
+
+  const onToggleSearch = useCallback(() => {
+    setHiddenSearch(pre => !pre)
+  }, [])
+
   const handleSignOut = useCallback(() => {
     supabase.auth.signOut().then(() => {
       router.push("/signin")
@@ -142,18 +164,27 @@ const HeaderComp = () => {
   return (
     <nav className="flex sticky top-0 z-10 justify-between items-center py-2 px-4 bg-white">
       <div className="flex items-center">
-        <div className="mr-4">
-          <img
-            className="w-8 h-8 rounded-full"
-            src="https://avatars.githubusercontent.com/u/67810971?s=40&v=4"
-            alt="avatar"
-          />
-        </div>
+        <Link href="/">
+          <a className="flex items-center mr-4">
+            <img
+              className="w-10 h-10 rounded-full"
+              src="/img/StoryHubIcon.png"
+              alt="icon"
+            />
+          </a>
+        </Link>
 
         <div className="group">
           <Menu
+            isHidden={isHiddenMainManu}
+            onToggle={onToggleMainManu}
             viewer={
-              <div className="flex items-center py-2 px-4 font-black group-hover:text-purple-400 group-hover:bg-slate-100 rounded-xl duration-200">
+              <div
+                className={cc([
+                  "flex items-center p-2 text-xl font-black group-hover:text-purple-400 group-hover:bg-slate-100 rounded-xl duration-200 sm:px-4",
+                  !isHiddenMainManu && "bg-slate-100 text-purple-400",
+                ])}
+              >
                 <p className="mr-2">{renderMainLinks}</p>
                 <ChevronDownIcon className="w-5 h-5" />
               </div>
@@ -164,8 +195,9 @@ const HeaderComp = () => {
                 <Link key={label} href={href}>
                   <a
                     className={cc([
-                      "py-2 px-4 w-[200px] text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 justify-between rounded-xl duration-200",
-                      router.asPath === href && "bg-slate-100 text-purple-400",
+                      "py-2 px-4 w-[200px] text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                      router.pathname === href &&
+                        "bg-slate-100 text-purple-400",
                     ])}
                   >
                     <p>{label}</p>
@@ -177,60 +209,148 @@ const HeaderComp = () => {
           </Menu>
         </div>
       </div>
-      <div className="group flex items-center">
+      <div className="flex items-center">
         <Menu
-          position={-80}
+          isHidden={isHiddenSearch}
+          onToggle={onToggleSearch}
           viewer={
-            <div className="flex items-center py-2 px-4 font-black group-hover:bg-slate-100 rounded-xl duration-200">
-              <div className="mr-2">
-                <img
-                  className="w-8 h-8 rounded-full"
-                  src={user?.QueryMe.image || "/img/Vector.png"}
-                  alt="avatar"
-                />
-              </div>
-
-              <ChevronDownIcon className="w-5 h-5" />
+            <div className="mr-4 w-10">
+              <SearchIcon
+                className={cc([
+                  "p-2 w-10 h-10 duration-200 rounded-full",
+                  !isHiddenSearch
+                    ? "text-white bg-purple-500"
+                    : "text-purple-500 hover:bg-slate-100",
+                ])}
+              />
             </div>
           }
         >
-          <div className="flex flex-col w-[230px]">
-            {user && (
-              <>
-                <div className="py-2 px-4 mb-4 border-b border-slate-200">
-                  <p className="mb-2 text-sm text-slate-400">
-                    ログイン中のアカウント:
-                  </p>
-                  <div className="flex">
-                    <div className="mr-2 w-10">
-                      <img
-                        className="w-10 h-10 rounded-full"
-                        src={user.QueryMe.image || "/img/Vector.png"}
-                        alt={user.QueryMe.user_name || "avatar"}
-                      />
-                    </div>
-                    <div className="overflow-scroll no-scrollbar">
-                      <p className="font-bold">{user.QueryMe.user_name}</p>
-                      <p className="text-sm text-slate-400">
-                        {userInfo?.email}
-                      </p>
+          <div>
+            <p className="text-slate-400">検索機能</p>
+          </div>
+        </Menu>
+
+        <Menu
+          isHidden={isHiddenNotification}
+          onToggle={onToggleNotification}
+          viewer={
+            <div className="mr-4 w-10">
+              <BellIcon
+                className={cc([
+                  "p-2 w-10 h-10 duration-200 rounded-full",
+                  !isHiddenNotification
+                    ? "text-white bg-purple-500"
+                    : "text-purple-500 hover:bg-slate-100",
+                ])}
+              />
+            </div>
+          }
+        >
+          <div>
+            <p className="text-slate-400">現在通知は届いていません</p>
+          </div>
+        </Menu>
+
+        <div className="group">
+          <Menu
+            isHidden={isHiddenUserManu}
+            onToggle={onToggleUserManu}
+            position={-80}
+            viewer={
+              <div
+                className={cc([
+                  "flex items-center p-2 font-black group-hover:bg-slate-100 rounded-xl duration-200 sm:px-4",
+                  !isHiddenUserManu && "bg-slate-100",
+                ])}
+              >
+                <div className="mr-2">
+                  <img
+                    className="w-8 h-8 rounded-full"
+                    src={user?.QueryMe.image || "/img/Vector.png"}
+                    alt="avatar"
+                  />
+                </div>
+
+                <ChevronDownIcon className="w-5 h-5" />
+              </div>
+            }
+          >
+            <div className="flex flex-col w-[230px]">
+              {user && (
+                <>
+                  <div className="py-2 px-4 mb-4 border-b border-slate-200">
+                    <p className="mb-2 text-sm text-slate-400">
+                      ログイン中のアカウント:
+                    </p>
+                    <div className="flex">
+                      <div className="mr-2 w-10">
+                        <img
+                          className="w-10 h-10 rounded-full"
+                          src={user.QueryMe.image || "/img/Vector.png"}
+                          alt={user.QueryMe.user_name || "avatar"}
+                        />
+                      </div>
+                      <div className="overflow-scroll no-scrollbar">
+                        <p className="font-bold">{user.QueryMe.user_name}</p>
+                        <p className="text-sm text-slate-400">
+                          {userInfo?.email}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="mb-4">
+                  <div className="mb-4">
+                    <Accordion
+                      isOpen={isOpenUserAccodion}
+                      onToggle={onToggleUserAccodion}
+                      toggleButton={
+                        <div
+                          className={cc([
+                            "py-2 px-4 w-full text-lg flex font-bold items-center bg-slate-100 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                            isOpenUserAccodion && "text-purple-400",
+                          ])}
+                        >
+                          <p>User Pages</p>
+                          <div className="w-8">
+                            {isOpenUserAccodion ? (
+                              <ChevronUpIcon className="w-8 h-8" />
+                            ) : (
+                              <ChevronDownIcon className="w-8 h-8" />
+                            )}
+                          </div>
+                        </div>
+                      }
+                    >
+                      {userLinks.map(({ href, icon, label }) => (
+                        <Link key={label} href={href}>
+                          <a
+                            className={cc([
+                              "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                              router.pathname === href &&
+                                "bg-slate-100 text-purple-400",
+                            ])}
+                          >
+                            <p>{label}</p>
+                            <div className="w-8">{icon}</div>
+                          </a>
+                        </Link>
+                      ))}
+                    </Accordion>
+                  </div>
+
                   <Accordion
-                    isOpen={isOpenUserAccodion}
-                    onToggle={onToggleUserAccodion}
+                    isOpen={isOpenUserActionAccodion}
+                    onToggle={onToggleUserActionAccodion}
                     toggleButton={
                       <div
                         className={cc([
-                          "py-2 px-4 w-full text-lg flex font-bold items-center bg-slate-100 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
-                          isOpenUserAccodion && "text-purple-400",
+                          "py-2 px-4 w-full text-lg flex font-bold bg-slate-100 items-center hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                          isOpenUserActionAccodion && "text-purple-400",
                         ])}
                       >
-                        <p>User Pages</p>
+                        <p>User Actions</p>
                         <div className="w-8">
-                          {isOpenUserAccodion ? (
+                          {isOpenUserActionAccodion ? (
                             <ChevronUpIcon className="w-8 h-8" />
                           ) : (
                             <ChevronDownIcon className="w-8 h-8" />
@@ -239,87 +359,50 @@ const HeaderComp = () => {
                       </div>
                     }
                   >
-                    {userLinks.map(({ href, icon, label }) => (
-                      <Link key={label} href={href}>
-                        <a
-                          className={cc([
-                            "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
-                            router.asPath === href &&
-                              "bg-slate-100 text-purple-400",
-                          ])}
-                        >
-                          <p>{label}</p>
-                          <div className="w-8">{icon}</div>
-                        </a>
-                      </Link>
-                    ))}
-                  </Accordion>
-                </div>
-
-                <Accordion
-                  isOpen={isOpenUserActionAccodion}
-                  onToggle={onToggleUserActionAccodion}
-                  toggleButton={
-                    <div
-                      className={cc([
-                        "py-2 px-4 w-full text-lg flex font-bold bg-slate-100 items-center hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
-                        isOpenUserActionAccodion && "text-purple-400",
-                      ])}
+                    <button
+                      className="flex justify-between items-center py-2 px-4 w-full text-lg font-bold hover:text-yellow-400 hover:bg-purple-500 rounded-xl duration-200"
+                      onClick={handleSignOut}
                     >
-                      <p>User Actions</p>
+                      <p>Sign Out</p>
                       <div className="w-8">
-                        {isOpenUserActionAccodion ? (
-                          <ChevronUpIcon className="w-8 h-8" />
-                        ) : (
-                          <ChevronDownIcon className="w-8 h-8" />
-                        )}
+                        <LogoutIcon className="w-8 h-8" />
                       </div>
-                    </div>
-                  }
-                >
-                  <button
-                    className="flex justify-between items-center py-2 px-4 w-full text-lg font-bold hover:text-white hover:bg-purple-500 rounded-xl duration-200"
-                    onClick={handleSignOut}
-                  >
-                    <p>Sign Out</p>
-                    <div className="w-8">
-                      <LogoutIcon className="w-8 h-8" />
-                    </div>
-                  </button>
-                  <button
-                    className="flex justify-between items-center py-2 px-4 w-full text-lg font-bold hover:text-white hover:bg-purple-500 rounded-xl duration-200"
-                    onClick={handleSendResetPasswordEmail}
-                  >
-                    <p>Password Reset</p>
-                    <div className="w-8">
-                      <MailIcon className="w-8 h-8" />
-                    </div>
-                  </button>
-                </Accordion>
-              </>
-            )}
-            {!user && (
-              <div>
-                <Link href="/signin">
-                  <a className="flex justify-between items-center py-2 px-4 w-full text-lg font-bold hover:text-white hover:bg-purple-500 rounded-xl duration-200">
-                    <p>Login</p>
-                    <div className="w-8">
-                      <LoginIcon className="w-8 h-8" />
-                    </div>
-                  </a>
-                </Link>
-                <Link href="/signup">
-                  <a className="flex justify-between items-center py-2 px-4 w-full text-lg font-bold hover:text-white hover:bg-purple-500 rounded-xl duration-200">
-                    <p>Sign Up</p>
-                    <div className="w-8">
-                      <UserAddIcon className="w-8 h-8" />
-                    </div>
-                  </a>
-                </Link>
-              </div>
-            )}
-          </div>
-        </Menu>
+                    </button>
+                    <button
+                      className="flex justify-between items-center py-2 px-4 w-full text-lg font-bold hover:text-yellow-400 hover:bg-purple-500 rounded-xl duration-200"
+                      onClick={handleSendResetPasswordEmail}
+                    >
+                      <p>Password Reset</p>
+                      <div className="w-8">
+                        <MailIcon className="w-8 h-8" />
+                      </div>
+                    </button>
+                  </Accordion>
+                </>
+              )}
+              {!user && (
+                <div>
+                  <Link href="/signin">
+                    <a className="flex justify-between items-center py-2 px-4 w-full text-lg font-bold hover:text-yellow-400 hover:bg-purple-500 rounded-xl duration-200">
+                      <p>Login</p>
+                      <div className="w-8">
+                        <LoginIcon className="w-8 h-8" />
+                      </div>
+                    </a>
+                  </Link>
+                  <Link href="/signup">
+                    <a className="flex justify-between items-center py-2 px-4 w-full text-lg font-bold hover:text-yellow-400 hover:bg-purple-500 rounded-xl duration-200">
+                      <p>Sign Up</p>
+                      <div className="w-8">
+                        <UserAddIcon className="w-8 h-8" />
+                      </div>
+                    </a>
+                  </Link>
+                </div>
+              )}
+            </div>
+          </Menu>
+        </div>
       </div>
     </nav>
   )

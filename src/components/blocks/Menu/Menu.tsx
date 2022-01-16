@@ -3,67 +3,84 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import gsap from "gsap"
 import type { ReactNode, VFC } from "react"
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { memo, useEffect, useMemo, useRef } from "react"
 
 type Props = {
   children: ReactNode
   viewer: ReactNode
   position?: number
+  isHidden: boolean
+  onToggle: () => void
 }
 
 // hoverするとhiddenからblockになるPopverコンポーネントをtailwindCSSで実装
 // eslint-disable-next-line react/display-name
-export const Menu: VFC<Props> = memo(({ children, position, viewer }) => {
-  const [isHidden, setHidden] = useState<boolean>(true)
-  const popoverRef = useRef<HTMLDivElement>(null)
-  const timeline = useMemo(() => gsap.timeline({ paused: true }), [])
-  const handleClick = useCallback(() => {
-    setHidden(pre => !pre)
-  }, [])
+export const Menu: VFC<Props> = memo(
+  ({ children, isHidden, onToggle, position, viewer }) => {
+    const popoverRef = useRef<HTMLDivElement>(null)
+    const timeline = useMemo(() => gsap.timeline({ paused: true }), [])
 
-  useEffect(() => {
-    if (popoverRef.current) {
-      timeline.from(popoverRef.current.childNodes, {
-        y: 50,
-        opacity: 0,
-        display: "none",
-        ease: "power4.inOut",
-        duration: 0.2,
-        stagger: 0.1,
-      })
-    }
-  }, [timeline])
+    useEffect(() => {
+      if (popoverRef.current) {
+        timeline.from(popoverRef.current.children, {
+          y: 50,
+          opacity: 0,
+          display: "none",
+          ease: "power4.inOut",
+          duration: 0.2,
+          stagger: 0.1,
+        })
+      }
+    }, [timeline])
 
-  useEffect(() => {
-    if (!isHidden) {
-      timeline.play()
-    } else {
-      timeline.reverse()
-    }
-  }, [isHidden, timeline])
+    useEffect(() => {
+      if (!isHidden) {
+        timeline.play()
+      } else {
+        timeline.reverse()
+      }
+    }, [isHidden, timeline])
 
-  return (
-    <div className="relative cursor-pointer">
-      <div onClick={handleClick} className="flex flex-col items-center">
-        {viewer}
-      </div>
+    // const onHover = useCallback(() => {
+    //   setHidden(false)
+    // }, [])
 
-      <div ref={popoverRef}>
+    // const onLeave = useCallback(() => {
+    //   setHidden(true)
+    // }, [])
+
+    return (
+      <div className="relative cursor-pointer">
         <div
-          className={`absolute z-10 bg-white rounded-lg shadow-lg`}
-          style={{
-            top: "100%",
-            left: "50%",
-            transform: `${
-              position ? `translateX(${position}%)` : "translateX(-50%)"
-            }`,
-            width: "max-content",
-            padding: "10px",
-          }}
+          onClick={onToggle}
+          // onMouseEnter={onHover}
+          // onMouseLeave={onLeave}
+          className="flex flex-col items-center"
         >
-          <div className="w-full">{children}</div>
+          {viewer}
+        </div>
+
+        <div
+          // onMouseEnter={onHover}
+          // onMouseLeave={onLeave}
+          ref={popoverRef}
+        >
+          <div
+            className={`absolute z-10 bg-white rounded-lg shadow-lg`}
+            style={{
+              top: "100%",
+              left: "50%",
+              transform: `${
+                position ? `translateX(${position}%)` : "translateX(-50%)"
+              }`,
+              width: "max-content",
+              padding: "10px",
+            }}
+          >
+            <div className="w-full">{children}</div>
+          </div>
         </div>
       </div>
-    </div>
-  )
-})
+    )
+  }
+)

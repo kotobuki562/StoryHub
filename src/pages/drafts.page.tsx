@@ -54,7 +54,7 @@ const Drafts = () => {
         <h1>Drafts</h1>
         <main>
           {data.drafts.map(post => (
-            <div key={post.id} className="post">
+            <div key={post.id}>
               <Post post={post} />
             </div>
           ))}

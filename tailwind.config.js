@@ -1,3 +1,5 @@
+const colors = require("tailwindcss/colors")
+
 module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
@@ -12,7 +14,11 @@ module.exports = {
       xl: "1280px",
       // => @media (min-width: 1280px) { ... }
     },
-    extend: {},
+    extend: {
+      colors: {
+        yellow: colors.yellow,
+      },
+    },
   },
   plugins: [],
 }
