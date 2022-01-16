@@ -1,5 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable import/no-default-export */
 import gql from "graphql-tag"
 import type { NextPage } from "next"
+import { StoryCard } from "src/components/blocks/Card"
 import { Layout } from "src/components/Layout/Layout"
 import { client } from "src/lib/apollo"
 import type { QueryStories } from "src/types/Story/query"
@@ -7,12 +10,17 @@ import type { QueryStories } from "src/types/Story/query"
 const StoriesQuery = gql`
   query QueryStories($page: Int!, $pageSize: Int!) {
     QueryStories(page: $page, pageSize: $pageSize) {
+      id
       story_title
       story_synopsis
       story_categories
       story_image
-      created_at
       viewing_restriction
+      created_at
+      user {
+        user_name
+        image
+      }
     }
   }
 `
@@ -58,17 +66,12 @@ const HomePage: NextPage<HomePageProps> = ({ stories }) => (
       cardImage: `/img/StoryHubLogo.png`,
     }}
   >
-    <div>
-      <h1>My HomePage</h1>
-      <main>
+    <div className="p-8">
+      <div className="flex flex-wrap gap-8 justify-center w-full">
         {stories.QueryStories.map(story => (
-          <div key={story.id}>
-            <h2>{story.story_title}</h2>
-            <p>{story.story_synopsis}</p>
-            <img src={`${story.story_image}`} alt={`${story.story_title}`} />
-          </div>
+          <StoryCard key={story.id} {...story} />
         ))}
-      </main>
+      </div>
     </div>
   </Layout>
 )

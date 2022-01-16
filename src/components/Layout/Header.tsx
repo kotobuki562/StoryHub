@@ -43,20 +43,20 @@ type QueryMe = {
 }
 
 const mainLinks = [
-  { href: "/", label: "HOME", icon: <HomeIcon className="w-6 h-6" /> },
+  { href: "/", label: "トップ", icon: <HomeIcon className="w-6 h-6" /> },
   {
     href: "/story",
-    label: "STORY",
+    label: "ストーリー",
     icon: <BookOpenIcon className="w-6 h-6" />,
   },
   {
     href: "/settingMaterial",
-    label: "MATERIAL",
+    label: "設定資料",
     icon: <PhotographIcon className="w-6 h-6" />,
   },
   {
     href: "/review",
-    label: "REVIEW",
+    label: "レビュー",
     icon: <FireIcon className="w-6 h-6" />,
   },
 ]
@@ -64,32 +64,32 @@ const mainLinks = [
 const userLinks = [
   {
     href: "/user/[userId]",
-    label: "PROFILE",
+    label: "プロフィール",
     icon: <UserCircleIcon className="w-6 h-6" />,
   },
   {
     href: "/user/[userId]/story",
-    label: "My STORY",
+    label: "ストーリー",
     icon: <BookOpenIcon className="w-6 h-6" />,
   },
   {
     href: "/user/[userId]/settingMaterial",
-    label: "My MATERIAL",
+    label: "設定資料",
     icon: <PhotographIcon className="w-6 h-6" />,
   },
   {
     href: "/user/[userId]/review",
-    label: "My REVIEW",
+    label: "レビュー",
     icon: <FireIcon className="w-6 h-6" />,
   },
   {
     href: "/user/[userId]/follow",
-    label: "My FOLLOW",
+    label: "フォロー",
     icon: <UserGroupIcon className="w-6 h-6" />,
   },
   {
     href: "/user/[userId]/favorite",
-    label: "My FAVORITE",
+    label: "ブックマーク",
     icon: <BookmarkIcon className="w-6 h-6" />,
   },
 ]
@@ -310,7 +310,7 @@ const HeaderComp = () => {
                             isOpenUserAccodion && "text-purple-400",
                           ])}
                         >
-                          <p>User Pages</p>
+                          <p>ユーザーコンテンツ</p>
                           <div className="w-8">
                             {isOpenUserAccodion ? (
                               <ChevronUpIcon className="w-8 h-8" />
@@ -348,7 +348,7 @@ const HeaderComp = () => {
                           isOpenUserActionAccodion && "text-purple-400",
                         ])}
                       >
-                        <p>User Actions</p>
+                        <p>その他</p>
                         <div className="w-8">
                           {isOpenUserActionAccodion ? (
                             <ChevronUpIcon className="w-8 h-8" />
@@ -363,7 +363,7 @@ const HeaderComp = () => {
                       className="flex justify-between items-center py-2 px-4 w-full text-lg font-bold hover:text-yellow-400 hover:bg-purple-500 rounded-xl duration-200"
                       onClick={handleSignOut}
                     >
-                      <p>Sign Out</p>
+                      <p>ログアウト</p>
                       <div className="w-8">
                         <LogoutIcon className="w-8 h-8" />
                       </div>
@@ -372,7 +372,7 @@ const HeaderComp = () => {
                       className="flex justify-between items-center py-2 px-4 w-full text-lg font-bold hover:text-yellow-400 hover:bg-purple-500 rounded-xl duration-200"
                       onClick={handleSendResetPasswordEmail}
                     >
-                      <p>Password Reset</p>
+                      <p>パスワードリセット</p>
                       <div className="w-8">
                         <MailIcon className="w-8 h-8" />
                       </div>
@@ -384,7 +384,7 @@ const HeaderComp = () => {
                 <div>
                   <Link href="/signin">
                     <a className="flex justify-between items-center py-2 px-4 w-full text-lg font-bold hover:text-yellow-400 hover:bg-purple-500 rounded-xl duration-200">
-                      <p>Login</p>
+                      <p>ログイン</p>
                       <div className="w-8">
                         <LoginIcon className="w-8 h-8" />
                       </div>
@@ -392,7 +392,7 @@ const HeaderComp = () => {
                   </Link>
                   <Link href="/signup">
                     <a className="flex justify-between items-center py-2 px-4 w-full text-lg font-bold hover:text-yellow-400 hover:bg-purple-500 rounded-xl duration-200">
-                      <p>Sign Up</p>
+                      <p>新規登録</p>
                       <div className="w-8">
                         <UserAddIcon className="w-8 h-8" />
                       </div>
