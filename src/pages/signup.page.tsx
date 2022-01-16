@@ -3,6 +3,7 @@ import { useMutation } from "@apollo/client"
 import gql from "graphql-tag"
 import Router from "next/router"
 import { useState } from "react"
+import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout/Layout"
 
 const SignupMutation = gql`
@@ -22,6 +23,19 @@ const Signup = () => {
 
   return (
     <Layout>
+      <Tab
+        color="purple"
+        values={[
+          {
+            label: "Signup",
+            children: <div className="w-[100px] h-[100px] bg-slate-300"></div>,
+          },
+          {
+            label: "Login",
+            children: <div className="w-[100px] h-[100px] bg-purple-300"></div>,
+          },
+        ]}
+      />
       <div>
         <form
           onSubmit={async e => {

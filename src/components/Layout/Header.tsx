@@ -152,6 +152,22 @@ const HeaderComp = () => {
     setHiddenSearch(pre => !pre)
   }, [])
 
+  const handleCloseMainManu = useCallback(() => {
+    setHiddenMainManu(true)
+  }, [])
+
+  const handleCloseUserManu = useCallback(() => {
+    setHiddenUserManu(true)
+  }, [])
+
+  const handleCloseNotification = useCallback(() => {
+    setHiddenNotification(true)
+  }, [])
+
+  const handleCloseSearch = useCallback(() => {
+    setHiddenSearch(true)
+  }, [])
+
   const handleSignOut = useCallback(() => {
     supabase.auth.signOut().then(() => {
       router.push("/signin")
@@ -179,6 +195,7 @@ const HeaderComp = () => {
           <Menu
             isHidden={isHiddenMainManu}
             onToggle={onToggleMainManu}
+            onClose={handleCloseMainManu}
             viewer={
               <div
                 className={cc([
@@ -214,6 +231,7 @@ const HeaderComp = () => {
         <Menu
           isHidden={isHiddenSearch}
           onToggle={onToggleSearch}
+          onClose={handleCloseSearch}
           viewer={
             <div className="mr-4 w-10">
               <SearchIcon
@@ -235,6 +253,7 @@ const HeaderComp = () => {
         <Menu
           isHidden={isHiddenNotification}
           onToggle={onToggleNotification}
+          onClose={handleCloseNotification}
           viewer={
             <div className="mr-4 w-10">
               <BellIcon
@@ -257,6 +276,7 @@ const HeaderComp = () => {
           <Menu
             isHidden={isHiddenUserManu}
             onToggle={onToggleUserManu}
+            onClose={handleCloseUserManu}
             position={-80}
             viewer={
               <div
@@ -285,7 +305,7 @@ const HeaderComp = () => {
                       ログイン中のアカウント:
                     </p>
                     <div className="flex">
-                      <div className="mr-2 w-10">
+                      <div className="mr-2 min-w-[40px]">
                         <img
                           className="w-10 h-10 rounded-full"
                           src={user.QueryMe.image || "/img/Vector.png"}

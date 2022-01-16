@@ -11,12 +11,13 @@ type Props = {
   position?: number
   isHidden: boolean
   onToggle: () => void
+  onClose: () => void
 }
 
 // hoverするとhiddenからblockになるPopverコンポーネントをtailwindCSSで実装
 // eslint-disable-next-line react/display-name
 export const Menu: VFC<Props> = memo(
-  ({ children, isHidden, onToggle, position, viewer }) => {
+  ({ children, isHidden, onClose, onToggle, position, viewer }) => {
     const popoverRef = useRef<HTMLDivElement>(null)
     const timeline = useMemo(() => gsap.timeline({ paused: true }), [])
 
@@ -59,6 +60,9 @@ export const Menu: VFC<Props> = memo(
         >
           {viewer}
         </div>
+        {!isHidden && (
+          <div onClick={onClose} className="fixed inset-0 z-10 opacity-0" />
+        )}
 
         <div
           // onMouseEnter={onHover}

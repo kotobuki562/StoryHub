@@ -11,6 +11,7 @@ import { Layout } from "src/components/Layout/Layout"
 import { LoadingLogo } from "src/components/Loading"
 import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { supabase } from "src/lib/supabase"
+import { STORY_PAGE_SIZE } from "src/tools/page"
 import { isMe } from "src/tools/state"
 import type { QueryUserById } from "src/types/User/query"
 
@@ -36,14 +37,34 @@ const UpdateUserMutation = gql`
   }
 `
 const UserQueryById = gql`
-  query QueryUserById($queryUserByIdId: String!) {
+  query QueryUserById(
+    $queryUserByIdId: String!
+    $storyPage: Int!
+    $storyPageSize: Int!
+    $storyAccessToken: String
+  ) {
     QueryUserById(id: $queryUserByIdId) {
       id
       user_name
       user_deal
       image
-      created_at
       updated_at
+      stories(
+        storyPage: $storyPage
+        storyPageSize: $storyPageSize
+        storyAccessToken: $storyAccessToken
+      ) {
+        id
+        user_id
+        story_title
+        story_synopsis
+        story_categories
+        story_image
+        viewing_restriction
+        created_at
+        updated_at
+        publish
+      }
     }
   }
 `
@@ -65,6 +86,9 @@ const ProfilePage = () => {
   } = useQuery<QueryUserById>(UserQueryById, {
     variables: {
       queryUserByIdId: userId,
+      storyPage: 1,
+      storyPageSize: STORY_PAGE_SIZE,
+      storyAccessToken: `${accessToken}`,
     },
     fetchPolicy: "cache-and-network",
   })
