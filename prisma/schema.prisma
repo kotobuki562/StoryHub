@@ -65,6 +65,7 @@ model SettingMaterial {
 model Character {
   id                  String          @id @default(uuid())
   setting_material_id String
+  season_id           String?
   character_name      String
   character_sex       String
   character_category  String
@@ -75,24 +76,29 @@ model Character {
   created_at          DateTime        @default(now())
   updated_at          DateTime?
   settingMaterial     SettingMaterial @relation(fields: [setting_material_id], references: [id])
+  season              Season?         @relation(fields: [season_id], references: [id])
 }
 
 model Object {
-  id                  String          @id @default(uuid())
+  id                  String  @id @default(uuid())
   setting_material_id String
-  object_name         String
-  object_deal         String
-  object_image        String?
-  isSpoiler           Boolean         @default(false) @db.Boolean
-  publish             Boolean         @default(false) @db.Boolean
-  created_at          DateTime        @default(now())
-  updated_at          DateTime?
-  settingMaterial     SettingMaterial @relation(fields: [setting_material_id], references: [id])
+  season_id           String?
+
+  object_name     String
+  object_deal     String
+  object_image    String?
+  isSpoiler       Boolean         @default(false) @db.Boolean
+  publish         Boolean         @default(false) @db.Boolean
+  created_at      DateTime        @default(now())
+  updated_at      DateTime?
+  settingMaterial SettingMaterial @relation(fields: [setting_material_id], references: [id])
+  season          Season?         @relation(fields: [season_id], references: [id])
 }
 
 model Terminology {
   id                  String          @id @default(uuid())
   setting_material_id String
+  season_id           String?
   terminology_name    String
   terminology_deal    String
   isSpoiler           Boolean         @default(false) @db.Boolean
@@ -100,6 +106,7 @@ model Terminology {
   created_at          DateTime        @default(now())
   updated_at          DateTime?
   settingMaterial     SettingMaterial @relation(fields: [setting_material_id], references: [id])
+  season              Season?         @relation(fields: [season_id], references: [id])
 }
 
 model Favorite {
@@ -130,17 +137,20 @@ model Story {
 }
 
 model Season {
-  id                String    @id @unique @default(uuid())
+  id                String        @id @unique @default(uuid())
   story_id          String
   season_title      String
   season_image      String?
   season_synopsis   String?
   season_categories String[]
-  publish           Boolean   @default(false) @db.Boolean
-  created_at        DateTime  @default(now())
+  publish           Boolean       @default(false) @db.Boolean
+  created_at        DateTime      @default(now())
   updated_at        DateTime?
+  story             Story?        @relation(fields: [story_id], references: [id])
   episodes          Episode[]
-  story             Story?    @relation(fields: [story_id], references: [id])
+  Character         Character[]
+  Object            Object[]
+  Terminology       Terminology[]
 }
 
 model Episode {

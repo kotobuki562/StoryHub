@@ -5,6 +5,10 @@ export type QueryStories = {
   QueryStories: NexusGenFieldTypes["Story"][]
 }
 
+export type QueryMyStories = {
+  QueryMyStories: NexusGenFieldTypes["Story"][]
+}
+
 export type QueryStoryById = {
   QueryStoryById: NexusGenFieldTypes["Story"]
 }

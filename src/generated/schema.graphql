@@ -30,6 +30,8 @@ type Character {
   id: ID
   isSpoiler: Boolean
   publish: Boolean
+  season: Season
+  season_id: String
   settingMaterial: SettingMaterial
   setting_material_id: String
   updated_at: DateTime
@@ -88,6 +90,8 @@ type Object {
   object_image: String
   object_name: String
   publish: Boolean
+  season: Season
+  season_id: String
   settingMaterial: SettingMaterial
   setting_material_id: String
   updated_at: DateTime
@@ -137,7 +141,7 @@ type Query {
   QueryMySeasons(accessToken: String!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Season]
   QueryMySettingMaterialById(accessToken: String!, id: String!, userId: String!): SettingMaterial
   QueryMySettingMaterials(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, serchStoryId: String): [SettingMaterial]
-  QueryMyStories(accessToken: String!, page: Int!, pageSize: Int!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Story]
+  QueryMyStories(accessToken: String!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Story]
   QueryMyStoryById(accessToken: String!, id: String!, userId: String!): Story
   QueryMyTerminologies(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchSettingMaterialId: String, userId: String!): [Terminology]
   QueryMyTerminologyById(accessToken: String!, terminologyId: String!, userId: String!): Terminology
@@ -187,9 +191,11 @@ type Review {
 }
 
 type Season {
+  characters(characterAccessToken: String, characterUserId: String): [Character]
   created_at: DateTime
   episodes(episodeAccessToken: String, episodeUserId: String): [Episode]
   id: ID
+  objects(objectAccessToken: String, objectUserId: String): [Object]
   publish: Boolean
   season_categories: [String]
   season_image: String
@@ -197,6 +203,7 @@ type Season {
   season_title: String
   story: Story
   story_id: String
+  terminologies(terminologyAccessToken: String, terminologyUserId: String): [Terminology]
   updated_at: DateTime
 }
 
@@ -239,6 +246,8 @@ type Terminology {
   id: ID
   isSpoiler: Boolean
   publish: Boolean
+  season: Season
+  season_id: String
   settingMaterial: SettingMaterial
   setting_material_id: String
   terminology_deal: String

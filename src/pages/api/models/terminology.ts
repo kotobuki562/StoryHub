@@ -18,6 +18,7 @@ export const Terminology = objectType({
   definition(t) {
     t.id("id")
     t.string("setting_material_id")
+    t.string("season_id")
     t.string("terminology_name")
     t.string("terminology_deal")
     t.boolean("isSpoiler")
@@ -30,6 +31,15 @@ export const Terminology = objectType({
         prisma.settingMaterial.findUnique({
           where: {
             id: `${parent.setting_material_id}`,
+          },
+        }),
+    })
+    t.field("season", {
+      type: "Season",
+      resolve: parent =>
+        prisma.season.findUnique({
+          where: {
+            id: `${parent.season_id}`,
           },
         }),
     })

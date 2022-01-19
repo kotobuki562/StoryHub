@@ -46,15 +46,10 @@ const QueryMyStories = (t: ObjectDefinitionBlock<"Query">) =>
     args: {
       ...storyArgs,
       ...authArgs,
-      ...defaultArgs,
     },
-    resolve: (_parent, args) => {
-      const { page, pageSize } = args
-      const skip = pageSize * (Number(page) - 1)
-      return isSafe(args.accessToken, args.userId)
+    resolve: (_parent, args) =>
+      isSafe(args.accessToken, args.userId)
         ? prisma.story.findMany({
-            skip,
-            take: pageSize,
             orderBy: { created_at: "desc" },
             where: {
               ...(args.searchTitle && {
@@ -69,8 +64,7 @@ const QueryMyStories = (t: ObjectDefinitionBlock<"Query">) =>
               user_id: args.userId,
             },
           })
-        : null
-    },
+        : null,
   })
 
 const QueryStoryById = (t: ObjectDefinitionBlock<"Query">) =>

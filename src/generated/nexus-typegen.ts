@@ -67,6 +67,7 @@ export interface NexusGenObjects {
     id?: string | null; // ID
     isSpoiler?: boolean | null; // Boolean
     publish?: boolean | null; // Boolean
+    season_id?: string | null; // String
     setting_material_id?: string | null; // String
     updated_at?: NexusGenScalars['DateTime'] | null; // DateTime
   }
@@ -101,6 +102,7 @@ export interface NexusGenObjects {
     object_image?: string | null; // String
     object_name?: string | null; // String
     publish?: boolean | null; // Boolean
+    season_id?: string | null; // String
     setting_material_id?: string | null; // String
     updated_at?: NexusGenScalars['DateTime'] | null; // DateTime
   }
@@ -162,6 +164,7 @@ export interface NexusGenObjects {
     id?: string | null; // ID
     isSpoiler?: boolean | null; // Boolean
     publish?: boolean | null; // Boolean
+    season_id?: string | null; // String
     setting_material_id?: string | null; // String
     terminology_deal?: string | null; // String
     terminology_name?: string | null; // String
@@ -214,6 +217,8 @@ export interface NexusGenFieldTypes {
     id: string | null; // ID
     isSpoiler: boolean | null; // Boolean
     publish: boolean | null; // Boolean
+    season: NexusGenRootTypes['Season'] | null; // Season
+    season_id: string | null; // String
     settingMaterial: NexusGenRootTypes['SettingMaterial'] | null; // SettingMaterial
     setting_material_id: string | null; // String
     updated_at: NexusGenScalars['DateTime'] | null; // DateTime
@@ -262,6 +267,8 @@ export interface NexusGenFieldTypes {
     object_image: string | null; // String
     object_name: string | null; // String
     publish: boolean | null; // Boolean
+    season: NexusGenRootTypes['Season'] | null; // Season
+    season_id: string | null; // String
     settingMaterial: NexusGenRootTypes['SettingMaterial'] | null; // SettingMaterial
     setting_material_id: string | null; // String
     updated_at: NexusGenScalars['DateTime'] | null; // DateTime
@@ -357,9 +364,11 @@ export interface NexusGenFieldTypes {
     user_id: string | null; // String
   }
   Season: { // field return type
+    characters: Array<NexusGenRootTypes['Character'] | null> | null; // [Character]
     created_at: NexusGenScalars['DateTime'] | null; // DateTime
     episodes: Array<NexusGenRootTypes['Episode'] | null> | null; // [Episode]
     id: string | null; // ID
+    objects: Array<NexusGenRootTypes['Object'] | null> | null; // [Object]
     publish: boolean | null; // Boolean
     season_categories: Array<string | null> | null; // [String]
     season_image: string | null; // String
@@ -367,6 +376,7 @@ export interface NexusGenFieldTypes {
     season_title: string | null; // String
     story: NexusGenRootTypes['Story'] | null; // Story
     story_id: string | null; // String
+    terminologies: Array<NexusGenRootTypes['Terminology'] | null> | null; // [Terminology]
     updated_at: NexusGenScalars['DateTime'] | null; // DateTime
   }
   SettingMaterial: { // field return type
@@ -406,6 +416,8 @@ export interface NexusGenFieldTypes {
     id: string | null; // ID
     isSpoiler: boolean | null; // Boolean
     publish: boolean | null; // Boolean
+    season: NexusGenRootTypes['Season'] | null; // Season
+    season_id: string | null; // String
     settingMaterial: NexusGenRootTypes['SettingMaterial'] | null; // SettingMaterial
     setting_material_id: string | null; // String
     terminology_deal: string | null; // String
@@ -453,6 +465,8 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     isSpoiler: 'Boolean'
     publish: 'Boolean'
+    season: 'Season'
+    season_id: 'String'
     settingMaterial: 'SettingMaterial'
     setting_material_id: 'String'
     updated_at: 'DateTime'
@@ -501,6 +515,8 @@ export interface NexusGenFieldTypeNames {
     object_image: 'String'
     object_name: 'String'
     publish: 'Boolean'
+    season: 'Season'
+    season_id: 'String'
     settingMaterial: 'SettingMaterial'
     setting_material_id: 'String'
     updated_at: 'DateTime'
@@ -596,9 +612,11 @@ export interface NexusGenFieldTypeNames {
     user_id: 'String'
   }
   Season: { // field return type name
+    characters: 'Character'
     created_at: 'DateTime'
     episodes: 'Episode'
     id: 'ID'
+    objects: 'Object'
     publish: 'Boolean'
     season_categories: 'String'
     season_image: 'String'
@@ -606,6 +624,7 @@ export interface NexusGenFieldTypeNames {
     season_title: 'String'
     story: 'Story'
     story_id: 'String'
+    terminologies: 'Terminology'
     updated_at: 'DateTime'
   }
   SettingMaterial: { // field return type name
@@ -645,6 +664,8 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     isSpoiler: 'Boolean'
     publish: 'Boolean'
+    season: 'Season'
+    season_id: 'String'
     settingMaterial: 'SettingMaterial'
     setting_material_id: 'String'
     terminology_deal: 'String'
@@ -847,8 +868,6 @@ export interface NexusGenArgTypes {
     }
     QueryMyStories: { // args
       accessToken: string; // String!
-      page: number; // Int!
-      pageSize: number; // Int!
       searchCategory?: string | null; // String
       searchTitle?: string | null; // String
       searchUserId?: string | null; // String
@@ -943,9 +962,21 @@ export interface NexusGenArgTypes {
     }
   }
   Season: {
+    characters: { // args
+      characterAccessToken?: string | null; // String
+      characterUserId?: string | null; // String
+    }
     episodes: { // args
       episodeAccessToken?: string | null; // String
       episodeUserId?: string | null; // String
+    }
+    objects: { // args
+      objectAccessToken?: string | null; // String
+      objectUserId?: string | null; // String
+    }
+    terminologies: { // args
+      terminologyAccessToken?: string | null; // String
+      terminologyUserId?: string | null; // String
     }
   }
   SettingMaterial: {
