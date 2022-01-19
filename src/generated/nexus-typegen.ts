@@ -868,8 +868,6 @@ export interface NexusGenArgTypes {
     }
     QueryMyStories: { // args
       accessToken: string; // String!
-      page: number; // Int!
-      pageSize: number; // Int!
       searchCategory?: string | null; // String
       searchTitle?: string | null; // String
       searchUserId?: string | null; // String

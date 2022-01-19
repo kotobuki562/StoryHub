@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form"
 import { toast, Toaster } from "react-hot-toast"
 import ReactCrop from "react-image-crop"
 import { Alert } from "src/components/atoms/Alert"
+import { Button } from "src/components/atoms/Button"
 import { Modal } from "src/components/blocks/Modal"
 import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout/Layout"
@@ -21,7 +22,6 @@ import { LoadingLogo } from "src/components/Loading"
 import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { useAvatar } from "src/hooks/useAvatar"
 import { supabase } from "src/lib/supabase"
-import { STORY_PAGE_SIZE } from "src/tools/page"
 import { isMe } from "src/tools/state"
 import type { QueryUserById } from "src/types/User/query"
 
@@ -52,6 +52,9 @@ const UserQueryById = gql`
     $storyPage: Int!
     $storyPageSize: Int!
     $storyAccessToken: String
+    $reviewPage: Int!
+    $reviewPageSize: Int!
+    $reviewAccessToken: String
   ) {
     QueryUserById(id: $queryUserByIdId) {
       id
@@ -74,6 +77,19 @@ const UserQueryById = gql`
         created_at
         updated_at
         publish
+      }
+      reviews(
+        reviewPage: $reviewPage
+        reviewPageSize: $reviewPageSize
+        reviewAccessToken: $reviewAccessToken
+      ) {
+        id
+        story_id
+        review_title
+        review_body
+        stars
+        created_at
+        updated_at
       }
     }
   }
@@ -105,7 +121,10 @@ const ProfilePage = () => {
     variables: {
       queryUserByIdId: userId,
       storyPage: 1,
-      storyPageSize: STORY_PAGE_SIZE,
+      storyPageSize: 10,
+      reviewPage: 1,
+      reviewPageSize: 10,
+      reviewAccessToken: `${accessToken}`,
       storyAccessToken: `${accessToken}`,
     },
     fetchPolicy: "cache-and-network",
@@ -203,7 +222,7 @@ const ProfilePage = () => {
     <Layout>
       <Toaster position="top-center" />
       <div className="p-8">
-        <div className="flex flex-col justify-center items-center w-full">
+        <div className="flex flex-col justify-center items-center mb-16 w-full">
           <div className="flex flex-col items-center w-[300px] sm:w-[400px] xl:w-[600px]">
             <img
               className="mb-8 w-[100px] h-[100px] rounded-full"
@@ -301,19 +320,12 @@ const ProfilePage = () => {
                     </div>
 
                     <div className="flex flex-col items-center w-full">
-                      <button
-                        type="submit"
+                      <Button
                         disabled={isLoadingUpdateUser || isLoading}
-                        className="flex flex-col items-center p-2 w-full font-semibold text-white bg-purple-500 rounded-lg border focus:outline-none focus:ring-2 ring-purple-300"
-                      >
-                        {isLoadingUpdateUser || isLoading ? (
-                          <div className="w-8 h-8 animate-spin">
-                            <img src="/img/Loading.svg" alt="" />
-                          </div>
-                        ) : (
-                          "更新"
-                        )}
-                      </button>
+                        isLoading={isLoadingUpdateUser || isLoading}
+                        type="submit"
+                        text="更新"
+                      />
                     </div>
                   </form>
                 ),
@@ -471,7 +483,6 @@ const UproadImageForm: VFC<UpdateImageFormProps> = ({
       </div>
 
       <div className="flex flex-col items-center mb-4">
-        <img src={`${data?.QueryUserById.image}`} alt="" />
         {upImgUrl && (
           <ReactCrop
             src={upImgUrl}
@@ -495,19 +506,12 @@ const UproadImageForm: VFC<UpdateImageFormProps> = ({
         </div>
       </div>
 
-      <button
-        onClick={handleUpdateUserProfileImage}
+      <Button
         disabled={isLoadingFunction || !upImgUrl}
-        className="flex flex-col items-center p-2 w-full font-semibold text-white bg-purple-500 rounded-lg border focus:outline-none focus:ring-2 ring-purple-300"
-      >
-        {isLoadingFunction ? (
-          <div className="w-8 h-8 animate-spin">
-            <img src="/img/Loading.svg" alt="" />
-          </div>
-        ) : (
-          "更新"
-        )}
-      </button>
+        isLoading={isLoadingFunction}
+        onClick={handleUpdateUserProfileImage}
+        text="更新"
+      />
     </div>
   )
 }
