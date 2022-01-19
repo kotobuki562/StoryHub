@@ -4,7 +4,7 @@ import type { ReactNode, VFC } from "react"
 import { memo, useCallback, useEffect, useRef, useState } from "react"
 
 type Props = {
-  color: "agree" | "delete" | "yellow" | "blue" | "purple" | "other"
+  color: "purple"
   values: {
     children: ReactNode
     label: string
@@ -33,42 +33,10 @@ const TabComp: VFC<Props> = ({ color, values }) => {
               key={index}
               className={cc([
                 "flex justify-center items-center px-4 mr-2 py-2 md:text-xl text-base font-semibold duration-200",
-                isActive === index &&
-                  color === "blue" &&
-                  "text-blue-500 border-blue-500 border-b-2 bg-blue-100 rounded-t-lg",
-                isActive !== index &&
-                  color === "blue" &&
-                  "text-blue-500 border-blue-500 border-b-2",
-                isActive === index &&
-                  color === "agree" &&
-                  "text-teal-500 border-teal-500 border-b-2 bg-teal-100 rounded-t-lg",
-                isActive !== index &&
-                  color === "agree" &&
-                  "text-teal-500 border-teal-500 border-b-2",
-                isActive === index &&
-                  color === "yellow" &&
-                  "text-yellow-500 border-yellow-500 border-b-2 bg-yellow-100 rounded-t-lg",
-                isActive !== index &&
-                  color === "yellow" &&
-                  "text-yellow-500 border-yellow-500 border-b-2",
-                isActive === index &&
-                  color === "delete" &&
-                  "text-red-500 border-red-500 border-b-2 bg-red-100 rounded-t-lg",
-                isActive !== index &&
-                  color === "delete" &&
-                  "text-red-500 border-red-500 border-b-2",
-                isActive === index &&
-                  color === "purple" &&
-                  "text-purple-500 border-purple-500 border-b-2 bg-purple-100 rounded-t-lg",
+                color === "purple" && "bg-purple-500 text-white rounded-full",
                 isActive !== index &&
                   color === "purple" &&
-                  "text-purple-500 border-purple-500 border-b-2",
-                isActive === index &&
-                  color === "other" &&
-                  "text-blueGray-800 border-blueGray-800 border-b-2 bg-blueGray-200 rounded-t-lg",
-                isActive !== index &&
-                  color === "other" &&
-                  "text-blueGray-800 border-blueGray-800 border-b-2",
+                  "bg-purple-100 text-purple-500 rounded-full",
               ])}
               onClick={() => onClick(index)}
             >
@@ -107,8 +75,8 @@ const TabChildrenComp: VFC<TabChildren> = ({ children, isActive }) => {
         y: 100,
         opacity: 0,
         display: "none",
-        ease: "power4.inOut",
-        // ease: "back.out(3.05)",
+        // ease: "power4.inOut",
+        ease: "back.out(1.5)",
         duration: 0.5,
       })
     }
