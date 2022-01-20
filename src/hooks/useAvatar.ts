@@ -3,6 +3,10 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import type { Crop } from "react-image-crop"
 import Resizer from "react-image-file-resizer"
 
+type UseAvatar = {
+  aspect?: number
+}
+
 const resizeFile = (
   file: Blob
 ): Promise<string | Blob | File | ProgressEvent<FileReader>> =>
@@ -21,12 +25,12 @@ const resizeFile = (
     )
   })
 
-const useAvatar = () => {
+const useAvatar = ({ aspect }: UseAvatar) => {
   const [upImgUrl, setUpImgUrl] = useState<string | null>(null)
   const imgRef = useRef<HTMLImageElement>(null)
   const previewCanvasRef = useRef<HTMLCanvasElement>(null)
   const [crop, setCrop] = useState<Crop>({
-    aspect: 1,
+    aspect: aspect ? aspect : 1,
     width: 30,
     height: 30,
     x: 0,
@@ -131,6 +135,7 @@ const useAvatar = () => {
     onLoad,
     onChangeCrop,
     onCompleteCrop,
+    setUpImgUrl,
   }
 }
 

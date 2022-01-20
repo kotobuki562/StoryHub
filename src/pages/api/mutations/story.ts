@@ -32,11 +32,11 @@ const createStory = (t: ObjectDefinitionBlock<"Mutation">) => {
     resolve: (_, args, _ctx) =>
       prisma.story.create({
         data: {
-          story_title: `${args.storyTitle}`,
-          story_synopsis: `${args.storySynopsis}`,
+          story_title: args.storyTitle,
+          story_synopsis: args.storySynopsis,
           story_categories: args.storyCategories,
-          story_image: `${args.storyImage}`,
-          viewing_restriction: `${args.viewingRestriction}`,
+          story_image: args.storyImage,
+          viewing_restriction: args.viewingRestriction,
           publish: args.publish,
           user_id: `${decodeUserId(args.acessToken)}`,
         },
@@ -49,7 +49,7 @@ const updateStory = (t: ObjectDefinitionBlock<"Mutation">) => {
     type: "Story",
     args: {
       storyId: nonNull(stringArg()),
-      storyTitle: nullable(stringArg()),
+      storyTitle: nonNull(stringArg()),
       storySynopsis: nullable(stringArg()),
       storyCategories: nonNull(list(nonNull(stringArg()))),
       storyImage: nullable(stringArg()),
@@ -63,11 +63,12 @@ const updateStory = (t: ObjectDefinitionBlock<"Mutation">) => {
         },
         data: {
           story_title: `${args.storyTitle}`,
-          story_synopsis: `${args.storySynopsis}`,
+          story_synopsis: args.storySynopsis,
           story_categories: args.storyCategories,
-          story_image: `${args.storyImage}`,
-          viewing_restriction: `${args.viewingRestriction}`,
+          story_image: args.storyImage,
+          viewing_restriction: args.viewingRestriction,
           publish: args.publish,
+          updated_at: new Date(),
         },
       }),
   })

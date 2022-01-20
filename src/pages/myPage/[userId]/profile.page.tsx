@@ -385,7 +385,9 @@ const UproadImageForm: VFC<UpdateImageFormProps> = ({
     onSelectResizeImage,
     previewCanvasRef,
     upImgUrl,
-  } = useAvatar()
+  } = useAvatar({
+    aspect: 1,
+  })
 
   const handleUpdateUserProfileImage = useCallback(() => {
     if (!data?.QueryUserById.id || !previewCanvasRef.current || !crop) {

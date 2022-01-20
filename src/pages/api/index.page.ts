@@ -12,7 +12,6 @@ import {
   stringArg,
 } from "nexus"
 import path from "path"
-import { Category } from "src/pages/api/models/category"
 import { Chapter } from "src/pages/api/models/chapter"
 import { Character } from "src/pages/api/models/character"
 import { Episode } from "src/pages/api/models/episode"
@@ -37,7 +36,6 @@ import {
   signupUser,
   updateUser,
 } from "src/pages/api/mutations/user"
-import { QueryCategories } from "src/pages/api/queries/category"
 import {
   QueryChapterById,
   QueryChapters,
@@ -203,9 +201,6 @@ const Query = objectType({
     QueryPage(t)
     QueryPageCountByChapterId(t)
 
-    // カテゴリーのクエリ
-    QueryCategories(t)
-
     // レビューのクエリ
     QueryReviews(t)
     QueryMyReviews(t)
@@ -286,7 +281,6 @@ export const schema = makeSchema({
     Follow,
     Story,
     Review,
-    Category,
     Character,
     Terminology,
     Object,
