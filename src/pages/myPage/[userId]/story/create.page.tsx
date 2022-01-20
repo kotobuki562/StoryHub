@@ -3,16 +3,19 @@ import cc from "classcat"
 import type { NextPage } from "next"
 import { useRouter } from "next/router"
 import { memo, useCallback, useEffect, useState } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import toast, { Toaster } from "react-hot-toast"
 import { Alert } from "src/components/atoms/Alert"
 import { Button } from "src/components/atoms/Button"
+import { Input } from "src/components/atoms/Input"
+import { Select } from "src/components/atoms/Select"
 import { Switch } from "src/components/atoms/Switch"
+import { TextArea } from "src/components/atoms/TextArea"
 import { Menu } from "src/components/blocks/Menu"
 import { Layout } from "src/components/Layout"
 import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { supabase } from "src/lib/supabase"
-import { ageCategory, categories } from "src/tools/options"
+import { ageCategories, categories } from "src/tools/options"
 
 const CreateStory = gql`
   mutation Mutation(
@@ -89,16 +92,21 @@ const CreateStoryPage: NextPage = () => {
 
   const {
     formState: { errors },
+    // eslint-disable-next-line sort-destructure-keys/sort-destructure-keys
+    control,
     getValues,
     handleSubmit,
     register,
     watch,
-  } = useForm()
+  } = useForm({
+    defaultValues: {
+      viewingRestriction: "",
+      synopsis: "",
+      title: "",
+    },
+  })
 
-  const { synopsis, title, viewingRestriction } = watch()
-  // eslint-disable-next-line no-console
-  console.log(viewingRestriction)
-  
+  const { synopsis, title } = watch()
 
   const handleSubmitData = useCallback(async () => {
     await createStory({
@@ -114,7 +122,12 @@ const CreateStoryPage: NextPage = () => {
             ? null
             : getValues("viewingRestriction"),
       },
-    }).then(() => router.push(`/myPage/${userId}/story`))
+    }).then(() => {
+      toast.custom(t => (
+        <Alert t={t} title="ストーリーを作成しました" usage="success" />
+      ))
+      return router.push(`/myPage/${userId}/story`)
+    })
   }, [
     accessToken,
     createStory,
@@ -190,20 +203,14 @@ const CreateStoryPage: NextPage = () => {
           </div>
 
           <div className="flex flex-col mb-4 w-full">
-            <label
-              htmlFor="title"
-              className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500"
-            >
-              <p>タイトル</p>
-              <p className={cc([title?.length > 50 && "text-red-500"])}>
-                {title?.length}/50
-              </p>
-            </label>
-            <input
+            <p className={cc([title?.length > 50 && "text-red-500"])}>
+              {title?.length}/50
+            </p>
+            <Input
+              label="タイトル"
+              required={true}
+              placeholder="ストーリーのタイトルを入力してください"
               type="text"
-              max={50}
-              min={2}
-              className="p-2 w-full rounded-lg border-2 border-purple-500 focus:outline-none focus:ring-2 ring-purple-300"
               {...register("title", {
                 required: true,
                 minLength: {
@@ -216,6 +223,7 @@ const CreateStoryPage: NextPage = () => {
                 },
               })}
             />
+
             {errors && errors.title && (
               <p className="text-xs italic text-red-500">
                 {errors.title.message}
@@ -225,18 +233,17 @@ const CreateStoryPage: NextPage = () => {
           <div className="flex flex-col mb-4 w-full">
             <label
               htmlFor="title"
-              className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500"
+              className="flex justify-end items-center mb-1 text-sm font-bold text-left text-slate-500"
             >
-              <p>年齢制限</p>
               <Menu
                 position={-90}
                 onToggle={handleToggleAgeCategoryMenu}
                 isHidden={isHiddenAgeCategoryMenu}
                 onClose={handleHiddenAgeCategoryMenu}
-                viewer={<p className="text-purple-500">詳細</p>}
+                viewer={<p className="text-purple-500">年齢制限詳細</p>}
               >
                 <div className="grid grid-cols-1 gap-2 w-[300px]">
-                  {ageCategory.map(category => (
+                  {ageCategories.map(category => (
                     <div
                       key={category.nameJa}
                       className="flex text-sm font-bold text-left text-slate-500"
@@ -250,36 +257,43 @@ const CreateStoryPage: NextPage = () => {
                 </div>
               </Menu>
             </label>
-            <select
-              className="p-2 w-full rounded-lg border-2 border-purple-500 focus:outline-none focus:ring-2 ring-purple-300"
-              {...register("ageCategory")}
-            >
-              <option value="">---</option>
-              {ageCategory.map(age => (
-                <option key={age.nameEn} value={age.nameEn}>
-                  {age.nameEn}
-                </option>
-              ))}
-            </select>
-            {errors && errors.ageCategory && (
+            <Controller
+              name="viewingRestriction"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  onChange={onChange}
+                  label="年齢制限"
+                  value={value}
+                  options={[
+                    {
+                      value: "",
+                      label: "---",
+                    },
+                    ...ageCategories.map(category => {
+                      return {
+                        value: category.nameJa,
+                        label: category.nameJa,
+                      }
+                    }),
+                  ]}
+                />
+              )}
+            />
+            {errors && errors.viewingRestriction && (
               <p className="text-xs italic text-red-500">
-                {errors.ageCategory.message}
+                {errors.viewingRestriction.message}
               </p>
             )}
           </div>
 
           <div className="flex flex-col mb-4 w-full">
-            <label
-              htmlFor="synopsis"
-              className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500"
-            >
-              <p>あらすじ</p>
-              <p className={cc([synopsis?.length > 1000 && "text-red-500"])}>
-                {synopsis?.length}/1000
-              </p>
-            </label>
-            <textarea
-              className="p-2 w-full h-[300px] rounded-lg border-2 border-purple-500 focus:outline-none focus:ring-2 ring-purple-300 resize-none"
+            <p className={cc([synopsis?.length > 1000 && "text-red-500"])}>
+              {synopsis?.length}/1000
+            </p>
+            <TextArea
+              label="あらすじ"
+              required={true}
               {...register("synopsis", {
                 required: true,
                 maxLength: {
@@ -300,7 +314,7 @@ const CreateStoryPage: NextPage = () => {
               disabled={isLoadingCreateStory}
               isLoading={isLoadingCreateStory}
               type="submit"
-              text="更新"
+              text="ストーリー作成"
             />
           </div>
         </form>

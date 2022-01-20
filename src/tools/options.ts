@@ -57,7 +57,7 @@ export const characterCategory: Array<{
   { nameEn: "Other", nameJa: "その他", description: "その他" },
 ]
 
-export const ageCategory: Array<{
+export const ageCategories: Array<{
   nameEn: string
   nameJa: string
   description: string
