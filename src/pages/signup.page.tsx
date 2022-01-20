@@ -4,7 +4,7 @@ import gql from "graphql-tag"
 import Router from "next/router"
 import { useState } from "react"
 import { Tab } from "src/components/blocks/Tab"
-import { Layout } from "src/components/Layout/Layout"
+import { Layout } from "src/components/Layout"
 
 const SignupMutation = gql`
   mutation Mutation($email: String!, $userName: String) {

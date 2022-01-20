@@ -3,7 +3,7 @@
 import { format } from "date-fns"
 import gql from "graphql-tag"
 import type { GetStaticPropsContext, NextPage } from "next"
-import { Layout } from "src/components/Layout/Layout"
+import { Layout } from "src/components/Layout"
 import { client } from "src/lib/apollo"
 import { STORY_PAGE_SIZE } from "src/tools/page"
 import type { QueryStories, QueryStoryById } from "src/types/Story/query"

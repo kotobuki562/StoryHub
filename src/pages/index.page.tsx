@@ -3,7 +3,7 @@
 import gql from "graphql-tag"
 import type { NextPage } from "next"
 import { StoryCard } from "src/components/blocks/Card"
-import { Layout } from "src/components/Layout/Layout"
+import { Layout } from "src/components/Layout"
 import { client } from "src/lib/apollo"
 import { STORY_PAGE_SIZE } from "src/tools/page"
 import type { QueryStories } from "src/types/Story/query"

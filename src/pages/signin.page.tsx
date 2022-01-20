@@ -10,7 +10,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import type { Crop } from "react-image-crop"
 import ReactCrop from "react-image-crop"
 import Resizer from "react-image-file-resizer"
-import { Layout } from "src/components/Layout/Layout"
+import { Layout } from "src/components/Layout"
 import { supabase } from "src/lib/supabase"
 
 const ReactQuill = dynamic(() => import("react-quill"), {
