@@ -4,7 +4,7 @@ import gql from "graphql-tag"
 import type { NextPage } from "next"
 import { StoryCard } from "src/components/blocks/Card"
 import { Pagination } from "src/components/blocks/Pagination"
-import { Layout } from "src/components/Layout/Layout"
+import { Layout } from "src/components/Layout"
 import { client } from "src/lib/apollo"
 import { STORY_PAGE_SIZE } from "src/tools/page"
 import type {

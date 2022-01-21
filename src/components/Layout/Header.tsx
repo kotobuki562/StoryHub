@@ -11,6 +11,7 @@ import {
   LoginIcon,
   LogoutIcon,
   MailIcon,
+  PencilIcon,
   PhotographIcon,
   SearchIcon,
   UserAddIcon,
@@ -66,6 +67,11 @@ const HeaderComp = () => {
   const [isOpenUserAccodion, setOpenUserAccodion] = useState<boolean>(false)
   const [isOpenUserActionAccodion, setOpenUserActionAccodion] =
     useState<boolean>(false)
+  const [isOpenUserStoryAccordion, setOpenUserStoryAccordion] =
+    useState<boolean>(false)
+  const [isOpenUserSettingMaterial, setOpenUserSettingMaterial] =
+    useState<boolean>(false)
+
   const [isHiddenMainManu, setHiddenMainManu] = useState<boolean>(true)
   const [isHiddenUserManu, setHiddenUserManu] = useState<boolean>(true)
   const [isHiddenNotification, setHiddenNotification] = useState<boolean>(true)
@@ -80,21 +86,6 @@ const HeaderComp = () => {
 
   const userLinks = [
     {
-      href: `/myPage/${user?.QueryMe.id}/profile`,
-      label: "プロフィール",
-      icon: <UserCircleIcon className="w-6 h-6" />,
-    },
-    {
-      href: `/myPage/${user?.QueryMe.id}/story`,
-      label: "ストーリー",
-      icon: <BookOpenIcon className="w-6 h-6" />,
-    },
-    {
-      href: `/myPage/${user?.QueryMe.id}/settingMaterial`,
-      label: "設定資料",
-      icon: <PhotographIcon className="w-6 h-6" />,
-    },
-    {
       href: `/myPage/${user?.QueryMe.id}/review`,
       label: "レビュー",
       icon: <FireIcon className="w-6 h-6" />,
@@ -108,6 +99,32 @@ const HeaderComp = () => {
       href: `/myPage/${user?.QueryMe.id}/favorite`,
       label: "ブックマーク",
       icon: <BookmarkIcon className="w-6 h-6" />,
+    },
+  ]
+
+  const userStoryLinks = [
+    {
+      href: `/myPage/${user?.QueryMe.id}/story`,
+      label: "一覧で見る",
+      icon: <BookOpenIcon className="w-6 h-6" />,
+    },
+    {
+      href: `/myPage/${user?.QueryMe.id}/story/create`,
+      label: "作成する",
+      icon: <PencilIcon className="w-6 h-6" />,
+    },
+  ]
+
+  const userSettingMaterialLinks = [
+    {
+      href: `/myPage/${user?.QueryMe.id}/settingMaterial`,
+      label: "一覧で見る",
+      icon: <PhotographIcon className="w-6 h-6" />,
+    },
+    {
+      href: `/myPage/${user?.QueryMe.id}/settingMaterial/create`,
+      label: "作成する",
+      icon: <PencilIcon className="w-6 h-6" />,
     },
   ]
 
@@ -134,6 +151,14 @@ const HeaderComp = () => {
 
   const onToggleUserActionAccodion = useCallback(() => {
     setOpenUserActionAccodion(pre => !pre)
+  }, [])
+
+  const onToggleUserStoryAccordion = useCallback(() => {
+    setOpenUserStoryAccordion(pre => !pre)
+  }, [])
+
+  const onToggleUserSettingMaterial = useCallback(() => {
+    setOpenUserSettingMaterial(pre => !pre)
   }, [])
 
   const onToggleMainManu = useCallback(() => {
@@ -342,7 +367,99 @@ const HeaderComp = () => {
                         </div>
                       }
                     >
+                      <Link href={`/myPage/${user?.QueryMe.id}/profile`}>
+                        <a
+                          className={cc([
+                            "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                            router.pathname ===
+                              `/myPage/${user?.QueryMe.id}/profile` &&
+                              "bg-slate-100 text-purple-400",
+                          ])}
+                        >
+                          <p>プロフィール</p>
+                          <div className="w-8">
+                            <UserCircleIcon className="w-6 h-6" />
+                          </div>
+                        </a>
+                      </Link>
+
                       {userLinks.map(({ href, icon, label }) => (
+                        <Link key={label} href={href}>
+                          <a
+                            className={cc([
+                              "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                              router.pathname === href &&
+                                "bg-slate-100 text-purple-400",
+                            ])}
+                          >
+                            <p>{label}</p>
+                            <div className="w-8">{icon}</div>
+                          </a>
+                        </Link>
+                      ))}
+                    </Accordion>
+                  </div>
+                  <div className="mb-4">
+                    <Accordion
+                      isOpen={isOpenUserStoryAccordion}
+                      onToggle={onToggleUserStoryAccordion}
+                      toggleButton={
+                        <div
+                          className={cc([
+                            "py-2 px-4 w-full text-lg flex font-bold items-center bg-slate-100 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                            isOpenUserStoryAccordion && "text-purple-400",
+                          ])}
+                        >
+                          <p>ストーリー</p>
+                          <div className="w-8">
+                            {isOpenUserStoryAccordion ? (
+                              <ChevronUpIcon className="w-8 h-8" />
+                            ) : (
+                              <ChevronDownIcon className="w-8 h-8" />
+                            )}
+                          </div>
+                        </div>
+                      }
+                    >
+                      {userStoryLinks.map(({ href, icon, label }) => (
+                        <Link key={label} href={href}>
+                          <a
+                            className={cc([
+                              "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                              router.pathname === href &&
+                                "bg-slate-100 text-purple-400",
+                            ])}
+                          >
+                            <p>{label}</p>
+                            <div className="w-8">{icon}</div>
+                          </a>
+                        </Link>
+                      ))}
+                    </Accordion>
+                  </div>
+                  <div className="mb-4">
+                    <Accordion
+                      isOpen={isOpenUserSettingMaterial}
+                      onToggle={onToggleUserSettingMaterial}
+                      toggleButton={
+                        <div
+                          className={cc([
+                            "py-2 px-4 w-full text-lg flex font-bold items-center bg-slate-100 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                            isOpenUserSettingMaterial && "text-purple-400",
+                          ])}
+                        >
+                          <p>設定資料</p>
+                          <div className="w-8">
+                            {isOpenUserSettingMaterial ? (
+                              <ChevronUpIcon className="w-8 h-8" />
+                            ) : (
+                              <ChevronDownIcon className="w-8 h-8" />
+                            )}
+                          </div>
+                        </div>
+                      }
+                    >
+                      {userSettingMaterialLinks.map(({ href, icon, label }) => (
                         <Link key={label} href={href}>
                           <a
                             className={cc([

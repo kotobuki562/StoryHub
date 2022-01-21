@@ -17,7 +17,7 @@ import { Alert } from "src/components/atoms/Alert"
 import { Button } from "src/components/atoms/Button"
 import { Modal } from "src/components/blocks/Modal"
 import { Tab } from "src/components/blocks/Tab"
-import { Layout } from "src/components/Layout/Layout"
+import { Layout } from "src/components/Layout"
 import { LoadingLogo } from "src/components/Loading"
 import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { useAvatar } from "src/hooks/useAvatar"
@@ -385,7 +385,9 @@ const UproadImageForm: VFC<UpdateImageFormProps> = ({
     onSelectResizeImage,
     previewCanvasRef,
     upImgUrl,
-  } = useAvatar()
+  } = useAvatar({
+    aspect: 1,
+  })
 
   const handleUpdateUserProfileImage = useCallback(() => {
     if (!data?.QueryUserById.id || !previewCanvasRef.current || !crop) {

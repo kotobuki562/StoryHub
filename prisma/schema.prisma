@@ -186,9 +186,3 @@ model Page {
   updated_at DateTime?
   chapter    Chapter?  @relation(fields: [chapter_id], references: [id])
 }
-
-model Category {
-  id             Int      @id @unique @default(autoincrement())
-  category_title String
-  created_at     DateTime @default(now())
-}

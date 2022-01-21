@@ -43,11 +43,6 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
-  Category: { // root type
-    category_title?: string | null; // String
-    created_at?: NexusGenScalars['DateTime'] | null; // DateTime
-    id?: number | null; // Int
-  }
   Chapter: { // root type
     chapter_image?: string | null; // String
     chapter_title?: string | null; // String
@@ -191,11 +186,6 @@ export type NexusGenRootTypes = NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
-  Category: { // field return type
-    category_title: string | null; // String
-    created_at: NexusGenScalars['DateTime'] | null; // DateTime
-    id: number | null; // Int
-  }
   Chapter: { // field return type
     chapter_image: string | null; // String
     chapter_title: string | null; // String
@@ -282,7 +272,6 @@ export interface NexusGenFieldTypes {
     updated_at: NexusGenScalars['DateTime'] | null; // DateTime
   }
   Query: { // field return type
-    QueryCategories: Array<NexusGenRootTypes['Category'] | null> | null; // [Category]
     QueryChapterById: NexusGenRootTypes['Chapter'] | null; // Chapter
     QueryChapters: Array<NexusGenRootTypes['Chapter'] | null> | null; // [Chapter]
     QueryChaptersCountByPublish: number | null; // Int
@@ -439,11 +428,6 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
-  Category: { // field return type name
-    category_title: 'String'
-    created_at: 'DateTime'
-    id: 'Int'
-  }
   Chapter: { // field return type name
     chapter_image: 'String'
     chapter_title: 'String'
@@ -530,7 +514,6 @@ export interface NexusGenFieldTypeNames {
     updated_at: 'DateTime'
   }
   Query: { // field return type name
-    QueryCategories: 'Category'
     QueryChapterById: 'Chapter'
     QueryChapters: 'Chapter'
     QueryChaptersCountByPublish: 'Int'
@@ -732,7 +715,7 @@ export interface NexusGenArgTypes {
       storyId: string; // String!
       storyImage?: string | null; // String
       storySynopsis?: string | null; // String
-      storyTitle?: string | null; // String
+      storyTitle: string; // String!
       viewingRestriction?: string | null; // String
     }
     updateUser: { // args

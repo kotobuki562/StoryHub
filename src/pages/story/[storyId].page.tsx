@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable import/no-default-export */
 import { format } from "date-fns"
 import gql from "graphql-tag"
 import type { GetStaticPropsContext, NextPage } from "next"
-import { Layout } from "src/components/Layout/Layout"
+import { Layout } from "src/components/Layout"
 import { client } from "src/lib/apollo"
 import { STORY_PAGE_SIZE } from "src/tools/page"
 import type { QueryStories, QueryStoryById } from "src/types/Story/query"
@@ -72,6 +73,26 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
       queryStoryByIdId: params?.storyId,
     },
   })
+  if (data.QueryStoryById.publish === false) {
+    return {
+      props: {
+        story: {
+          QueryStoryById: {
+            id: "非公開のストーリー",
+            story_title: "非公開のストーリー",
+            story_synopsis: "非公開のストーリー",
+            story_categories: [],
+            story_image: "",
+            viewing_restriction: "",
+            publish: false,
+            created_at: "",
+            updated_at: "",
+            user: null,
+          },
+        },
+      },
+    }
+  }
 
   return {
     props: {
@@ -84,7 +105,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 const StoryPage: NextPage<StoryPageProps> = ({ story }) => (
   <Layout
     meta={{
-      pageName: `StoryHub | ${story.QueryStoryById.user?.user_name}さんの作品。「${story.QueryStoryById.story_title}」`,
+      pageName: `StoryHub | ${story.QueryStoryById?.user?.user_name}さんの作品。「${story.QueryStoryById.story_title}」`,
       description: `${story.QueryStoryById.story_synopsis}`,
       cardImage: `${
         story.QueryStoryById.story_image || "/img/StoryHubLogo.png"

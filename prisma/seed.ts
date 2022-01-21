@@ -17,8 +17,8 @@ const prisma = new PrismaClient()
 export const main = async () => {
   try {
     console.log(`Start seeding ...`)
-    for (const u of createCategories()) {
-      const story = await prisma.category.create({
+    for (const u of createStories(10)) {
+      const story = await prisma.story.create({
         data: u,
       })
       console.log(`Created story with id: ${story.id}`)

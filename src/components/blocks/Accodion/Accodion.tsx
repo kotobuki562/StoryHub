@@ -32,7 +32,7 @@ const AccodionComp: VFC<Props> = props => {
         </button>
       </div>
       <div
-        className="overflow-hidden w-full duration-200"
+        className="overflow-y-scroll w-full duration-200"
         ref={linksContainerRef}
       >
         <ul className={cc(["w-full"])} ref={linksRef}>
