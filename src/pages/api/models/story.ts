@@ -1,4 +1,4 @@
-import { intArg, nonNull, nullable, objectType, stringArg } from "nexus"
+import { nullable, objectType, stringArg } from "nexus"
 import prisma from "src/lib/prisma"
 
 import { isSafe } from "../index.page"
@@ -6,8 +6,6 @@ import { isSafe } from "../index.page"
 const seasonArgs = {
   seasonAccessToken: nullable(stringArg()),
   seasonUserId: nullable(stringArg()),
-  seasonPage: nonNull(intArg()),
-  seasonPageSize: nonNull(intArg()),
 }
 
 const Story = objectType({
@@ -26,24 +24,18 @@ const Story = objectType({
     t.list.field("seasons", {
       type: "Season",
       args: seasonArgs,
-      resolve: (parent, args, ctx) => {
-        const { seasonAccessToken, seasonUserId, seasonPage, seasonPageSize } =
-          args
-        const skip = seasonPageSize * (seasonPage - 1)
+      resolve: (parent, args) => {
+        const { seasonAccessToken, seasonUserId } = args
         return seasonAccessToken &&
           seasonUserId &&
           isSafe(seasonAccessToken, seasonUserId)
           ? prisma.season.findMany({
-              skip,
-              take: seasonPageSize,
               orderBy: { created_at: "desc" },
               where: {
                 story_id: `${parent.id}`,
               },
             })
           : prisma.season.findMany({
-              skip,
-              take: seasonPageSize,
               orderBy: { created_at: "desc" },
               where: {
                 story_id: `${parent.id}`,
@@ -54,38 +46,35 @@ const Story = objectType({
     })
     t.list.field("reviews", {
       type: "Review",
-      resolve: (parent, args, ctx) => {
-        return parent.id
+      resolve: parent =>
+        parent.id
           ? prisma.review.findMany({
               where: {
                 story_id: parent.id,
                 publish: true,
               },
             })
-          : []
-      },
+          : [],
     })
     t.list.field("favorites", {
       type: "Favorite",
-      resolve: (parent, args, ctx) => {
-        return parent.id
+      resolve: parent =>
+        parent.id
           ? prisma.favorite.findMany({
               where: {
                 story_id: parent.id,
               },
             })
-          : []
-      },
+          : [],
     })
     t.field("user", {
       type: "User",
-      resolve: (parent, args, ctx) => {
-        return prisma.user.findUnique({
+      resolve: parent =>
+        prisma.user.findUnique({
           where: {
             id: `${parent.user_id}`,
           },
-        })
-      },
+        }),
     })
   },
 })

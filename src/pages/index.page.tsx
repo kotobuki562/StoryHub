@@ -1,86 +1,68 @@
-import { useQuery } from "@apollo/client"
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable import/no-default-export */
 import gql from "graphql-tag"
-import Link from "next/link"
+import type { NextPage } from "next"
+import { StoryCard } from "src/components/blocks/Card"
+import { Layout } from "src/components/Layout"
+import { client } from "src/lib/apollo"
+import { STORY_PAGE_SIZE } from "src/tools/page"
+import type { QueryStories } from "src/types/Story/query"
 
-import Layout from "../components/Layout"
-
-const FeedQuery = gql`
-  query FeedQuery {
-    feed {
+const StoriesQuery = gql`
+  query QueryStories($page: Int!, $pageSize: Int!) {
+    QueryStories(page: $page, pageSize: $pageSize) {
       id
-      title
-      content
-      published
-      author {
-        id
-        name
+      story_title
+      story_synopsis
+      story_categories
+      story_image
+      viewing_restriction
+      created_at
+      user {
+        user_name
+        image
       }
     }
   }
 `
 
-const Post = ({ post }) => {
-  return (
-    <Link href="/p/[id]" as={`/p/${post.id}`}>
-      <a>
-        <h2>{post.title}</h2>
-        <small>By {post.author.name}</small>
-        <p>{post.content}</p>
-        <style jsx>{`
-          a {
-            text-decoration: none;
-            color: inherit;
-            padding: 2rem;
-            display: block;
-          }
-        `}</style>
-      </a>
-    </Link>
-  )
+type HomePageProps = {
+  stories: QueryStories
 }
 
-const Blog = () => {
-  const { loading, error, data } = useQuery(FeedQuery, {
-    fetchPolicy: "cache-and-network",
+export const getStaticProps = async () => {
+  const data = await client.query<QueryStories>({
+    query: StoriesQuery,
+    variables: {
+      page: 1,
+      pageSize: STORY_PAGE_SIZE,
+    },
   })
 
-  if (loading) {
-    return <div>Loading ...</div>
+  return {
+    props: {
+      stories: data.data,
+    },
+    revalidate: 60,
   }
-  if (error) {
-    return <div>Error: {error.message}</div>
-  }
-
-  return (
-    <Layout>
-      <div className="page">
-        <h1>My Blog</h1>
-        <main>
-          {data.feed.map(post => {
-            return (
-              <div key={post.id} className="post">
-                <Post post={post} />
-              </div>
-            )
-          })}
-        </main>
-      </div>
-      <style jsx>{`
-        .post {
-          background: white;
-          transition: box-shadow 0.1s ease-in;
-        }
-
-        .post:hover {
-          box-shadow: 1px 1px 3px #aaa;
-        }
-
-        .post + .post {
-          margin-top: 2rem;
-        }
-      `}</style>
-    </Layout>
-  )
 }
 
-export default Blog
+const HomePage: NextPage<HomePageProps> = ({ stories }) => (
+  <Layout
+    meta={{
+      pageName: `StoryHub | 妄想を、吐き出せ`,
+      description: `StoryHubはあなたの思い描いた物語を自由に創作するプラットフォームです。あなたも今すぐ「妄想を、吐き出せ」`,
+      cardImage: `/img/StoryHubLogo.png`,
+    }}
+  >
+    <div className="p-8">
+      <div className="flex flex-wrap gap-8 justify-center w-full">
+        {stories.QueryStories.map(story => (
+          <StoryCard key={story.id} {...story} />
+        ))}
+      </div>
+    </div>
+  </Layout>
+)
+
+export default HomePage

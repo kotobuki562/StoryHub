@@ -1,4 +1,3 @@
-import { makeExecutableSchema } from "@graphql-tools/schema"
 import { ApolloServer } from "apollo-server-micro"
 import { DateTimeResolver } from "graphql-scalars"
 import jwt from "jsonwebtoken"
@@ -9,14 +8,10 @@ import {
   intArg,
   makeSchema,
   nonNull,
-  nullable,
   objectType,
   stringArg,
 } from "nexus"
 import path from "path"
-import prisma from "src/lib/prisma"
-import supabase from "src/lib/supabase"
-import { Category } from "src/pages/api/models/category"
 import { Chapter } from "src/pages/api/models/chapter"
 import { Character } from "src/pages/api/models/character"
 import { Episode } from "src/pages/api/models/episode"
@@ -42,6 +37,22 @@ import {
   updateUser,
 } from "src/pages/api/mutations/user"
 import {
+  QueryChapterById,
+  QueryChapters,
+  QueryChaptersCountByPublish,
+  QueryChaptersCountByUnPublish,
+  QueryMyChapterById,
+  QueryMyChapters,
+} from "src/pages/api/queries/chapter"
+import {
+  QueryCharacterById,
+  QueryCharacters,
+  QueryCharactersCountByPublish,
+  QueryCharactersCountByUnPublish,
+  QueryMyCharacterById,
+  QueryMyCharacters,
+} from "src/pages/api/queries/character"
+import {
   QueryEpisodeById,
   QueryEpisodes,
   QueryEpisodesCountByPublish,
@@ -49,6 +60,34 @@ import {
   QueryMyEpisodeById,
   QueryMyEpisodes,
 } from "src/pages/api/queries/episode"
+import {
+  QueryFavoritesByStory,
+  QueryFavoritesByUser,
+  QueryMyFavoritesByStory,
+  QueryMyFavoritesByUser,
+} from "src/pages/api/queries/favorite"
+import { QueryFollowers, QueryFollowing } from "src/pages/api/queries/follow"
+import {
+  QueryMyObjectById,
+  QueryMyObjects,
+  QueryObjectById,
+  QueryObjects,
+  QueryObjectsCountByPublish,
+  QueryObjectsCountByUnPublish,
+} from "src/pages/api/queries/object"
+import {
+  QueryPage,
+  QueryPageCountByChapterId,
+  QueryPages,
+} from "src/pages/api/queries/page"
+import {
+  QueryMyReviewById,
+  QueryMyReviews,
+  QueryPublishReviewsCount,
+  QueryReviewById,
+  QueryReviews,
+  QueryUnPublishReviewsCount,
+} from "src/pages/api/queries/review"
 import {
   QueryMySeasonById,
   QueryMySeasons,
@@ -58,6 +97,14 @@ import {
   QuerySeasonsCountByUnPublish,
 } from "src/pages/api/queries/season"
 import {
+  QueryMySettingMaterialById,
+  QueryMySettingMaterials,
+  QuerySettingMaterialById,
+  QuerySettingMaterials,
+  QuerySettingMaterialsCountByPublish,
+  QuerySettingMaterialsCountByUnPublish,
+} from "src/pages/api/queries/settingMaterial"
+import {
   QueryMyStories,
   QueryMyStoryById,
   QueryStories,
@@ -66,25 +113,14 @@ import {
   QueryStoryById,
 } from "src/pages/api/queries/story"
 import {
-  QueryChapters,
-  QueryMyChapters,
-  QueryChapterById,
-  QueryMyChapterById,
-  QueryChaptersCountByPublish,
-  QueryChaptersCountByUnPublish,
-} from "src/pages/api/queries/chapter"
-import {
-  QueryPages,
-  QueryPage,
-  QueryPageCountByChapterId,
-} from "src/pages/api/queries/page"
-import {
-  QueryCategories,
-  QueryCategory,
-  QueryCategoryCount,
-} from "src/pages/api/queries/category"
+  QueryMyTerminologies,
+  QueryMyTerminologyById,
+  QueryTerminologies,
+  QueryTerminologiesCountByPublish,
+  QueryTerminologiesCountByUnPublish,
+  QueryTerminologyById,
+} from "src/pages/api/queries/terminology"
 import { QueryMe, QueryUserById, QueryUsers } from "src/pages/api/queries/user"
-import { SubscriptionServer } from "subscriptions-transport-ws"
 
 import { context } from "./context"
 
@@ -165,133 +201,55 @@ const Query = objectType({
     QueryPage(t)
     QueryPageCountByChapterId(t)
 
-    // カテゴリーのクエリ
-    QueryCategories(t)
-    QueryCategory(t)
-    QueryCategoryCount(t)
+    // レビューのクエリ
+    QueryReviews(t)
+    QueryMyReviews(t)
+    QueryReviewById(t)
+    QueryMyReviewById(t)
+    QueryPublishReviewsCount(t)
+    QueryUnPublishReviewsCount(t)
 
-    // 全て取得する
-    t.list.field("categories", {
-      type: "Category",
-      resolve: (_parent, _args) => {
-        return prisma.category.findMany()
-      },
-    })
+    // フォローのクエリ
+    QueryFollowers(t)
+    QueryFollowing(t)
 
-    t.list.field("reviews", {
-      type: "Review",
-      resolve: (_parent, _args) => {
-        return prisma.review.findMany({
-          where: { publish: true },
-        })
-      },
-    })
+    // 設定のクエリ
+    QuerySettingMaterials(t)
+    QuerySettingMaterialById(t)
+    QueryMySettingMaterials(t)
+    QueryMySettingMaterialById(t)
+    QuerySettingMaterialsCountByPublish(t)
+    QuerySettingMaterialsCountByUnPublish(t)
 
-    t.list.field("QueryPageReviews", {
-      type: "Review",
-      args: {
-        page: stringArg({ default: "1" }),
-      },
-      resolve: async (_parent, args) => {
-        const { page } = args
-        const pageSize = 10
-        const skip = pageSize * (Number(page) - 1)
-        const reviews = await prisma.review.findMany({
-          skip,
-          take: pageSize,
-          orderBy: { created_at: "desc" },
-        })
-        return reviews
-      },
-    })
+    // キャラクターのクエリ
+    QueryCharacters(t)
+    QueryCharacterById(t)
+    QueryMyCharacters(t)
+    QueryMyCharacterById(t)
+    QueryCharactersCountByPublish(t)
+    QueryCharactersCountByUnPublish(t)
 
-    t.list.field("filterReviewsByUserId", {
-      type: "Review",
-      args: {
-        userId: nonNull(stringArg()),
-      },
-      resolve: async (_parent, args) => {
-        return await prisma.review.findMany({
-          where: {
-            user_id: args.userId,
-          },
-        })
-      },
-    })
+    // オブジェクトのクエリ
+    QueryObjects(t)
+    QueryObjectById(t)
+    QueryMyObjects(t)
+    QueryMyObjectById(t)
+    QueryObjectsCountByPublish(t)
+    QueryObjectsCountByUnPublish(t)
 
-    t.list.field("filterReviewsByStoryId", {
-      type: "Review",
-      args: {
-        storyId: nonNull(stringArg()),
-      },
-      resolve: async (_parent, args) => {
-        return await prisma.review.findMany({
-          where: {
-            story_id: args.storyId,
-          },
-        })
-      },
-    })
+    // 専門用語のクエリ
+    QueryTerminologies(t)
+    QueryTerminologyById(t)
+    QueryMyTerminologies(t)
+    QueryMyTerminologyById(t)
+    QueryTerminologiesCountByPublish(t)
+    QueryTerminologiesCountByUnPublish(t)
 
-    t.list.field("filterFollowsByUserId", {
-      type: "Follow",
-      args: {
-        userId: nonNull(stringArg()),
-      },
-      resolve: (_parent, args) => {
-        return prisma.follow.findMany({
-          where: { user_id: args.userId },
-        })
-      },
-    })
-
-    t.list.field("filterFollowsByFollowId", {
-      type: "Follow",
-      args: {
-        followId: nonNull(stringArg()),
-      },
-      resolve: (_parent, args) => {
-        return prisma.follow.findMany({
-          where: { follow_id: args.followId },
-        })
-      },
-    })
-
-    t.list.field("filterFavoritesByUserId", {
-      type: "Favorite",
-      args: {
-        userId: nonNull(stringArg()),
-      },
-      resolve: (_parent, args) => {
-        return prisma.favorite.findMany({
-          where: { user_id: args.userId },
-        })
-      },
-    })
-
-    t.list.field("filterFavoritesByStoryId", {
-      type: "Favorite",
-      args: {
-        storyId: nonNull(stringArg()),
-      },
-      resolve: (_parent, args) => {
-        return prisma.favorite.findMany({
-          where: { story_id: args.storyId },
-        })
-      },
-    })
-    // UserIdに紐づくStoryを取得
-    t.list.field("filterStoriesByUserId", {
-      type: "Story",
-      args: {
-        userId: nonNull(stringArg()),
-      },
-      resolve: (_parent, args) => {
-        return prisma.story.findMany({
-          where: { user_id: args.userId },
-        })
-      },
-    })
+    // ファボのクエリ
+    QueryFavoritesByUser(t)
+    QueryFavoritesByStory(t)
+    QueryMyFavoritesByUser(t)
+    QueryMyFavoritesByStory(t)
   },
 })
 
@@ -323,7 +281,6 @@ export const schema = makeSchema({
     Follow,
     Story,
     Review,
-    Category,
     Character,
     Terminology,
     Object,
@@ -359,7 +316,7 @@ const apolloServer = new ApolloServer({ schema, context: context })
 
 let apolloServerHandler: NextApiHandler
 
-async function getApolloServerHandler() {
+const getApolloServerHandler = async () => {
   if (!apolloServerHandler) {
     await apolloServer.start()
 
@@ -385,5 +342,7 @@ const handler: NextApiHandler = async (
   return apolloServerHandler(req, res)
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+// eslint-disable-next-line import/no-default-export
 export default cors()(handler)

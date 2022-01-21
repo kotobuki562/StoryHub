@@ -1,7 +1,5 @@
-import { intArg, nonNull, nullable, objectType, stringArg } from "nexus"
+import { objectType } from "nexus"
 import prisma from "src/lib/prisma"
-
-import { isSafe } from "../index.page"
 
 // model Terminology {
 //   id                  String          @id @default(uuid())
@@ -20,6 +18,7 @@ export const Terminology = objectType({
   definition(t) {
     t.id("id")
     t.string("setting_material_id")
+    t.string("season_id")
     t.string("terminology_name")
     t.string("terminology_deal")
     t.boolean("isSpoiler")
@@ -28,13 +27,21 @@ export const Terminology = objectType({
     t.nullable.date("updated_at")
     t.field("settingMaterial", {
       type: "SettingMaterial",
-      resolve: (parent, args, ctx) => {
-        return prisma.settingMaterial.findUnique({
+      resolve: parent =>
+        prisma.settingMaterial.findUnique({
           where: {
             id: `${parent.setting_material_id}`,
           },
-        })
-      },
+        }),
+    })
+    t.field("season", {
+      type: "Season",
+      resolve: parent =>
+        prisma.season.findUnique({
+          where: {
+            id: `${parent.season_id}`,
+          },
+        }),
     })
   },
 })

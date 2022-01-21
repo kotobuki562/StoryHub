@@ -1,5 +1,4 @@
-import { Prisma } from "@prisma/client"
-import faker from "@withshepherd/faker"
+import type { Prisma } from "@prisma/client"
 
 const createCategories = (): Prisma.CategoryCreateInput[] => {
   const data: Array<{ category_title: string }> = [

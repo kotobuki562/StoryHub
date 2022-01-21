@@ -29,19 +29,18 @@ const createStory = (t: ObjectDefinitionBlock<"Mutation">) => {
       publish: nonNull(booleanArg()),
       acessToken: nonNull(stringArg()),
     },
-    resolve: (_, args, ctx) => {
-      return prisma.story.create({
+    resolve: (_, args, _ctx) =>
+      prisma.story.create({
         data: {
-          story_title: `${args.storyTitle}`,
-          story_synopsis: `${args.storySynopsis}`,
+          story_title: args.storyTitle,
+          story_synopsis: args.storySynopsis,
           story_categories: args.storyCategories,
-          story_image: `${args.storyImage}`,
-          viewing_restriction: `${args.viewingRestriction}`,
+          story_image: args.storyImage,
+          viewing_restriction: args.viewingRestriction,
           publish: args.publish,
           user_id: `${decodeUserId(args.acessToken)}`,
         },
-      })
-    },
+      }),
   })
 }
 
@@ -50,28 +49,28 @@ const updateStory = (t: ObjectDefinitionBlock<"Mutation">) => {
     type: "Story",
     args: {
       storyId: nonNull(stringArg()),
-      storyTitle: nullable(stringArg()),
+      storyTitle: nonNull(stringArg()),
       storySynopsis: nullable(stringArg()),
       storyCategories: nonNull(list(nonNull(stringArg()))),
       storyImage: nullable(stringArg()),
       viewingRestriction: nullable(stringArg()),
       publish: nonNull(booleanArg()),
     },
-    resolve: (_, args, ctx) => {
-      return prisma.story.update({
+    resolve: (_, args) =>
+      prisma.story.update({
         where: {
           id: `${args.storyId}`,
         },
         data: {
           story_title: `${args.storyTitle}`,
-          story_synopsis: `${args.storySynopsis}`,
+          story_synopsis: args.storySynopsis,
           story_categories: args.storyCategories,
-          story_image: `${args.storyImage}`,
-          viewing_restriction: `${args.viewingRestriction}`,
+          story_image: args.storyImage,
+          viewing_restriction: args.viewingRestriction,
           publish: args.publish,
+          updated_at: new Date(),
         },
-      })
-    },
+      }),
   })
 }
 
@@ -81,13 +80,12 @@ const deleteStory = (t: ObjectDefinitionBlock<"Mutation">) => {
     args: {
       storyId: nonNull(stringArg()),
     },
-    resolve: (_, args, ctx) => {
-      return prisma.story.delete({
+    resolve: (_, args) =>
+      prisma.story.delete({
         where: {
           id: `${args.storyId}`,
         },
-      })
-    },
+      }),
   })
 }
 

@@ -1,4 +1,4 @@
-import { intArg, nonNull, nullable, objectType, stringArg } from "nexus"
+import { nullable, objectType, stringArg } from "nexus"
 import prisma from "src/lib/prisma"
 
 import { isSafe } from "../index.page"
@@ -6,8 +6,6 @@ import { isSafe } from "../index.page"
 const chapterArgs = {
   chapterAccessToken: nullable(stringArg()),
   chapterUserId: nullable(stringArg()),
-  chapterPage: nonNull(intArg()),
-  chapterPageSize: nonNull(intArg()),
 }
 
 const Episode = objectType({
@@ -24,29 +22,18 @@ const Episode = objectType({
     t.list.field("chapters", {
       type: "Chapter",
       args: chapterArgs,
-      resolve: (parent, args, ctx) => {
-        const {
-          chapterAccessToken,
-          chapterUserId,
-          chapterPage,
-          chapterPageSize,
-        } = args
-        const skip = chapterPageSize * (chapterPage - 1)
+      resolve: (parent, args) => {
+        const { chapterAccessToken, chapterUserId } = args
         return chapterAccessToken &&
           chapterUserId &&
           isSafe(chapterAccessToken, chapterUserId)
           ? prisma.chapter.findMany({
-              skip,
-              take: chapterPageSize,
               orderBy: { created_at: "desc" },
               where: {
                 episode_id: `${parent.id}`,
               },
             })
           : prisma.chapter.findMany({
-              skip,
-              take: chapterPageSize,
-
               orderBy: { created_at: "desc" },
               where: {
                 episode_id: `${parent.id}`,
@@ -57,15 +44,14 @@ const Episode = objectType({
     })
     t.field("season", {
       type: "Season",
-      resolve: (parent, args, ctx) => {
-        return parent.season_id
+      resolve: parent =>
+        parent.season_id
           ? prisma.season.findUnique({
               where: {
                 id: parent.season_id,
               },
             })
-          : null
-      },
+          : null,
     })
   },
 })

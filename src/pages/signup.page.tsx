@@ -1,9 +1,10 @@
+/* eslint-disable import/no-default-export */
 import { useMutation } from "@apollo/client"
 import gql from "graphql-tag"
-import Router, { useRouter } from "next/router"
-import React, { useState } from "react"
-
-import Layout from "../components/Layout"
+import Router from "next/router"
+import { useState } from "react"
+import { Tab } from "src/components/blocks/Tab"
+import { Layout } from "src/components/Layout"
 
 const SignupMutation = gql`
   mutation Mutation($email: String!, $userName: String) {
@@ -14,7 +15,7 @@ const SignupMutation = gql`
   }
 `
 
-function Signup(props) {
+const Signup = () => {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
 
@@ -22,6 +23,19 @@ function Signup(props) {
 
   return (
     <Layout>
+      <Tab
+        color="purple"
+        values={[
+          {
+            label: "Signup",
+            children: <div className="w-[100px] h-[100px] bg-slate-300"></div>,
+          },
+          {
+            label: "Login",
+            children: <div className="w-[100px] h-[100px] bg-purple-300"></div>,
+          },
+        ]}
+      />
       <div>
         <form
           onSubmit={async e => {
@@ -38,31 +52,18 @@ function Signup(props) {
           <h1>Signup user</h1>
           <input
             autoFocus
-            onChange={e => {
-              return setName(e.target.value)
-            }}
+            onChange={e => setName(e.target.value)}
             placeholder="Name"
             type="text"
             value={name}
           />
           <input
-            onChange={e => {
-              return setEmail(e.target.value)
-            }}
+            onChange={e => setEmail(e.target.value)}
             placeholder="Email address)"
             type="text"
             value={email}
           />
           <input disabled={!name || !email} type="submit" value="Signup" />
-          <a
-            className="back"
-            href="#"
-            onClick={() => {
-              return Router.push("/")
-            }}
-          >
-            or Cancel
-          </a>
         </form>
       </div>
       <style jsx>{`

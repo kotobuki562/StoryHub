@@ -1,7 +1,7 @@
-import { list, nonNull, nullable, stringArg } from "nexus"
+import { nonNull, nullable, stringArg } from "nexus"
 import type { ObjectDefinitionBlock } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
-import supabase from "src/lib/supabase"
+import { supabase } from "src/lib/supabase"
 
 import { decodeUserId } from "../index.page"
 
@@ -13,24 +13,23 @@ const signupUser = (t: ObjectDefinitionBlock<"Mutation">) => {
       email: nonNull(stringArg()),
       password: nonNull(stringArg()),
     },
-    resolve: async (_, args, ctx) => {
-      return await supabase.auth
+    resolve: async (_, args, _ctx) =>
+      await supabase.auth
         .signUp({
           email: args.email,
           password: args.password,
         })
-        .then(res => {
-          return prisma.user.create({
+        .then(res =>
+          prisma.user.create({
             data: {
               id: `${res?.user?.id}`,
               user_name: `${args.userName}`,
             },
           })
-        })
+        )
         .catch(error => {
           throw new Error(error)
-        })
-    },
+        }),
   })
 }
 
@@ -40,21 +39,18 @@ const createUser = (t: ObjectDefinitionBlock<"Mutation">) => {
     args: {
       userName: nonNull(stringArg()),
       userDeal: nonNull(stringArg()),
-      links: nullable(list(stringArg())),
       image: nullable(stringArg()),
       accessToken: nonNull(stringArg()),
     },
-    resolve: (_, args, ctx) => {
-      return prisma.user.create({
+    resolve: (_, args, _ctx) =>
+      prisma.user.create({
         data: {
           id: `${decodeUserId(args.accessToken)}`,
           user_name: `${args.userName}`,
           user_deal: `${args.userDeal}`,
-          links: `${args.links}`,
           image: `${args.image}`,
         },
-      })
-    },
+      }),
   })
 }
 
@@ -64,23 +60,21 @@ const updateUser = (t: ObjectDefinitionBlock<"Mutation">) => {
     args: {
       userName: nonNull(stringArg()),
       userDeal: nonNull(stringArg()),
-      links: nullable(list(stringArg())),
       image: nullable(stringArg()),
       accessToken: nonNull(stringArg()),
     },
-    resolve: (_, args, ctx) => {
-      return prisma.user.update({
+    resolve: (_, args, _ctx) =>
+      prisma.user.update({
         where: {
           id: `${decodeUserId(args.accessToken)}`,
         },
         data: {
           user_name: `${args.userName}`,
           user_deal: `${args.userDeal}`,
-          links: `${args.links}`,
           image: `${args.image}`,
+          updated_at: new Date(),
         },
-      })
-    },
+      }),
   })
 }
 
@@ -90,13 +84,12 @@ const deleteUser = (t: ObjectDefinitionBlock<"Mutation">) => {
     args: {
       accessToken: nonNull(stringArg()),
     },
-    resolve: (_, args, ctx) => {
-      return prisma.user.delete({
+    resolve: (_, args, _ctx) =>
+      prisma.user.delete({
         where: {
           id: `${decodeUserId(args.accessToken)}`,
         },
-      })
-    },
+      }),
   })
 }
 
