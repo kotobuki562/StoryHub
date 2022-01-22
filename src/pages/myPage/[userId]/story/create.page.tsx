@@ -193,7 +193,7 @@ const CreateStoryPage: NextPage = () => {
             <div className="flex flex-wrap gap-4 w-full">
               {storyCategoryes.map(category => (
                 <div
-                  className="py-2 px-4 text-yellow-400 bg-purple-500 rounded-full"
+                  className="py-2 px-4 text-yellow-300 bg-purple-500 rounded-full"
                   key={category}
                 >
                   {category}

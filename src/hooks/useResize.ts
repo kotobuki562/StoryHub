@@ -25,8 +25,9 @@ const resizeFile = (
     )
   })
 
-const useAvatar = ({ aspect }: UseAvatar) => {
+const useResize = ({ aspect }: UseAvatar) => {
   const [upImgUrl, setUpImgUrl] = useState<string | null>(null)
+  const [img, setImg] = useState<File | null>(null)
   const imgRef = useRef<HTMLImageElement>(null)
   const previewCanvasRef = useRef<HTMLCanvasElement>(null)
   const [crop, setCrop] = useState<Crop>({
@@ -49,6 +50,7 @@ const useAvatar = ({ aspect }: UseAvatar) => {
     async (e: ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files.length > 0) {
         const file = e.target.files[0]
+        setImg(file)
         const resizedFile = await resizeFile(file)
         // resizeFileはbase64なので、Fileに変換する
         const bin = window.atob(`${resizedFile}`.replace(/^.*,/, ""))
@@ -131,6 +133,7 @@ const useAvatar = ({ aspect }: UseAvatar) => {
     completedCrop,
     previewCanvasRef,
     crop,
+    img,
     onSelectResizeImage,
     onLoad,
     onChangeCrop,
@@ -139,4 +142,4 @@ const useAvatar = ({ aspect }: UseAvatar) => {
   }
 }
 
-export { useAvatar }
+export { useResize }
