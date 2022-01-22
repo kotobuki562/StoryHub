@@ -70,7 +70,7 @@ export const Menu: VFC<Props> = memo(
           ref={popoverRef}
         >
           <div
-            className={`absolute z-10 bg-white rounded-lg shadow-lg`}
+            className="overflow-y-scroll absolute z-10 bg-white rounded-lg shadow-lg"
             style={{
               top: "100%",
               left: "50%",
@@ -78,6 +78,7 @@ export const Menu: VFC<Props> = memo(
                 position ? `translateX(${position}%)` : "translateX(-50%)"
               }`,
               width: "max-content",
+              height: "max-content",
               padding: "10px",
             }}
           >

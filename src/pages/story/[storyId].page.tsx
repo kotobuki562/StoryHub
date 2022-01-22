@@ -137,7 +137,7 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => (
           <h2 className="mb-4 text-2xl font-black">
             {story.QueryStoryById.story_title}
           </h2>
-          <p className="mb-4 text-slate-600 break-all">
+          <p className="mb-4 text-slate-600 whitespace-pre-wrap">
             {story.QueryStoryById.story_synopsis}
           </p>
           <p className="text-right text-slate-400">

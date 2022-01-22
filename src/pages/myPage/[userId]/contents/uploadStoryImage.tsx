@@ -1,5 +1,6 @@
 import { CheckCircleIcon } from "@heroicons/react/solid"
 import gsap from "gsap"
+import { useRouter } from "next/router"
 import type { VFC } from "react"
 import { memo, useCallback, useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
@@ -15,6 +16,7 @@ type UpdateImageFormProps = {
 
 const UploadStoryImageFormComp: VFC<UpdateImageFormProps> = ({ userId }) => {
   const iconRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
   const [timeline] = useState(gsap.timeline({ paused: true }))
   const [isLoadingFunction, setIsLoadingFunction] = useState(false)
@@ -48,6 +50,28 @@ const UploadStoryImageFormComp: VFC<UpdateImageFormProps> = ({ userId }) => {
               cacheControl: "3600",
               upsert: true,
             })
+            .then(async () => {
+              toast.custom(t => (
+                <Alert
+                  t={t}
+                  title="アップロード完了"
+                  usage="success"
+                  message="アップロードが完了しました"
+                />
+              ))
+              const { data } = await supabase.storage
+                .from("management")
+                .list(`${userId}/story`, {
+                  limit: 100,
+                  offset: 0,
+                  sortBy: { column: "name", order: "asc" },
+                })
+              if (data) {
+                return data?.length >= 3 && router.reload()
+              }
+
+              router.push(`/myPage/${userId}/contents`)
+            })
             .catch(error => {
               toast.custom(t => (
                 <Alert
@@ -66,7 +90,7 @@ const UploadStoryImageFormComp: VFC<UpdateImageFormProps> = ({ userId }) => {
       "image/png",
       1
     )
-  }, [crop, img?.name, previewCanvasRef, userId])
+  }, [crop, img?.name, previewCanvasRef, router, userId])
   useEffect(() => {
     if (iconRef.current) {
       timeline.from(iconRef.current, {
@@ -90,7 +114,7 @@ const UploadStoryImageFormComp: VFC<UpdateImageFormProps> = ({ userId }) => {
 
   return (
     <div className="p-4 w-full">
-      <div className="flex justify-center items-center w-full">
+      <div className="flex justify-center items-center mb-4 w-full">
         <label className="flex relative flex-col items-center py-6 px-4 w-full tracking-wide text-white uppercase bg-purple-500 rounded-lg cursor-pointer">
           <div ref={iconRef} className="absolute -top-5 -right-5">
             <CheckCircleIcon className="w-10 h-10 text-yellow-400 bg-purple-500 rounded-full" />
@@ -114,17 +138,19 @@ const UploadStoryImageFormComp: VFC<UpdateImageFormProps> = ({ userId }) => {
       </div>
 
       <div className="flex justify-around items-center mb-4">
-        {upImgUrl && (
-          <ReactCrop
-            src={upImgUrl}
-            onImageLoaded={onLoad}
-            crop={crop}
-            onChange={onChangeCrop}
-            onComplete={onCompleteCrop}
-          />
-        )}
+        <div className="w-1/2">
+          {upImgUrl && (
+            <ReactCrop
+              src={upImgUrl}
+              onImageLoaded={onLoad}
+              crop={crop}
+              onChange={onChangeCrop}
+              onComplete={onCompleteCrop}
+            />
+          )}
+        </div>
 
-        <div>
+        <div className="w-1/2">
           <canvas
             ref={previewCanvasRef}
             // Rounding is important so the canvas width and height matches/is a multiple for sharpness.

@@ -46,6 +46,16 @@ const UploadAvatorFormComp: VFC<UpdateImageFormProps> = ({ userId }) => {
               cacheControl: "3600",
               upsert: true,
             })
+            .then(() => {
+              toast.custom(t => (
+                <Alert
+                  t={t}
+                  title="アップロード完了"
+                  usage="success"
+                  message="アップロードが完了しました"
+                />
+              ))
+            })
             .catch(error => {
               toast.custom(t => (
                 <Alert
@@ -88,7 +98,7 @@ const UploadAvatorFormComp: VFC<UpdateImageFormProps> = ({ userId }) => {
 
   return (
     <div className="p-4 w-full">
-      <div className="flex justify-center items-center w-full">
+      <div className="flex justify-center items-center mb-4 w-full">
         <label className="flex relative flex-col items-center py-6 px-4 w-full tracking-wide text-white uppercase bg-purple-500 rounded-lg cursor-pointer">
           <div ref={iconRef} className="absolute -top-5 -right-5">
             <CheckCircleIcon className="w-10 h-10 text-yellow-400 bg-purple-500 rounded-full" />
@@ -112,17 +122,19 @@ const UploadAvatorFormComp: VFC<UpdateImageFormProps> = ({ userId }) => {
       </div>
 
       <div className="flex justify-around items-center mb-4">
-        {upImgUrl && (
-          <ReactCrop
-            src={upImgUrl}
-            onImageLoaded={onLoad}
-            crop={crop}
-            onChange={onChangeCrop}
-            onComplete={onCompleteCrop}
-          />
-        )}
+        <div className="w-1/2">
+          {upImgUrl && (
+            <ReactCrop
+              src={upImgUrl}
+              onImageLoaded={onLoad}
+              crop={crop}
+              onChange={onChangeCrop}
+              onComplete={onCompleteCrop}
+            />
+          )}
+        </div>
 
-        <div>
+        <div className="w-1/2">
           <canvas
             ref={previewCanvasRef}
             // Rounding is important so the canvas width and height matches/is a multiple for sharpness.
