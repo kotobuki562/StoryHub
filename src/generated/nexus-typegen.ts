@@ -112,7 +112,6 @@ export interface NexusGenObjects {
   Review: { // root type
     created_at?: NexusGenScalars['DateTime'] | null; // DateTime
     id?: string | null; // ID
-    publish?: boolean | null; // Boolean
     review_body?: string | null; // String
     review_title?: string | null; // String
     stars?: number | null; // Int
@@ -321,9 +320,10 @@ export interface NexusGenFieldTypes {
     QueryPage: NexusGenRootTypes['Page'] | null; // Page
     QueryPageCountByChapterId: number | null; // Int
     QueryPages: Array<NexusGenRootTypes['Page'] | null> | null; // [Page]
-    QueryPublishReviewsCount: number | null; // Int
     QueryReviewById: NexusGenRootTypes['Review'] | null; // Review
     QueryReviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
+    QueryReviewsByStoryId: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
+    QueryReviewsCount: number | null; // Int
     QuerySeasonById: NexusGenRootTypes['Season'] | null; // Season
     QuerySeasons: Array<NexusGenRootTypes['Season'] | null> | null; // [Season]
     QuerySeasonsCountByPublish: number | null; // Int
@@ -340,14 +340,12 @@ export interface NexusGenFieldTypes {
     QueryTerminologiesCountByPublish: number | null; // Int
     QueryTerminologiesCountByUnPublish: number | null; // Int
     QueryTerminologyById: NexusGenRootTypes['Terminology'] | null; // Terminology
-    QueryUnPublishReviewsCount: number | null; // Int
     QueryUserById: NexusGenRootTypes['User'] | null; // User
     QueryUsers: Array<NexusGenRootTypes['User'] | null> | null; // [User]
   }
   Review: { // field return type
     created_at: NexusGenScalars['DateTime'] | null; // DateTime
     id: string | null; // ID
-    publish: boolean | null; // Boolean
     review_body: string | null; // String
     review_title: string | null; // String
     stars: number | null; // Int
@@ -568,9 +566,10 @@ export interface NexusGenFieldTypeNames {
     QueryPage: 'Page'
     QueryPageCountByChapterId: 'Int'
     QueryPages: 'Page'
-    QueryPublishReviewsCount: 'Int'
     QueryReviewById: 'Review'
     QueryReviews: 'Review'
+    QueryReviewsByStoryId: 'Review'
+    QueryReviewsCount: 'Int'
     QuerySeasonById: 'Season'
     QuerySeasons: 'Season'
     QuerySeasonsCountByPublish: 'Int'
@@ -587,14 +586,12 @@ export interface NexusGenFieldTypeNames {
     QueryTerminologiesCountByPublish: 'Int'
     QueryTerminologiesCountByUnPublish: 'Int'
     QueryTerminologyById: 'Terminology'
-    QueryUnPublishReviewsCount: 'Int'
     QueryUserById: 'User'
     QueryUsers: 'User'
   }
   Review: { // field return type name
     created_at: 'DateTime'
     id: 'ID'
-    publish: 'Boolean'
     review_body: 'String'
     review_title: 'String'
     stars: 'Int'
@@ -694,7 +691,6 @@ export interface NexusGenArgTypes {
   Mutation: {
     createReview: { // args
       acessToken: string; // String!
-      publish: boolean; // Boolean!
       reviewBody: string; // String!
       reviewTitle: string; // String!
       stars: number; // Int!
@@ -746,7 +742,6 @@ export interface NexusGenArgTypes {
     }
     updateReview: { // args
       acessToken: string; // String!
-      publish: boolean; // Boolean!
       reviewBody: string; // String!
       reviewId: string; // String!
       reviewTitle: string; // String!
@@ -953,6 +948,9 @@ export interface NexusGenArgTypes {
       searchTitle?: string | null; // String
       serchUserId?: string | null; // String
     }
+    QueryReviewsByStoryId: { // args
+      storyId: string; // String!
+    }
     QuerySeasonById: { // args
       id: string; // String!
     }
@@ -1033,10 +1031,6 @@ export interface NexusGenArgTypes {
     }
   }
   Story: {
-    reviews: { // args
-      reviewAccessToken?: string | null; // String
-      reviewUserId?: string | null; // String
-    }
     seasons: { // args
       seasonAccessToken?: string | null; // String
       seasonUserId?: string | null; // String

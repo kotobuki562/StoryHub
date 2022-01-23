@@ -23,8 +23,8 @@ const StoryCardComp: VFC<NexusGenFieldTypes["Story"]> = ({
   >
     <div className="absolute inset-0 bg-black/50 group-hover:opacity-75 transition duration-300 ease-in-out"></div>
     <div className="flex relative flex-col justify-between p-2 w-full h-full">
-      <div className="flex justify-between items-center text-white">
-        <div className="flex items-center text-sm sm:text-base">
+      <div className="flex justify-between text-white">
+        <div className="flex text-sm sm:text-base">
           <div className="mr-2 min-w-[2rem]">
             <img
               className="w-8 h-8 rounded-full"

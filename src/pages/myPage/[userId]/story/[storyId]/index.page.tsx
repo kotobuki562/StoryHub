@@ -26,24 +26,24 @@ const UpdateStory = gql`
   mutation Mutation(
     $storyId: String!
     $storyTitle: String!
+    $storySynopsis: String!
     $storyCategories: [String!]!
     $publish: Boolean!
-    $storyImage: String
-    $viewingRestriction: String
-    $storySynopsis: String
     $acessToken: String!
     $userId: String!
+    $storyImage: String
+    $viewingRestriction: String
   ) {
     updateStory(
       storyId: $storyId
       storyTitle: $storyTitle
+      storySynopsis: $storySynopsis
       storyCategories: $storyCategories
       publish: $publish
-      storyImage: $storyImage
-      viewingRestriction: $viewingRestriction
-      storySynopsis: $storySynopsis
       acessToken: $acessToken
       userId: $userId
+      storyImage: $storyImage
+      viewingRestriction: $viewingRestriction
     ) {
       id
     }
