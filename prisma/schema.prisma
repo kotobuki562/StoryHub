@@ -37,6 +37,15 @@ model Review {
   story        Story?    @relation(fields: [story_id], references: [id])
 }
 
+model Favorite {
+  id         Int      @id @unique @default(autoincrement())
+  user_id    String
+  story_id   String
+  created_at DateTime @default(now())
+  user       User?    @relation(fields: [user_id], references: [id])
+  story      Story?   @relation(fields: [story_id], references: [id])
+}
+
 model Follow {
   id         Int      @id @unique @default(autoincrement())
   user_id    String
@@ -80,19 +89,18 @@ model Character {
 }
 
 model Object {
-  id                  String  @id @default(uuid())
+  id                  String          @id @default(uuid())
   setting_material_id String
   season_id           String?
-
-  object_name     String
-  object_deal     String
-  object_image    String?
-  isSpoiler       Boolean         @default(false) @db.Boolean
-  publish         Boolean         @default(false) @db.Boolean
-  created_at      DateTime        @default(now())
-  updated_at      DateTime?
-  settingMaterial SettingMaterial @relation(fields: [setting_material_id], references: [id])
-  season          Season?         @relation(fields: [season_id], references: [id])
+  object_name         String
+  object_deal         String
+  object_image        String?
+  isSpoiler           Boolean         @default(false) @db.Boolean
+  publish             Boolean         @default(false) @db.Boolean
+  created_at          DateTime        @default(now())
+  updated_at          DateTime?
+  settingMaterial     SettingMaterial @relation(fields: [setting_material_id], references: [id])
+  season              Season?         @relation(fields: [season_id], references: [id])
 }
 
 model Terminology {
@@ -107,15 +115,6 @@ model Terminology {
   updated_at          DateTime?
   settingMaterial     SettingMaterial @relation(fields: [setting_material_id], references: [id])
   season              Season?         @relation(fields: [season_id], references: [id])
-}
-
-model Favorite {
-  id         Int      @id @unique @default(autoincrement())
-  user_id    String
-  story_id   String
-  created_at DateTime @default(now())
-  user       User?    @relation(fields: [user_id], references: [id])
-  story      Story?   @relation(fields: [story_id], references: [id])
 }
 
 model Story {

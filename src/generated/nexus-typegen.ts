@@ -240,13 +240,16 @@ export interface NexusGenFieldTypes {
     user_id: string | null; // String
   }
   Mutation: { // field return type
+    createReview: NexusGenRootTypes['Review'] | null; // Review
     createSeason: NexusGenRootTypes['Season'] | null; // Season
     createStory: NexusGenRootTypes['Story'] | null; // Story
     createUser: NexusGenRootTypes['User'] | null; // User
+    deleteReview: NexusGenRootTypes['Review'] | null; // Review
     deleteSeason: NexusGenRootTypes['Season'] | null; // Season
     deleteStory: NexusGenRootTypes['Story'] | null; // Story
     deleteUser: NexusGenRootTypes['User'] | null; // User
     signupUser: NexusGenRootTypes['User'] | null; // User
+    updateReview: NexusGenRootTypes['Review'] | null; // Review
     updateSeason: NexusGenRootTypes['Season'] | null; // Season
     updateStory: NexusGenRootTypes['Story'] | null; // Story
     updateUser: NexusGenRootTypes['User'] | null; // User
@@ -484,13 +487,16 @@ export interface NexusGenFieldTypeNames {
     user_id: 'String'
   }
   Mutation: { // field return type name
+    createReview: 'Review'
     createSeason: 'Season'
     createStory: 'Story'
     createUser: 'User'
+    deleteReview: 'Review'
     deleteSeason: 'Season'
     deleteStory: 'Story'
     deleteUser: 'User'
     signupUser: 'User'
+    updateReview: 'Review'
     updateSeason: 'Season'
     updateStory: 'Story'
     updateUser: 'User'
@@ -686,6 +692,14 @@ export interface NexusGenArgTypes {
     }
   }
   Mutation: {
+    createReview: { // args
+      acessToken: string; // String!
+      publish: boolean; // Boolean!
+      reviewBody: string; // String!
+      reviewTitle: string; // String!
+      stars: number; // Int!
+      storyId: string; // String!
+    }
     createSeason: { // args
       acessToken: string; // String!
       publish: boolean; // Boolean!
@@ -709,6 +723,11 @@ export interface NexusGenArgTypes {
       userDeal: string; // String!
       userName: string; // String!
     }
+    deleteReview: { // args
+      acessToken: string; // String!
+      reviewId: string; // String!
+      userId: string; // String!
+    }
     deleteSeason: { // args
       acessToken: string; // String!
       seasonId: string; // String!
@@ -724,6 +743,15 @@ export interface NexusGenArgTypes {
       email: string; // String!
       password: string; // String!
       userName?: string | null; // String
+    }
+    updateReview: { // args
+      acessToken: string; // String!
+      publish: boolean; // Boolean!
+      reviewBody: string; // String!
+      reviewId: string; // String!
+      reviewTitle: string; // String!
+      stars: number; // Int!
+      userId: string; // String!
     }
     updateSeason: { // args
       acessToken: string; // String!

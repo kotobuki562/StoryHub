@@ -26,6 +26,11 @@ import { Story } from "src/pages/api/models/story"
 import { Terminology } from "src/pages/api/models/terminology"
 import { User } from "src/pages/api/models/user"
 import {
+  createReview,
+  deleteReview,
+  updateReview,
+} from "src/pages/api/mutations/review"
+import {
   createSeason,
   deleteSeason,
   updateSeason,
@@ -276,6 +281,11 @@ const Mutation = objectType({
     createSeason(t)
     updateSeason(t)
     deleteSeason(t)
+
+    // レビューのミューテーション
+    createReview(t)
+    updateReview(t)
+    deleteReview(t)
   },
 })
 
