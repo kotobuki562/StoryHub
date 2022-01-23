@@ -24,7 +24,6 @@ const QueryReviews = (t: ObjectDefinitionBlock<"Query">) =>
           ...(args.serchUserId && {
             user_id: args.serchUserId,
           }),
-          publish: true,
         },
       })
       return reviews
@@ -83,28 +82,11 @@ const QueryMyReviewById = (t: ObjectDefinitionBlock<"Query">) =>
     },
   })
 
-const QueryPublishReviewsCount = (t: ObjectDefinitionBlock<"Query">) =>
-  t.field("QueryPublishReviewsCount", {
+const QueryReviewsCount = (t: ObjectDefinitionBlock<"Query">) =>
+  t.field("QueryReviewsCount", {
     type: "Int",
     resolve: async (_parent, _args) => {
-      const count = await prisma.review.count({
-        where: {
-          publish: true,
-        },
-      })
-      return count
-    },
-  })
-
-const QueryUnPublishReviewsCount = (t: ObjectDefinitionBlock<"Query">) =>
-  t.field("QueryUnPublishReviewsCount", {
-    type: "Int",
-    resolve: async (_parent, _args) => {
-      const count = await prisma.review.count({
-        where: {
-          publish: false,
-        },
-      })
+      const count = await prisma.review.count()
       return count
     },
   })
@@ -112,8 +94,7 @@ const QueryUnPublishReviewsCount = (t: ObjectDefinitionBlock<"Query">) =>
 export {
   QueryMyReviewById,
   QueryMyReviews,
-  QueryPublishReviewsCount,
   QueryReviewById,
   QueryReviews,
-  QueryUnPublishReviewsCount,
+  QueryReviewsCount,
 }

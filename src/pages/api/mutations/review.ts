@@ -1,6 +1,5 @@
 import { intArg, nonNull, stringArg } from "nexus"
 import type { ObjectDefinitionBlock } from "nexus/dist/core"
-import { booleanArg } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
 import { decodeUserId, isSafe } from "src/pages/api/index.page"
 
@@ -26,7 +25,6 @@ const createReview = (t: ObjectDefinitionBlock<"Mutation">) => {
       reviewTitle: nonNull(stringArg()),
       reviewBody: nonNull(stringArg()),
       stars: nonNull(intArg()),
-      publish: nonNull(booleanArg()),
       acessToken: nonNull(stringArg()),
     },
     resolve: (_, args, _ctx) =>
@@ -37,7 +35,6 @@ const createReview = (t: ObjectDefinitionBlock<"Mutation">) => {
           review_title: args.reviewTitle,
           review_body: args.reviewBody,
           stars: args.stars,
-          publish: args.publish,
         },
       }),
   })
@@ -51,7 +48,6 @@ const updateReview = (t: ObjectDefinitionBlock<"Mutation">) => {
       reviewTitle: nonNull(stringArg()),
       reviewBody: nonNull(stringArg()),
       stars: nonNull(intArg()),
-      publish: nonNull(booleanArg()),
       acessToken: nonNull(stringArg()),
       userId: nonNull(stringArg()),
     },
@@ -65,7 +61,7 @@ const updateReview = (t: ObjectDefinitionBlock<"Mutation">) => {
               review_title: args.reviewTitle,
               review_body: args.reviewBody,
               stars: args.stars,
-              publish: args.publish,
+
               updated_at: new Date(),
             },
           })

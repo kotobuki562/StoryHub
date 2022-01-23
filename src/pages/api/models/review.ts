@@ -10,7 +10,6 @@ const Review = objectType({
     t.string("review_title")
     t.string("review_body")
     t.int("stars")
-    t.boolean("publish")
     t.date("created_at")
     t.nullable.date("updated_at")
     t.field("user", {

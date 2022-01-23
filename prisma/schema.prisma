@@ -29,8 +29,7 @@ model Review {
   story_id     String?
   review_title String
   review_body  String
-  stars        Int       @default(0)
-  publish      Boolean   @default(false) @db.Boolean
+  stars        Int       @default(1)
   created_at   DateTime  @default(now())
   updated_at   DateTime?
   user         User?     @relation(fields: [user_id], references: [id])
