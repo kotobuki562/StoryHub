@@ -159,7 +159,7 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => (
             children: <div className="flex flex-col items-center">review</div>,
           },
           {
-            label: "設定資料",
+            label: "お気に入り",
             children: <div className="flex flex-col items-center">setting</div>,
           },
         ]}

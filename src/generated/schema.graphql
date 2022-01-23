@@ -227,7 +227,7 @@ type Story {
   favorites: [Favorite]
   id: ID
   publish: Boolean
-  reviews: [Review]
+  reviews(reviewAccessToken: String, reviewUserId: String): [Review]
   seasons(seasonAccessToken: String, seasonUserId: String): [Season]
   story_categories: [String]
   story_image: String

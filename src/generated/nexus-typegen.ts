@@ -1033,6 +1033,10 @@ export interface NexusGenArgTypes {
     }
   }
   Story: {
+    reviews: { // args
+      reviewAccessToken?: string | null; // String
+      reviewUserId?: string | null; // String
+    }
     seasons: { // args
       seasonAccessToken?: string | null; // String
       seasonUserId?: string | null; // String

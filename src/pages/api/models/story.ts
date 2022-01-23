@@ -8,6 +8,11 @@ const seasonArgs = {
   seasonUserId: nullable(stringArg()),
 }
 
+const reviewArgs = {
+  reviewAccessToken: nullable(stringArg()),
+  reviewUserId: nullable(stringArg()),
+}
+
 const Story = objectType({
   name: "Story",
   definition(t) {
@@ -46,15 +51,26 @@ const Story = objectType({
     })
     t.list.field("reviews", {
       type: "Review",
-      resolve: parent =>
-        parent.id
+      args: reviewArgs,
+      resolve: (parent, args) => {
+        const { reviewAccessToken, reviewUserId } = args
+        return reviewAccessToken &&
+          reviewUserId &&
+          isSafe(reviewAccessToken, reviewUserId)
           ? prisma.review.findMany({
+              orderBy: { created_at: "desc" },
               where: {
-                story_id: parent.id,
+                story_id: `${parent.id}`,
+              },
+            })
+          : prisma.review.findMany({
+              orderBy: { created_at: "desc" },
+              where: {
+                story_id: `${parent.id}`,
                 publish: true,
               },
             })
-          : [],
+      },
     })
     t.list.field("favorites", {
       type: "Favorite",

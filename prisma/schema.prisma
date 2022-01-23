@@ -10,17 +10,17 @@ datasource db {
 }
 
 model User {
-  id              String            @id @unique @default(uuid())
-  user_name       String?
-  user_deal       String?
-  image           String?
-  created_at      DateTime          @default(now())
-  updated_at      DateTime?
-  stories         Story[]
-  reviews         Review[]
-  follows         Follow[]
-  favorites       Favorite[]
-  SettingMaterial SettingMaterial[]
+  id               String            @id @unique @default(uuid())
+  user_name        String?
+  user_deal        String?
+  image            String?
+  created_at       DateTime          @default(now())
+  updated_at       DateTime?
+  stories          Story[]
+  reviews          Review[]
+  follows          Follow[]
+  favorites        Favorite[]
+  settingMaterials SettingMaterial[]
 }
 
 model Review {
@@ -66,9 +66,9 @@ model SettingMaterial {
   updated_at             DateTime?
   user                   User?         @relation(fields: [user_id], references: [id])
   story                  Story?        @relation(fields: [story_id], references: [id])
-  Character              Character[]
-  Object                 Object[]
-  Terminology            Terminology[]
+  characters             Character[]
+  objects                Object[]
+  terminologies          Terminology[]
 }
 
 model Character {
@@ -146,9 +146,9 @@ model Season {
   updated_at      DateTime?
   story           Story?        @relation(fields: [story_id], references: [id])
   episodes        Episode[]
-  Character       Character[]
-  Object          Object[]
-  Terminology     Terminology[]
+  characters      Character[]
+  objects         Object[]
+  terminologies   Terminology[]
 }
 
 model Episode {
