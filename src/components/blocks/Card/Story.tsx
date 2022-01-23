@@ -25,7 +25,7 @@ const StoryCardComp: VFC<NexusGenFieldTypes["Story"]> = ({
     <div className="flex relative flex-col justify-between p-2 w-full h-full">
       <div className="flex justify-between items-center text-white">
         <div className="flex items-center text-sm sm:text-base">
-          <div className="mr-2 w-8">
+          <div className="mr-2 min-w-[2rem]">
             <img
               className="w-8 h-8 rounded-full"
               src={user?.image || "/img/Vector.png"}
@@ -38,7 +38,7 @@ const StoryCardComp: VFC<NexusGenFieldTypes["Story"]> = ({
         </div>
         {viewing_restriction && (
           <div>
-            <p className="py-1 px-2 text-lg font-bold bg-purple-400 rounded-full">
+            <p className="py-1 px-2 font-bold bg-purple-400 rounded-full">
               {viewing_restriction}
             </p>
           </div>

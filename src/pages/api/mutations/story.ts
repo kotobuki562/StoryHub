@@ -9,7 +9,7 @@ const createStory = (t: ObjectDefinitionBlock<"Mutation">) => {
     type: "Story",
     args: {
       storyTitle: nonNull(stringArg()),
-      storySynopsis: nullable(stringArg()),
+      storySynopsis: nonNull(stringArg()),
       storyCategories: nonNull(list(nonNull(stringArg()))),
       storyImage: nullable(stringArg()),
       viewingRestriction: nullable(stringArg()),
@@ -37,7 +37,7 @@ const updateStory = (t: ObjectDefinitionBlock<"Mutation">) => {
     args: {
       storyId: nonNull(stringArg()),
       storyTitle: nonNull(stringArg()),
-      storySynopsis: nullable(stringArg()),
+      storySynopsis: nonNull(stringArg()),
       storyCategories: nonNull(list(nonNull(stringArg()))),
       storyImage: nullable(stringArg()),
       viewingRestriction: nullable(stringArg()),
@@ -52,7 +52,7 @@ const updateStory = (t: ObjectDefinitionBlock<"Mutation">) => {
               id: `${args.storyId}`,
             },
             data: {
-              story_title: `${args.storyTitle}`,
+              story_title: args.storyTitle,
               story_synopsis: args.storySynopsis,
               story_categories: args.storyCategories,
               story_image: args.storyImage,
