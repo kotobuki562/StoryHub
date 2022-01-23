@@ -16,7 +16,7 @@ const ReviewCardComp: VFC<NexusGenFieldTypes["Review"]> = ({
   stars,
   user,
 }) => (
-  <article className="flex flex-col items-center p-4 max-w-[300px] rounded-xl border-2 border-purple-500">
+  <article className="flex flex-col justify-between items-center p-4 w-full h-full bg-white">
     <div className="flex justify-start items-center mb-2 w-full text-sm sm:text-base">
       <div className="mr-2 min-w-[2.5rem]">
         <img

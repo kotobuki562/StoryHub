@@ -25,7 +25,7 @@ const CreateStory = gql`
     $storyCategories: [String!]!
     $publish: Boolean!
     $acessToken: String!
-    $storySynopsis: String
+    $storySynopsis: String!
     $storyImage: String
     $viewingRestriction: String
   ) {

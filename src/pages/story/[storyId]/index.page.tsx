@@ -267,7 +267,7 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
                 <div className="flex flex-col items-center w-full">
                   {data?.QueryReviewsByStoryId &&
                     data?.QueryReviewsByStoryId.length > 0 && (
-                      <div className="flex flex-wrap gap-5 justify-center items-center w-full">
+                      <div className="grid grid-cols-1 gap-1 justify-center items-center w-full bg-purple-100 sm:grid-cols-2 lg:grid-cols-3">
                         {data?.QueryReviewsByStoryId?.map(review => (
                           <ReviewCard key={review?.id} {...review} />
                         ))}
