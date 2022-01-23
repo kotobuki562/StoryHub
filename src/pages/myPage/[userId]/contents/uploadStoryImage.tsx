@@ -33,6 +33,8 @@ const UploadStoryImageFormComp: VFC<UpdateImageFormProps> = ({ userId }) => {
   } = useResize({
     // A4: 210mm x 297mmの比率
     aspect: 210 / 297,
+    maxWidth: 301.8,
+    maxHeight: 427,
   })
 
   const handleUpdateUserProfileImage = useCallback(() => {

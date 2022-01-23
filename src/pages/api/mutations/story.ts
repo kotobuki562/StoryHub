@@ -2,20 +2,7 @@ import { list, nonNull, nullable, stringArg } from "nexus"
 import type { ObjectDefinitionBlock } from "nexus/dist/core"
 import { booleanArg } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
-import { decodeUserId } from "src/pages/api/index.page"
-
-// model Story {
-//   id                  String            @id @unique @default(uuid())
-//   user_id             String
-//   story_title         String
-//   story_synopsis      String?
-//   story_image         String?
-//   story_categories    String[]
-//   viewing_restriction String?
-//   publish             Boolean           @default(false) @db.Boolean
-//   created_at          DateTime          @default(now())
-//   updated_at          DateTime?
-// }
+import { decodeUserId, isSafe } from "src/pages/api/index.page"
 
 const createStory = (t: ObjectDefinitionBlock<"Mutation">) => {
   t.field("createStory", {
@@ -55,22 +42,26 @@ const updateStory = (t: ObjectDefinitionBlock<"Mutation">) => {
       storyImage: nullable(stringArg()),
       viewingRestriction: nullable(stringArg()),
       publish: nonNull(booleanArg()),
+      acessToken: nonNull(stringArg()),
+      userId: nonNull(stringArg()),
     },
     resolve: (_, args) =>
-      prisma.story.update({
-        where: {
-          id: `${args.storyId}`,
-        },
-        data: {
-          story_title: `${args.storyTitle}`,
-          story_synopsis: args.storySynopsis,
-          story_categories: args.storyCategories,
-          story_image: args.storyImage,
-          viewing_restriction: args.viewingRestriction,
-          publish: args.publish,
-          updated_at: new Date(),
-        },
-      }),
+      isSafe(args.acessToken, args.userId)
+        ? prisma.story.update({
+            where: {
+              id: `${args.storyId}`,
+            },
+            data: {
+              story_title: `${args.storyTitle}`,
+              story_synopsis: args.storySynopsis,
+              story_categories: args.storyCategories,
+              story_image: args.storyImage,
+              viewing_restriction: args.viewingRestriction,
+              publish: args.publish,
+              updated_at: new Date(),
+            },
+          })
+        : null,
   })
 }
 

@@ -710,12 +710,14 @@ export interface NexusGenArgTypes {
       userName?: string | null; // String
     }
     updateStory: { // args
+      acessToken: string; // String!
       publish: boolean; // Boolean!
       storyCategories: string[]; // [String!]!
       storyId: string; // String!
       storyImage?: string | null; // String
       storySynopsis?: string | null; // String
       storyTitle: string; // String!
+      userId: string; // String!
       viewingRestriction?: string | null; // String
     }
     updateUser: { // args

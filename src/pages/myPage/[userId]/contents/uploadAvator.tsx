@@ -29,6 +29,8 @@ const UploadAvatorFormComp: VFC<UpdateImageFormProps> = ({ userId }) => {
     upImgUrl,
   } = useResize({
     aspect: 1,
+    maxWidth: 300,
+    maxHeight: 300,
   })
 
   const handleUpdateUserProfileImage = useCallback(() => {

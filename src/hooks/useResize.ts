@@ -5,18 +5,22 @@ import Resizer from "react-image-file-resizer"
 
 type UseAvatar = {
   aspect?: number
+  maxWidth: number
+  maxHeight: number
 }
 
 const resizeFile = (
-  file: Blob
+  file: Blob,
+  maxWidth: number,
+  maxHeight: number
 ): Promise<string | Blob | File | ProgressEvent<FileReader>> =>
   new Promise(resolve => {
     Resizer.imageFileResizer(
       file,
-      400,
-      400,
+      maxWidth,
+      maxHeight,
       "JPEG",
-      70,
+      80,
       0,
       uri => {
         resolve(uri)
@@ -25,7 +29,7 @@ const resizeFile = (
     )
   })
 
-const useResize = ({ aspect }: UseAvatar) => {
+const useResize = ({ aspect, maxHeight, maxWidth }: UseAvatar) => {
   const [upImgUrl, setUpImgUrl] = useState<string | null>(null)
   const [img, setImg] = useState<File | null>(null)
   const imgRef = useRef<HTMLImageElement>(null)
@@ -51,7 +55,7 @@ const useResize = ({ aspect }: UseAvatar) => {
       if (e.target.files && e.target.files.length > 0) {
         const file = e.target.files[0]
         setImg(file)
-        const resizedFile = await resizeFile(file)
+        const resizedFile = await resizeFile(file, maxWidth, maxHeight)
         // resizeFileはbase64なので、Fileに変換する
         const bin = window.atob(`${resizedFile}`.replace(/^.*,/, ""))
         const buffer = new Uint8Array(bin.length)
@@ -74,7 +78,7 @@ const useResize = ({ aspect }: UseAvatar) => {
         }
       }
     },
-    []
+    [maxHeight, maxWidth]
   )
 
   const onLoad = useCallback((img: HTMLImageElement) => {
