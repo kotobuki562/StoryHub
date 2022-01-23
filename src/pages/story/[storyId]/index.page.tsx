@@ -1,17 +1,21 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable import/no-default-export */
+import { useQuery } from "@apollo/client"
 import { PencilAltIcon } from "@heroicons/react/solid"
 import { format } from "date-fns"
 import gql from "graphql-tag"
 import type { GetStaticPropsContext, NextPage } from "next"
 import { useCallback, useMemo, useState } from "react"
+import { ReviewCard } from "src/components/blocks/Card/Review"
+import { SeasonCard } from "src/components/blocks/Card/Season"
 import { Modal } from "src/components/blocks/Modal"
 import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout"
 import { client } from "src/lib/apollo"
 import { supabase } from "src/lib/supabase"
 import { STORY_PAGE_SIZE } from "src/tools/page"
+import type { QueryReviewsByStoryId } from "src/types/Review/query"
 import type { QueryStories, QueryStoryById } from "src/types/Story/query"
 
 import { CreateReviewForm } from "./createReview"
@@ -38,29 +42,28 @@ const StoryQueryById = gql`
       updated_at
       seasons {
         id
-        story_id
         season_title
         season_image
-        season_synopsis
-        publish
         created_at
-        updated_at
-      }
-      reviews {
-        id
-        user_id
-        story_id
-        review_title
-        review_body
-        stars
       }
       favorites {
         id
-        user {
-          id
-          user_name
-          image
-        }
+      }
+    }
+  }
+`
+const ReviewsQueryByStoryId = gql`
+  query QueryReviewsByStoryId($storyId: String!) {
+    QueryReviewsByStoryId(storyId: $storyId) {
+      id
+      user_id
+      review_title
+      stars
+      created_at
+      user {
+        id
+        user_name
+        image
       }
     }
   }
@@ -133,13 +136,19 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 }
 
 const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
+  const { data } = useQuery<QueryReviewsByStoryId>(ReviewsQueryByStoryId, {
+    variables: {
+      storyId: story.QueryStoryById.id,
+    },
+  })
+
   const user = supabase.auth.user()
   const isCreateReview = useMemo(
     () =>
-      !!story.QueryStoryById.reviews?.find(
+      !!data?.QueryReviewsByStoryId?.find(
         review => review?.user_id === user?.id
       ),
-    [story.QueryStoryById.reviews, user?.id]
+    [data?.QueryReviewsByStoryId, user?.id]
   )
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false)
 
@@ -199,7 +208,7 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
           user?.id &&
           !isCreateReview && (
             <>
-              <div className="fixed right-5 bottom-5">
+              <div className="fixed right-5 bottom-5 z-10">
                 <button
                   onClick={handleOpenModal}
                   className="flex flex-col justify-center items-center p-2 w-16 h-16 text-yellow-300 bg-purple-500 rounded-full focus:ring-2 ring-purple-300 duration-200 sm:p-4 sm:w-20 sm:h-20"
@@ -221,23 +230,54 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
           color="purple"
           values={[
             {
-              label: "シーズン",
+              label: `${story.QueryStoryById?.seasons?.length}個のシーズン`,
               children: (
-                <div className="flex flex-col items-center">
-                  {story.QueryStoryById.seasons?.length}
+                <div className="flex flex-col items-center w-full">
+                  {story.QueryStoryById.seasons &&
+                    story.QueryStoryById.seasons.length > 0 && (
+                      <div className="flex flex-wrap gap-5 justify-center items-center w-full">
+                        {story.QueryStoryById.seasons?.map((season, index) => (
+                          <SeasonCard
+                            characters={null}
+                            created_at={undefined}
+                            episodes={null}
+                            id={null}
+                            objects={null}
+                            publish={null}
+                            season_image={null}
+                            season_synopsis={null}
+                            season_title={null}
+                            story={null}
+                            story_id={null}
+                            terminologies={null}
+                            updated_at={undefined}
+                            key={season?.id}
+                            {...season}
+                            seasonNumber={index + 1}
+                          />
+                        ))}
+                      </div>
+                    )}
                 </div>
               ),
             },
             {
-              label: "レビュー",
+              label: `${data?.QueryReviewsByStoryId?.length}件のレビュー`,
               children: (
-                <div className="flex flex-col items-center">
-                  {story.QueryStoryById.reviews?.length}
+                <div className="flex flex-col items-center w-full">
+                  {data?.QueryReviewsByStoryId &&
+                    data?.QueryReviewsByStoryId.length > 0 && (
+                      <div className="flex flex-wrap gap-5 justify-center items-center w-full">
+                        {data?.QueryReviewsByStoryId?.map(review => (
+                          <ReviewCard key={review?.id} {...review} />
+                        ))}
+                      </div>
+                    )}
                 </div>
               ),
             },
             {
-              label: "お気に入り",
+              label: `${story.QueryStoryById?.favorites?.length}個のお気に入り`,
               children: (
                 <div className="flex flex-col items-center">
                   {story.QueryStoryById.favorites?.length}

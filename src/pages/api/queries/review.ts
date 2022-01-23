@@ -82,6 +82,23 @@ const QueryMyReviewById = (t: ObjectDefinitionBlock<"Query">) =>
     },
   })
 
+const QueryReviewsByStoryId = (t: ObjectDefinitionBlock<"Query">) =>
+  t.list.field("QueryReviewsByStoryId", {
+    type: "Review",
+    args: {
+      storyId: nonNull(stringArg()),
+    },
+    resolve: async (_parent, { storyId }) => {
+      const reviews = await prisma.review.findMany({
+        orderBy: { created_at: "desc" },
+        where: {
+          story_id: storyId,
+        },
+      })
+      return reviews
+    },
+  })
+
 const QueryReviewsCount = (t: ObjectDefinitionBlock<"Query">) =>
   t.field("QueryReviewsCount", {
     type: "Int",
@@ -96,5 +113,6 @@ export {
   QueryMyReviews,
   QueryReviewById,
   QueryReviews,
+  QueryReviewsByStoryId,
   QueryReviewsCount,
 }

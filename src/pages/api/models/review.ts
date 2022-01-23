@@ -15,9 +15,11 @@ const Review = objectType({
     t.field("user", {
       type: "User",
       resolve: parent =>
-        prisma.user.findUnique({
-          where: { id: `${parent.user_id}` },
-        }),
+        parent.user_id
+          ? prisma.user.findUnique({
+              where: { id: parent.user_id },
+            })
+          : null,
     })
     t.field("story", {
       type: "Story",

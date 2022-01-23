@@ -322,6 +322,7 @@ export interface NexusGenFieldTypes {
     QueryPages: Array<NexusGenRootTypes['Page'] | null> | null; // [Page]
     QueryReviewById: NexusGenRootTypes['Review'] | null; // Review
     QueryReviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
+    QueryReviewsByStoryId: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
     QueryReviewsCount: number | null; // Int
     QuerySeasonById: NexusGenRootTypes['Season'] | null; // Season
     QuerySeasons: Array<NexusGenRootTypes['Season'] | null> | null; // [Season]
@@ -567,6 +568,7 @@ export interface NexusGenFieldTypeNames {
     QueryPages: 'Page'
     QueryReviewById: 'Review'
     QueryReviews: 'Review'
+    QueryReviewsByStoryId: 'Review'
     QueryReviewsCount: 'Int'
     QuerySeasonById: 'Season'
     QuerySeasons: 'Season'
@@ -945,6 +947,9 @@ export interface NexusGenArgTypes {
     QueryReviews: { // args
       searchTitle?: string | null; // String
       serchUserId?: string | null; // String
+    }
+    QueryReviewsByStoryId: { // args
+      storyId: string; // String!
     }
     QuerySeasonById: { // args
       id: string; // String!

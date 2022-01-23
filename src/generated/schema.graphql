@@ -153,6 +153,7 @@ type Query {
   QueryPages(serchSeasonId: String): [Page]
   QueryReviewById(id: String!): Review
   QueryReviews(searchTitle: String, serchUserId: String): [Review]
+  QueryReviewsByStoryId(storyId: String!): [Review]
   QueryReviewsCount: Int
   QuerySeasonById(id: String!): Season
   QuerySeasons(searchCategory: String, searchTitle: String, searchUserId: String): [Season]
