@@ -100,6 +100,11 @@ const HeaderComp = () => {
       label: "ブックマーク",
       icon: <BookmarkIcon className="w-6 h-6" />,
     },
+    {
+      href: `/myPage/${user?.QueryMe.id}/contents`,
+      label: "コンテンツ",
+      icon: <PhotographIcon className="w-6 h-6" />,
+    },
   ]
 
   const userStoryLinks = [

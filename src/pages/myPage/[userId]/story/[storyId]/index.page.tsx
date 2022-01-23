@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @next/next/no-img-element */
-import { gql, useMutation } from "@apollo/client"
+import { gql, useMutation, useQuery } from "@apollo/client"
 import cc from "classcat"
 import type { NextPage } from "next"
 import { useRouter } from "next/router"
@@ -14,48 +15,91 @@ import { Switch } from "src/components/atoms/Switch"
 import { TextArea } from "src/components/atoms/TextArea"
 import { Menu } from "src/components/blocks/Menu"
 import { Layout } from "src/components/Layout"
+import { LoadingLogo } from "src/components/Loading"
 import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { useStoryImage } from "src/hooks/storage/useStoryImage"
 import { supabase } from "src/lib/supabase"
 import { ageCategories, categories } from "src/tools/options"
+import type { QueryMyStoryById } from "src/types/Story/query"
 
-const CreateStory = gql`
+const UpdateStory = gql`
   mutation Mutation(
+    $storyId: String!
     $storyTitle: String!
     $storyCategories: [String!]!
     $publish: Boolean!
-    $acessToken: String!
-    $storySynopsis: String
     $storyImage: String
     $viewingRestriction: String
+    $storySynopsis: String
+    $acessToken: String!
+    $userId: String!
   ) {
-    createStory(
+    updateStory(
+      storyId: $storyId
       storyTitle: $storyTitle
       storyCategories: $storyCategories
       publish: $publish
-      acessToken: $acessToken
-      storySynopsis: $storySynopsis
       storyImage: $storyImage
       viewingRestriction: $viewingRestriction
+      storySynopsis: $storySynopsis
+      acessToken: $acessToken
+      userId: $userId
     ) {
       id
     }
   }
 `
 
-const CreateStoryPage: NextPage = () => {
+const MyStoryQuery = gql`
+  query QueryMyStoryById(
+    $queryMyStoryByIdId: String!
+    $userId: String!
+    $accessToken: String!
+  ) {
+    QueryMyStoryById(
+      id: $queryMyStoryByIdId
+      userId: $userId
+      accessToken: $accessToken
+    ) {
+      id
+      user_id
+      story_title
+      story_synopsis
+      story_categories
+      story_image
+      publish
+      viewing_restriction
+      created_at
+      updated_at
+    }
+  }
+`
+
+const EditStoryPage: NextPage = () => {
   const router = useRouter()
-  const { userId } = router.query
+  const { storyId, userId } = router.query
   const { storyImageUrls } = useStoryImage(userId as string)
   const [isPublish, setIsPublish] = useState<boolean>(false)
   const [storyImage, setStoryImage] = useState<string>("")
   const [isHiddenAgeCategoryMenu, setIsHiddenAgeCategoryMenu] =
     useState<boolean>(true)
   const accessToken = supabase.auth.session()?.access_token
+  const {
+    data: myStoryData,
+    error: myStoryError,
+    loading: isMyStoryLoading,
+  } = useQuery<QueryMyStoryById>(MyStoryQuery, {
+    variables: {
+      queryMyStoryByIdId: storyId as string,
+      userId: userId as string,
+      accessToken: `${accessToken}`,
+    },
+  })
+
   const [
-    createStory,
+    updateStory,
     { error: errorCreateStory, loading: isLoadingCreateStory },
-  ] = useMutation<NexusGenArgTypes["Mutation"]["createStory"]>(CreateStory)
+  ] = useMutation<NexusGenArgTypes["Mutation"]["updateStory"]>(UpdateStory)
   const [storyCategoryes, setStoryCategoryes] = useState<string[]>([])
 
   const handleTogglePublish = useCallback(() => {
@@ -109,6 +153,7 @@ const CreateStoryPage: NextPage = () => {
     handleSubmit,
     register,
     watch,
+    setValue,
   } = useForm({
     defaultValues: {
       viewingRestriction: "",
@@ -120,8 +165,10 @@ const CreateStoryPage: NextPage = () => {
   const { synopsis, title } = watch()
 
   const handleSubmitData = useCallback(async () => {
-    await createStory({
+    await updateStory({
       variables: {
+        userId: userId as string,
+        storyId: storyId as string,
         storyTitle: getValues("title"),
         storyCategories: storyCategoryes,
         publish: isPublish,
@@ -141,27 +188,67 @@ const CreateStoryPage: NextPage = () => {
     })
   }, [
     accessToken,
-    createStory,
+    updateStory,
     getValues,
     isPublish,
     router,
     storyCategoryes,
+    storyId,
     storyImage,
     userId,
   ])
 
   useEffect(() => {
-    if (errorCreateStory) {
+    if (errorCreateStory || myStoryError) {
       toast.custom(t => (
         <Alert
           t={t}
           title="エラーが発生しました"
           usage="error"
-          message={errorCreateStory?.message}
+          message={errorCreateStory?.message || myStoryError?.message}
         />
       ))
     }
-  }, [errorCreateStory])
+  }, [errorCreateStory, myStoryError])
+
+  useEffect(() => {
+    if (myStoryData?.QueryMyStoryById) {
+      const {
+        publish,
+        story_categories,
+        story_image,
+        story_synopsis,
+        story_title,
+        viewing_restriction,
+      } = myStoryData.QueryMyStoryById
+      setValue("title", story_title as string)
+      setValue("synopsis", story_synopsis as string)
+      setValue("viewingRestriction", viewing_restriction as string)
+      setIsPublish(publish ? true : false)
+      setStoryImage(story_image as string)
+      setStoryCategoryes(story_categories as string[])
+    }
+  }, [myStoryData, setValue])
+
+  if (isMyStoryLoading || !userId) {
+    return (
+      <Layout>
+        <div className="flex flex-col justify-center items-center p-8 w-full h-screen">
+          <LoadingLogo />
+        </div>
+      </Layout>
+    )
+  }
+
+  if (!isMyStoryLoading && myStoryError) {
+    return (
+      <Layout>
+        <div className="flex flex-col justify-center items-center p-8 w-full h-screen">
+          <LoadingLogo />
+        </div>
+      </Layout>
+    )
+  }
 
   return (
     <Layout>
@@ -356,7 +443,7 @@ const CreateStoryPage: NextPage = () => {
               disabled={isLoadingCreateStory}
               isLoading={isLoadingCreateStory}
               type="submit"
-              text="ストーリー作成"
+              text="更新"
             />
           </div>
         </form>
@@ -366,4 +453,4 @@ const CreateStoryPage: NextPage = () => {
 }
 
 // eslint-disable-next-line import/no-default-export
-export default memo(CreateStoryPage)
+export default memo(EditStoryPage)

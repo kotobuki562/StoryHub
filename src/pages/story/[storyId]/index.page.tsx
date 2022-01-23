@@ -4,6 +4,7 @@
 import { format } from "date-fns"
 import gql from "graphql-tag"
 import type { GetStaticPropsContext, NextPage } from "next"
+import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout"
 import { client } from "src/lib/apollo"
 import { STORY_PAGE_SIZE } from "src/tools/page"
@@ -112,7 +113,7 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => (
       }`,
     }}
   >
-    <div className="flex flex-col justify-center items-center py-8 w-full">
+    <div className="flex flex-col justify-center items-center p-8 w-full">
       <div className="flex flex-col items-center w-[300px] sm:w-[400px] xl:w-[600px]">
         <div
           className="overflow-hidden mb-8 w-[210px] h-[297px] bg-center bg-cover rounded-lg sm:w-[300.38px] sm:h-[425px] xl:w-[375px] xl:h-[530.57px]"
@@ -137,7 +138,7 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => (
           <h2 className="mb-4 text-2xl font-black">
             {story.QueryStoryById.story_title}
           </h2>
-          <p className="mb-4 text-slate-600 break-all">
+          <p className="mb-4 text-slate-600 whitespace-pre-wrap">
             {story.QueryStoryById.story_synopsis}
           </p>
           <p className="text-right text-slate-400">
@@ -146,6 +147,23 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => (
           </p>
         </div>
       </div>
+      <Tab
+        color="purple"
+        values={[
+          {
+            label: "シーズン",
+            children: <div className="flex flex-col items-center">season</div>,
+          },
+          {
+            label: "レビュー",
+            children: <div className="flex flex-col items-center">review</div>,
+          },
+          {
+            label: "お気に入り",
+            children: <div className="flex flex-col items-center">setting</div>,
+          },
+        ]}
+      />
     </div>
   </Layout>
 )

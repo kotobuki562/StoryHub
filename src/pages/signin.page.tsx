@@ -262,171 +262,169 @@ const Signin = () => {
 
   return (
     <Layout>
-      <div>
-        <img src="/img/StoryHubLogo.png" alt="Logo" />
-        <ReactQuill
-          theme="snow"
-          modules={modules}
-          formats={formats}
-          value={text}
-          onChange={e => setText(e)}
-        />
-        <input type="text" onChange={e => setImageUrl(e.target.value)} />
-        <div className="flex justify-around">
-          <button onClick={onChangeImage}>Image</button>
-          <button onClick={onSaveTextByLocalStorage}>SAVE</button>
-          <button onClick={onLoadTextByLocalStorage}>LOAD</button>
-        </div>
-        <div>
-          CropImage
-          <input type="file" accept="image/*" onChange={onSelectFile} />
-        </div>
-        <div>
-          ResizeImage
-          <input type="file" accept="image/*" onChange={onResizeImage} />
-        </div>
+      <section className="overflow-hidden relative h-full">
+        <h3
+          className="absolute -z-10 text-[200px] font-black text-purple-500/50"
+          style={{
+            transform: "translate(0px, 200px) rotate(45deg)",
+          }}
+        >
+          StoryHub
+        </h3>
+        <h3
+          className="absolute -z-10 text-[200px] font-black text-purple-500/50"
+          style={{
+            transform: "translate(0px, 400px) rotate(45deg)",
+          }}
+        >
+          StoryHub
+        </h3>
+  
 
-        <ReactCrop
-          src={upImg}
-          onImageLoaded={onLoad}
-          crop={crop}
-          onChange={onChangeCrop}
-          onComplete={onCompleteCrop}
-        />
         <div>
-          <canvas
-            ref={previewCanvasRef}
-            // Rounding is important so the canvas width and height matches/is a multiple for sharpness.
-            style={{
-              width: Math.round(completedCrop?.width ?? 0),
-              height: Math.round(completedCrop?.height ?? 0),
-            }}
+          <img src="/img/StoryHubLogo.png" alt="Logo" />
+          <ReactQuill
+            theme="snow"
+            modules={modules}
+            formats={formats}
+            value={text}
+            onChange={e => setText(e)}
           />
-        </div>
-        <p>
-          {`Note that the download below won't work in this sandbox due to the
+          <input type="text" onChange={e => setImageUrl(e.target.value)} />
+          <div className="flex justify-around">
+            <button onClick={onChangeImage}>Image</button>
+            <button onClick={onSaveTextByLocalStorage}>SAVE</button>
+            <button onClick={onLoadTextByLocalStorage}>LOAD</button>
+          </div>
+          <div>
+            CropImage
+            <input type="file" accept="image/*" onChange={onSelectFile} />
+          </div>
+          <div>
+            ResizeImage
+            <input type="file" accept="image/*" onChange={onResizeImage} />
+          </div>
+
+          <ReactCrop
+            src={upImg}
+            onImageLoaded={onLoad}
+            crop={crop}
+            onChange={onChangeCrop}
+            onComplete={onCompleteCrop}
+          />
+          <div>
+            <canvas
+              ref={previewCanvasRef}
+              // Rounding is important so the canvas width and height matches/is a multiple for sharpness.
+              style={{
+                width: Math.round(completedCrop?.width ?? 0),
+                height: Math.round(completedCrop?.height ?? 0),
+              }}
+            />
+          </div>
+          <p>
+            {`Note that the download below won't work in this sandbox due to the
           iframe missing 'allow-downloads'. It's just for your reference.`}
-        </p>
-        {previewCanvasRef.current && (
+          </p>
+          {previewCanvasRef.current && (
+            <button
+              type="button"
+              onClick={async () =>
+                await uploadPreview(
+                  previewCanvasRef.current as HTMLCanvasElement,
+                  `${user?.id}`,
+                  crop
+                )
+              }
+            >
+              Download cropped image
+            </button>
+          )}
+
           <button
-            type="button"
-            onClick={async () =>
-              await uploadPreview(
-                previewCanvasRef.current as HTMLCanvasElement,
-                `${user?.id}`,
-                crop
-              )
-            }
+            onClick={() => {
+              getImages()
+            }}
           >
-            Download cropped image
+            Get
           </button>
-        )}
-
-        <button
-          onClick={() => {
-            getImages()
-          }}
-        >
-          Get
-        </button>
-        <button
-          onClick={() => {
-            logout()
-          }}
-        >
-          signout
-        </button>
-        <img
-          src={
-            preview
-              ? URL.createObjectURL(preview)
-              : "https://via.placeholder.com/150"
-          }
-          alt="data"
-        />
-
-        <form
-          onSubmit={async e => {
-            e.preventDefault()
-            await supabase.auth
-              .signIn({
-                email,
-                password,
-              })
-              .then(res => {
-                // eslint-disable-next-line no-console
-                console.log(res)
-              })
-            Router.push("/")
-          }}
-        >
-          <h1>Signup user</h1>
-          <input
-            autoFocus
-            onChange={e => setPassword(e.target.value)}
-            placeholder="Password"
-            type="password"
-            value={password}
+          <button
+            onClick={() => {
+              logout()
+            }}
+          >
+            signout
+          </button>
+          <img
+            src={
+              preview
+                ? URL.createObjectURL(preview)
+                : "https://via.placeholder.com/150"
+            }
+            alt="data"
           />
-          <input
-            onChange={e => setEmail(e.target.value)}
-            placeholder="Email address)"
-            type="text"
-            value={email}
-          />
-          <input disabled={!password || !email} type="submit" value="Signin" />
-        </form>
-        <form
-          onSubmit={async e => {
-            e.preventDefault()
-            await supabase.auth.api
-              .updateUser(`${supabase.auth.session()?.access_token}`, {
-                password: password,
-              })
-              .then(res => {
-                // eslint-disable-next-line no-console
-                console.log(res)
-                Router.push("/")
-              })
-          }}
-        >
-          <h1>Reset Password</h1>
-          <input
-            autoFocus
-            onChange={e => setPassword(e.target.value)}
-            placeholder="Password"
-            type="password"
-            value={password}
-          />
-          <input disabled={!password} type="submit" value="Reset" />
-        </form>
-      </div>
-      <style jsx>{`
-        .page {
-          background: white;
-          padding: 3rem;
-          display: flex;
-          justify-content: center;
-        }
 
-        input[type="text"] {
-          width: 100%;
-          padding: 0.5rem;
-          margin: 0.5rem 0;
-          border-radius: 0.25rem;
-          border: 0.125rem solid rgba(0, 0, 0, 0.2);
-        }
-
-        input[type="submit"] {
-          background: #ececec;
-          border: 0;
-          padding: 1rem 2rem;
-        }
-
-        .back {
-          margin-left: 1rem;
-        }
-      `}</style>
+          <form
+            onSubmit={async e => {
+              e.preventDefault()
+              await supabase.auth
+                .signIn({
+                  email,
+                  password,
+                })
+                .then(res => {
+                  // eslint-disable-next-line no-console
+                  console.log(res)
+                })
+              Router.push("/")
+            }}
+          >
+            <h1>Signup user</h1>
+            <input
+              autoFocus
+              onChange={e => setPassword(e.target.value)}
+              placeholder="Password"
+              type="password"
+              value={password}
+            />
+            <input
+              onChange={e => setEmail(e.target.value)}
+              placeholder="Email address)"
+              type="text"
+              value={email}
+            />
+            <input
+              disabled={!password || !email}
+              type="submit"
+              value="Signin"
+            />
+          </form>
+          <form
+            onSubmit={async e => {
+              e.preventDefault()
+              await supabase.auth.api
+                .updateUser(`${supabase.auth.session()?.access_token}`, {
+                  password: password,
+                })
+                .then(res => {
+                  // eslint-disable-next-line no-console
+                  console.log(res)
+                  Router.push("/")
+                })
+            }}
+          >
+            <h1>Reset Password</h1>
+            <input
+              autoFocus
+              onChange={e => setPassword(e.target.value)}
+              placeholder="Password"
+              type="password"
+              value={password}
+            />
+            <input disabled={!password} type="submit" value="Reset" />
+          </form>
+        </div>
+      </section>
     </Layout>
   )
 }

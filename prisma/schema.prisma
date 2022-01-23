@@ -10,17 +10,17 @@ datasource db {
 }
 
 model User {
-  id              String            @id @unique @default(uuid())
-  user_name       String?
-  user_deal       String?
-  image           String?
-  created_at      DateTime          @default(now())
-  updated_at      DateTime?
-  stories         Story[]
-  reviews         Review[]
-  follows         Follow[]
-  favorites       Favorite[]
-  SettingMaterial SettingMaterial[]
+  id               String            @id @unique @default(uuid())
+  user_name        String?
+  user_deal        String?
+  image            String?
+  created_at       DateTime          @default(now())
+  updated_at       DateTime?
+  stories          Story[]
+  reviews          Review[]
+  follows          Follow[]
+  favorites        Favorite[]
+  settingMaterials SettingMaterial[]
 }
 
 model Review {
@@ -35,6 +35,15 @@ model Review {
   updated_at   DateTime?
   user         User?     @relation(fields: [user_id], references: [id])
   story        Story?    @relation(fields: [story_id], references: [id])
+}
+
+model Favorite {
+  id         Int      @id @unique @default(autoincrement())
+  user_id    String
+  story_id   String
+  created_at DateTime @default(now())
+  user       User?    @relation(fields: [user_id], references: [id])
+  story      Story?   @relation(fields: [story_id], references: [id])
 }
 
 model Follow {
@@ -57,9 +66,9 @@ model SettingMaterial {
   updated_at             DateTime?
   user                   User?         @relation(fields: [user_id], references: [id])
   story                  Story?        @relation(fields: [story_id], references: [id])
-  Character              Character[]
-  Object                 Object[]
-  Terminology            Terminology[]
+  characters             Character[]
+  objects                Object[]
+  terminologies          Terminology[]
 }
 
 model Character {
@@ -80,19 +89,18 @@ model Character {
 }
 
 model Object {
-  id                  String  @id @default(uuid())
+  id                  String          @id @default(uuid())
   setting_material_id String
   season_id           String?
-
-  object_name     String
-  object_deal     String
-  object_image    String?
-  isSpoiler       Boolean         @default(false) @db.Boolean
-  publish         Boolean         @default(false) @db.Boolean
-  created_at      DateTime        @default(now())
-  updated_at      DateTime?
-  settingMaterial SettingMaterial @relation(fields: [setting_material_id], references: [id])
-  season          Season?         @relation(fields: [season_id], references: [id])
+  object_name         String
+  object_deal         String
+  object_image        String?
+  isSpoiler           Boolean         @default(false) @db.Boolean
+  publish             Boolean         @default(false) @db.Boolean
+  created_at          DateTime        @default(now())
+  updated_at          DateTime?
+  settingMaterial     SettingMaterial @relation(fields: [setting_material_id], references: [id])
+  season              Season?         @relation(fields: [season_id], references: [id])
 }
 
 model Terminology {
@@ -109,20 +117,11 @@ model Terminology {
   season              Season?         @relation(fields: [season_id], references: [id])
 }
 
-model Favorite {
-  id         Int      @id @unique @default(autoincrement())
-  user_id    String
-  story_id   String
-  created_at DateTime @default(now())
-  user       User?    @relation(fields: [user_id], references: [id])
-  story      Story?   @relation(fields: [story_id], references: [id])
-}
-
 model Story {
   id                  String            @id @unique @default(uuid())
   user_id             String
   story_title         String
-  story_synopsis      String?
+  story_synopsis      String
   story_image         String?
   story_categories    String[]
   viewing_restriction String?
@@ -137,20 +136,19 @@ model Story {
 }
 
 model Season {
-  id                String        @id @unique @default(uuid())
-  story_id          String
-  season_title      String
-  season_image      String?
-  season_synopsis   String?
-  season_categories String[]
-  publish           Boolean       @default(false) @db.Boolean
-  created_at        DateTime      @default(now())
-  updated_at        DateTime?
-  story             Story?        @relation(fields: [story_id], references: [id])
-  episodes          Episode[]
-  Character         Character[]
-  Object            Object[]
-  Terminology       Terminology[]
+  id              String        @id @unique @default(uuid())
+  story_id        String
+  season_title    String
+  season_image    String?
+  season_synopsis String
+  publish         Boolean       @default(false) @db.Boolean
+  created_at      DateTime      @default(now())
+  updated_at      DateTime?
+  story           Story?        @relation(fields: [story_id], references: [id])
+  episodes        Episode[]
+  characters      Character[]
+  objects         Object[]
+  terminologies   Terminology[]
 }
 
 model Episode {
@@ -158,7 +156,7 @@ model Episode {
   season_id        String
   episode_title    String
   episode_image    String?
-  episode_synopsis String?
+  episode_synopsis String
   publish          Boolean   @default(false) @db.Boolean
   created_at       DateTime  @default(now())
   updated_at       DateTime?

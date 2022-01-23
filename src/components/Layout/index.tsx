@@ -33,6 +33,7 @@ const LayoutComp: VFC<LayoutProps> = props => {
     if (
       !session?.user &&
       pathname !== "/signup" &&
+      pathname !== "/signin" &&
       pathname !== "/" &&
       pathname !== "/story/[storyId]"
     ) {
@@ -46,6 +47,7 @@ const LayoutComp: VFC<LayoutProps> = props => {
       if (
         !user &&
         pathname !== "/signup" &&
+        pathname !== "/signin" &&
         pathname !== "/" &&
         pathname !== "/story/[storyId]"
       ) {
