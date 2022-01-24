@@ -73,7 +73,7 @@ const HomePage: NextPage<HomePageProps> = ({
     }}
   >
     <div className="p-8">
-      <div className="flex flex-wrap gap-8 justify-center w-full">
+      <div className="flex flex-wrap gap-8 justify-center mb-8 w-full">
         {stories.QueryStories.map(story => (
           <StoryCard key={story.id} {...story} />
         ))}
@@ -85,6 +85,7 @@ const HomePage: NextPage<HomePageProps> = ({
       />
     </div>
   </Layout>
+  
 )
 
 export default HomePage

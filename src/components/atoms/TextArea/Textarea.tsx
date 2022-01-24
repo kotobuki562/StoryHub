@@ -1,9 +1,5 @@
 import cc from "classcat"
-import type {
-  ChangeEventHandler,
-  FocusEventHandler,
-  KeyboardEventHandler,
-} from "react"
+import type { ChangeEventHandler, FocusEventHandler } from "react"
 import { forwardRef, memo } from "react"
 
 export type InputProps = {
@@ -17,15 +13,7 @@ export type InputProps = {
   disabled?: boolean
   required?: boolean
   onBlur?: ChangeEventHandler<HTMLTextAreaElement>
-  onKeyPress?: KeyboardEventHandler<HTMLTextAreaElement>
   onFocus?: FocusEventHandler<HTMLTextAreaElement>
-}
-
-// InputのkeyPressイベントでhandleSubmitが呼ばれないようにする
-const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-  if (e.key === "Enter") {
-    e.preventDefault()
-  }
 }
 
 const TextAreaComp: React.ForwardRefExoticComponent<InputProps> = forwardRef(
@@ -49,7 +37,6 @@ const TextAreaComp: React.ForwardRefExoticComponent<InputProps> = forwardRef(
         onBlur={props.onBlur}
         disabled={props.disabled}
         required={props.required}
-        onKeyPress={props.onKeyPress || handleKeyPress}
         placeholder={props.placeholder}
       />
     </>

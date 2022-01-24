@@ -1,15 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
+import { EyeIcon, EyeOffIcon } from "@heroicons/react/solid"
 import Link from "next/link"
 import type { VFC } from "react"
 import { memo } from "react"
 import type { NexusGenFieldTypes } from "src/generated/nexus-typegen"
 
-const StoryCardComp: VFC<NexusGenFieldTypes["Story"]> = ({
+const MyStoryCardComp: VFC<NexusGenFieldTypes["Story"]> = ({
   id,
+  publish,
   story_categories,
   story_image,
   story_title,
-  user,
+  user_id,
   viewing_restriction,
 }) => (
   <article
@@ -23,17 +25,15 @@ const StoryCardComp: VFC<NexusGenFieldTypes["Story"]> = ({
   >
     <div className="absolute inset-0 bg-black/50 group-hover:opacity-75 transition duration-300 ease-in-out"></div>
     <div className="flex relative flex-col justify-between p-2 w-full h-full">
-      <div className="flex justify-between text-white">
-        <div className="flex text-sm sm:text-base">
-          <div className="mr-2 min-w-[2rem]">
-            <img
-              className="w-8 h-8 rounded-full"
-              src={user?.image || "/img/Vector.png"}
-              alt={user?.user_name || "avatar"}
-            />
-          </div>
-          <div>
-            <p className="font-bold">{user?.user_name}</p>
+      <div className="flex justify-between items-center text-white">
+        <div className="flex items-center text-sm sm:text-base">
+          <div className="flex items-center py-1 px-2 text-purple-500 bg-yellow-300 rounded-xl">
+            {publish ? (
+              <EyeIcon className="mr-1 w-4 h-4" />
+            ) : (
+              <EyeOffIcon className="mr-1 w-4 h-4" />
+            )}
+            {publish ? "公開中" : "非公開"}
           </div>
         </div>
         {viewing_restriction && (
@@ -59,8 +59,8 @@ const StoryCardComp: VFC<NexusGenFieldTypes["Story"]> = ({
         <h3 className="text-left">
           <Link
             href={{
-              pathname: "/story/[storyId]",
-              query: { storyId: id },
+              pathname: "/myPage/[userId]/story/[storyId]",
+              query: { storyId: id, userId: user_id },
             }}
           >
             <a className="font-bold text-center text-white sm:text-xl">
@@ -76,4 +76,4 @@ const StoryCardComp: VFC<NexusGenFieldTypes["Story"]> = ({
   </article>
 )
 
-export const StoryCard = memo(StoryCardComp)
+export const MyStoryCard = memo(MyStoryCardComp)

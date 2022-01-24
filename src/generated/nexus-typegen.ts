@@ -112,7 +112,6 @@ export interface NexusGenObjects {
   Review: { // root type
     created_at?: NexusGenScalars['DateTime'] | null; // DateTime
     id?: string | null; // ID
-    publish?: boolean | null; // Boolean
     review_body?: string | null; // String
     review_title?: string | null; // String
     stars?: number | null; // Int
@@ -124,7 +123,6 @@ export interface NexusGenObjects {
     created_at?: NexusGenScalars['DateTime'] | null; // DateTime
     id?: string | null; // ID
     publish?: boolean | null; // Boolean
-    season_categories?: Array<string | null> | null; // [String]
     season_image?: string | null; // String
     season_synopsis?: string | null; // String
     season_title?: string | null; // String
@@ -241,11 +239,17 @@ export interface NexusGenFieldTypes {
     user_id: string | null; // String
   }
   Mutation: { // field return type
+    createReview: NexusGenRootTypes['Review'] | null; // Review
+    createSeason: NexusGenRootTypes['Season'] | null; // Season
     createStory: NexusGenRootTypes['Story'] | null; // Story
     createUser: NexusGenRootTypes['User'] | null; // User
+    deleteReview: NexusGenRootTypes['Review'] | null; // Review
+    deleteSeason: NexusGenRootTypes['Season'] | null; // Season
     deleteStory: NexusGenRootTypes['Story'] | null; // Story
     deleteUser: NexusGenRootTypes['User'] | null; // User
     signupUser: NexusGenRootTypes['User'] | null; // User
+    updateReview: NexusGenRootTypes['Review'] | null; // Review
+    updateSeason: NexusGenRootTypes['Season'] | null; // Season
     updateStory: NexusGenRootTypes['Story'] | null; // Story
     updateUser: NexusGenRootTypes['User'] | null; // User
   }
@@ -316,9 +320,10 @@ export interface NexusGenFieldTypes {
     QueryPage: NexusGenRootTypes['Page'] | null; // Page
     QueryPageCountByChapterId: number | null; // Int
     QueryPages: Array<NexusGenRootTypes['Page'] | null> | null; // [Page]
-    QueryPublishReviewsCount: number | null; // Int
     QueryReviewById: NexusGenRootTypes['Review'] | null; // Review
     QueryReviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
+    QueryReviewsByStoryId: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
+    QueryReviewsCount: number | null; // Int
     QuerySeasonById: NexusGenRootTypes['Season'] | null; // Season
     QuerySeasons: Array<NexusGenRootTypes['Season'] | null> | null; // [Season]
     QuerySeasonsCountByPublish: number | null; // Int
@@ -335,14 +340,12 @@ export interface NexusGenFieldTypes {
     QueryTerminologiesCountByPublish: number | null; // Int
     QueryTerminologiesCountByUnPublish: number | null; // Int
     QueryTerminologyById: NexusGenRootTypes['Terminology'] | null; // Terminology
-    QueryUnPublishReviewsCount: number | null; // Int
     QueryUserById: NexusGenRootTypes['User'] | null; // User
     QueryUsers: Array<NexusGenRootTypes['User'] | null> | null; // [User]
   }
   Review: { // field return type
     created_at: NexusGenScalars['DateTime'] | null; // DateTime
     id: string | null; // ID
-    publish: boolean | null; // Boolean
     review_body: string | null; // String
     review_title: string | null; // String
     stars: number | null; // Int
@@ -359,7 +362,6 @@ export interface NexusGenFieldTypes {
     id: string | null; // ID
     objects: Array<NexusGenRootTypes['Object'] | null> | null; // [Object]
     publish: boolean | null; // Boolean
-    season_categories: Array<string | null> | null; // [String]
     season_image: string | null; // String
     season_synopsis: string | null; // String
     season_title: string | null; // String
@@ -483,11 +485,17 @@ export interface NexusGenFieldTypeNames {
     user_id: 'String'
   }
   Mutation: { // field return type name
+    createReview: 'Review'
+    createSeason: 'Season'
     createStory: 'Story'
     createUser: 'User'
+    deleteReview: 'Review'
+    deleteSeason: 'Season'
     deleteStory: 'Story'
     deleteUser: 'User'
     signupUser: 'User'
+    updateReview: 'Review'
+    updateSeason: 'Season'
     updateStory: 'Story'
     updateUser: 'User'
   }
@@ -558,9 +566,10 @@ export interface NexusGenFieldTypeNames {
     QueryPage: 'Page'
     QueryPageCountByChapterId: 'Int'
     QueryPages: 'Page'
-    QueryPublishReviewsCount: 'Int'
     QueryReviewById: 'Review'
     QueryReviews: 'Review'
+    QueryReviewsByStoryId: 'Review'
+    QueryReviewsCount: 'Int'
     QuerySeasonById: 'Season'
     QuerySeasons: 'Season'
     QuerySeasonsCountByPublish: 'Int'
@@ -577,14 +586,12 @@ export interface NexusGenFieldTypeNames {
     QueryTerminologiesCountByPublish: 'Int'
     QueryTerminologiesCountByUnPublish: 'Int'
     QueryTerminologyById: 'Terminology'
-    QueryUnPublishReviewsCount: 'Int'
     QueryUserById: 'User'
     QueryUsers: 'User'
   }
   Review: { // field return type name
     created_at: 'DateTime'
     id: 'ID'
-    publish: 'Boolean'
     review_body: 'String'
     review_title: 'String'
     stars: 'Int'
@@ -601,7 +608,6 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     objects: 'Object'
     publish: 'Boolean'
-    season_categories: 'String'
     season_image: 'String'
     season_synopsis: 'String'
     season_title: 'String'
@@ -683,12 +689,27 @@ export interface NexusGenArgTypes {
     }
   }
   Mutation: {
+    createReview: { // args
+      acessToken: string; // String!
+      reviewBody: string; // String!
+      reviewTitle: string; // String!
+      stars: number; // Int!
+      storyId: string; // String!
+    }
+    createSeason: { // args
+      acessToken: string; // String!
+      publish: boolean; // Boolean!
+      seasonImage?: string | null; // String
+      seasonSynopsis: string; // String!
+      seasonTitle: string; // String!
+      storyId: string; // String!
+    }
     createStory: { // args
       acessToken: string; // String!
       publish: boolean; // Boolean!
       storyCategories: string[]; // [String!]!
       storyImage?: string | null; // String
-      storySynopsis?: string | null; // String
+      storySynopsis: string; // String!
       storyTitle: string; // String!
       viewingRestriction?: string | null; // String
     }
@@ -697,6 +718,16 @@ export interface NexusGenArgTypes {
       image?: string | null; // String
       userDeal: string; // String!
       userName: string; // String!
+    }
+    deleteReview: { // args
+      acessToken: string; // String!
+      reviewId: string; // String!
+      userId: string; // String!
+    }
+    deleteSeason: { // args
+      acessToken: string; // String!
+      seasonId: string; // String!
+      userId: string; // String!
     }
     deleteStory: { // args
       storyId: string; // String!
@@ -709,13 +740,33 @@ export interface NexusGenArgTypes {
       password: string; // String!
       userName?: string | null; // String
     }
+    updateReview: { // args
+      acessToken: string; // String!
+      reviewBody: string; // String!
+      reviewId: string; // String!
+      reviewTitle: string; // String!
+      stars: number; // Int!
+      userId: string; // String!
+    }
+    updateSeason: { // args
+      acessToken: string; // String!
+      publish: boolean; // Boolean!
+      seasonId: string; // String!
+      seasonImage?: string | null; // String
+      seasonSynopsis: string; // String!
+      seasonTitle: string; // String!
+      storyId: string; // String!
+      userId: string; // String!
+    }
     updateStory: { // args
+      acessToken: string; // String!
       publish: boolean; // Boolean!
       storyCategories: string[]; // [String!]!
       storyId: string; // String!
       storyImage?: string | null; // String
-      storySynopsis?: string | null; // String
+      storySynopsis: string; // String!
       storyTitle: string; // String!
+      userId: string; // String!
       viewingRestriction?: string | null; // String
     }
     updateUser: { // args
@@ -896,6 +947,9 @@ export interface NexusGenArgTypes {
     QueryReviews: { // args
       searchTitle?: string | null; // String
       serchUserId?: string | null; // String
+    }
+    QueryReviewsByStoryId: { // args
+      storyId: string; // String!
     }
     QuerySeasonById: { // args
       id: string; // String!

@@ -81,9 +81,11 @@ const ModalComp: VFC<Props> = ({ children, isOpen, onClose, title }) => {
         >
           <div
             ref={modalContent}
-            className="flex flex-col justify-center items-center p-2"
+            className="flex relative flex-col justify-center items-center p-2"
           >
-            <div className="mb-4 text-2xl font-bold">{title}</div>
+            <div className="sticky top-0 z-10 py-2 mb-4 w-full text-2xl font-bold bg-white">
+              {title.length > 20 ? `${title.slice(0, 20)}...` : title}
+            </div>
             {children}
           </div>
         </div>

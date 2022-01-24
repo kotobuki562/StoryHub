@@ -7,7 +7,7 @@ import { useRouter } from "next/router"
 import { useEffect } from "react"
 import toast from "react-hot-toast"
 import { Alert } from "src/components/atoms/Alert"
-import { StoryCard } from "src/components/blocks/Card"
+import { MyStoryCard } from "src/components/blocks/Card"
 import { Layout } from "src/components/Layout"
 import { LoadingLogo } from "src/components/Loading"
 import { supabase } from "src/lib/supabase"
@@ -17,6 +17,8 @@ const MyStoriesQuery = gql`
   query QueryMyStories($userId: String!, $accessToken: String!) {
     QueryMyStories(userId: $userId, accessToken: $accessToken) {
       id
+      user_id
+      publish
       story_title
       story_synopsis
       story_categories
@@ -89,7 +91,7 @@ const HomePage: NextPage = () => {
           <div className="flex flex-wrap gap-8 justify-center w-full">
             {data?.QueryMyStories.length > 0 ? (
               data?.QueryMyStories.map(story => (
-                <StoryCard key={story.id} {...story} />
+                <MyStoryCard key={story.id} {...story} />
               ))
             ) : (
               <div className="flex flex-col justify-center items-center w-full h-full">

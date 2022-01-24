@@ -67,12 +67,18 @@ type Follow {
 }
 
 type Mutation {
-  createStory(acessToken: String!, publish: Boolean!, storyCategories: [String!]!, storyImage: String, storySynopsis: String, storyTitle: String!, viewingRestriction: String): Story
+  createReview(acessToken: String!, reviewBody: String!, reviewTitle: String!, stars: Int!, storyId: String!): Review
+  createSeason(acessToken: String!, publish: Boolean!, seasonImage: String, seasonSynopsis: String!, seasonTitle: String!, storyId: String!): Season
+  createStory(acessToken: String!, publish: Boolean!, storyCategories: [String!]!, storyImage: String, storySynopsis: String!, storyTitle: String!, viewingRestriction: String): Story
   createUser(accessToken: String!, image: String, userDeal: String!, userName: String!): User
+  deleteReview(acessToken: String!, reviewId: String!, userId: String!): Review
+  deleteSeason(acessToken: String!, seasonId: String!, userId: String!): Season
   deleteStory(storyId: String!): Story
   deleteUser(accessToken: String!): User
   signupUser(email: String!, password: String!, userName: String): User
-  updateStory(publish: Boolean!, storyCategories: [String!]!, storyId: String!, storyImage: String, storySynopsis: String, storyTitle: String!, viewingRestriction: String): Story
+  updateReview(acessToken: String!, reviewBody: String!, reviewId: String!, reviewTitle: String!, stars: Int!, userId: String!): Review
+  updateSeason(acessToken: String!, publish: Boolean!, seasonId: String!, seasonImage: String, seasonSynopsis: String!, seasonTitle: String!, storyId: String!, userId: String!): Season
+  updateStory(acessToken: String!, publish: Boolean!, storyCategories: [String!]!, storyId: String!, storyImage: String, storySynopsis: String!, storyTitle: String!, userId: String!, viewingRestriction: String): Story
   updateUser(accessToken: String!, image: String, userDeal: String!, userName: String!): User
 }
 
@@ -145,9 +151,10 @@ type Query {
   QueryPage(id: String!): Page
   QueryPageCountByChapterId(chapterId: String!): Int
   QueryPages(serchSeasonId: String): [Page]
-  QueryPublishReviewsCount: Int
   QueryReviewById(id: String!): Review
   QueryReviews(searchTitle: String, serchUserId: String): [Review]
+  QueryReviewsByStoryId(storyId: String!): [Review]
+  QueryReviewsCount: Int
   QuerySeasonById(id: String!): Season
   QuerySeasons(searchCategory: String, searchTitle: String, searchUserId: String): [Season]
   QuerySeasonsCountByPublish: Int
@@ -164,7 +171,6 @@ type Query {
   QueryTerminologiesCountByPublish: Int
   QueryTerminologiesCountByUnPublish: Int
   QueryTerminologyById(terminologyId: String!): Terminology
-  QueryUnPublishReviewsCount: Int
   QueryUserById(id: String!): User
   QueryUsers(page: Int!, pageSize: Int!, searchUserName: String): [User]
 }
@@ -172,7 +178,6 @@ type Query {
 type Review {
   created_at: DateTime
   id: ID
-  publish: Boolean
   review_body: String
   review_title: String
   stars: Int
@@ -190,7 +195,6 @@ type Season {
   id: ID
   objects(objectAccessToken: String, objectUserId: String): [Object]
   publish: Boolean
-  season_categories: [String]
   season_image: String
   season_synopsis: String
   season_title: String
