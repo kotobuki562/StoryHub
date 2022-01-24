@@ -103,7 +103,7 @@ const CreateReviewFormComp: VFC<FormProps> = ({ userId }) => {
               <button key={star} type="button">
                 <StarIcon
                   className={cc([
-                    "w-10 h-10",
+                    "w-10 h-10 sm:w-20 sm:h-20",
                     {
                       "text-gray-500": star > stars,
                       "text-yellow-400": star <= stars,
