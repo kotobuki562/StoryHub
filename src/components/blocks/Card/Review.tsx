@@ -4,7 +4,7 @@ import cc from "classcat"
 import { format } from "date-fns"
 import Link from "next/link"
 import type { VFC } from "react"
-import { memo } from "react"
+import { memo, useState } from "react"
 import type { NexusGenFieldTypes } from "src/generated/nexus-typegen"
 
 const reviewStars = [1, 2, 3, 4, 5]
@@ -12,36 +12,34 @@ const reviewStars = [1, 2, 3, 4, 5]
 const ReviewCardComp: VFC<NexusGenFieldTypes["Review"]> = ({
   created_at,
   id,
+  review_body,
   review_title,
   stars,
+  story_id,
   user,
-}) => (
-  <article className="flex flex-col justify-between items-center p-4 w-full h-full bg-white">
-    <div className="flex justify-start items-center mb-2 w-full text-sm sm:text-base">
-      <div className="mr-2 min-w-[2rem] sm:min-w-[2.5rem]">
-        <img
-          className="object-cover object-center w-8 h-8 rounded-full sm:w-10 sm:h-10"
-          src={user?.image || "/img/Vector.png"}
-          alt={user?.user_name || "avatar"}
-        />
+}) => {
+  const [isShowMore, setIsShowMore] = useState(false)
+  return (
+    <article className="flex flex-col justify-between items-center p-4 w-[300px] h-full bg-white rounded-xl shadow-lg">
+      <div className="flex justify-start items-center mb-4 w-full text-sm sm:text-base">
+        <div className="mr-2 min-w-[2rem] sm:min-w-[2.5rem]">
+          <img
+            className="object-cover object-center w-8 h-8 rounded-full sm:w-10 sm:h-10"
+            src={user?.image || "/img/Vector.png"}
+            alt={user?.user_name || "avatar"}
+          />
+        </div>
+        <div>
+          <p className="font-bold">{user?.user_name}</p>
+        </div>
       </div>
-      <div>
-        <p className="font-bold">{user?.user_name}</p>
-      </div>
-    </div>
-    <div className="flex flex-col justify-start mb-2 w-full">
-      <h3 className="mb-2 text-left">
-        <Link href="/review/[id]" as={`/review/${id}`}>
-          <a className="text-left break-all">{review_title}</a>
-        </Link>
-      </h3>
       {stars && (
-        <div className="flex gap-1 items-center">
+        <div className="flex gap-1 items-center mb-4">
           {reviewStars.map(star => (
             <StarIcon
               key={star}
               className={cc([
-                "sm:w-8 sm:h-8 w-6 h-6",
+                "w-8 h-8",
                 {
                   "text-gray-500": star > stars,
                   "text-yellow-400": star <= stars,
@@ -51,13 +49,45 @@ const ReviewCardComp: VFC<NexusGenFieldTypes["Review"]> = ({
           ))}
         </div>
       )}
-    </div>
-    <div className="flex justify-end w-full">
-      <p className="text-right text-slate-500">
-        {created_at && format(new Date(created_at), "yyyy/MM/dd")}
-      </p>
-    </div>
-  </article>
-)
+      <div className="flex flex-col justify-start mb-4 w-full">
+        <h3 className="mb-2 text-left">
+          <Link href="/review/[id]" as={`/review/${id}`}>
+            <a className="font-bold text-left text-purple-500 break-all">
+              {review_title}
+            </a>
+          </Link>
+        </h3>
+        <p className="text-left text-slate-600 whitespace-pre-wrap">
+          {isShowMore ? review_body : review_body?.slice(0, 30)}
+        </p>
+        {review_body && review_body.length > 30 && (
+          <button
+            className="flex text-sm text-purple-300"
+            onClick={() => {
+              setIsShowMore(!isShowMore)
+            }}
+          >
+            {isShowMore ? "閉じる" : "全て見る"}
+          </button>
+        )}
+      </div>
+      <Link
+        href={{
+          pathname: "/story/[storyId]",
+          query: { storyId: story_id },
+        }}
+      >
+        <a className="flex w-full text-purple-500 underline">
+          ストーリーを見る
+        </a>
+      </Link>
+      <div className="flex justify-end w-full">
+        <p className="text-right text-slate-500">
+          {created_at && format(new Date(created_at), "yyyy/MM/dd")}
+        </p>
+      </div>
+    </article>
+  )
+}
 
-export const ReviewCard = memo(ReviewCardComp)
+export const ReviewCardOrigin = memo(ReviewCardComp)
