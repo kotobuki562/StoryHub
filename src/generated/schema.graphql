@@ -135,7 +135,7 @@ type Query {
   QueryMyObjectById(accessToken: String!, objectId: String!, userId: String!): Object
   QueryMyObjects(accessToken: String!, searchTitle: String, serchSettingMaterialId: String, userId: String!): [Object]
   QueryMyReviewById(accessToken: String!, id: String!, userId: String!): Review
-  QueryMyReviews(accessToken: String!, searchTitle: String, serchUserId: String): [Review]
+  QueryMyReviews(accessToken: String!, page: Int, pageSize: Int, searchTitle: String, serchUserId: String): [Review]
   QueryMySeasonById(accessToken: String!, id: String!, userId: String!): Season
   QueryMySeasons(accessToken: String!, searchCategory: String, searchTitle: String, searchUserId: String, userId: String!): [Season]
   QueryMySettingMaterialById(accessToken: String!, id: String!, userId: String!): SettingMaterial
@@ -152,9 +152,10 @@ type Query {
   QueryPageCountByChapterId(chapterId: String!): Int
   QueryPages(serchSeasonId: String): [Page]
   QueryReviewById(id: String!): Review
-  QueryReviews(searchTitle: String, serchUserId: String): [Review]
-  QueryReviewsByStoryId(storyId: String!): [Review]
+  QueryReviews(page: Int, pageSize: Int, searchTitle: String, serchUserId: String): [Review]
+  QueryReviewsByStoryId(page: Int, pageSize: Int, searchTitle: String, serchUserId: String, storyId: String!): [Review]
   QueryReviewsCount: Int
+  QueryReviewsCountByStoryId(storyId: String!): Int
   QuerySeasonById(id: String!): Season
   QuerySeasons(searchCategory: String, searchTitle: String, searchUserId: String): [Season]
   QuerySeasonsCountByPublish: Int

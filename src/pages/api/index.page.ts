@@ -97,6 +97,7 @@ import {
   QueryReviews,
   QueryReviewsByStoryId,
   QueryReviewsCount,
+  QueryReviewsCountByStoryId,
 } from "src/pages/api/queries/review"
 import {
   QueryMySeasonById,
@@ -218,6 +219,7 @@ const Query = objectType({
     QueryMyReviewById(t)
     QueryReviewsCount(t)
     QueryReviewsByStoryId(t)
+    QueryReviewsCountByStoryId(t)
 
     // フォローのクエリ
     QueryFollowers(t)

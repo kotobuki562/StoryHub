@@ -54,26 +54,16 @@ const User = objectType({
       type: "Review",
       args: reviewArgs,
       resolve: (parent, args) => {
-        const { reviewAccessToken, reviewPage, reviewPageSize } = args
+        const { reviewPage, reviewPageSize } = args
         const skip = reviewPageSize * (Number(reviewPage) - 1)
-        return reviewAccessToken && isSafe(reviewAccessToken, `${parent.id}`)
-          ? prisma.review.findMany({
-              skip,
-              take: reviewPageSize,
-              orderBy: { created_at: "desc" },
-              where: {
-                user_id: `${parent.id}`,
-              },
-            })
-          : prisma.review.findMany({
-              skip,
-              take: reviewPageSize,
-              orderBy: { created_at: "desc" },
-              where: {
-                user_id: `${parent.id}`,
-                publish: true,
-              },
-            })
+        return prisma.review.findMany({
+          skip,
+          take: reviewPageSize,
+          orderBy: { created_at: "desc" },
+          where: {
+            user_id: `${parent.id}`,
+          },
+        })
       },
     })
     t.list.field("follows", {
