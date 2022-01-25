@@ -7,7 +7,7 @@ import cc from "classcat"
 import { format } from "date-fns"
 import gql from "graphql-tag"
 import type { GetStaticPropsContext, NextPage } from "next"
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { ReviewCard } from "src/components/blocks/Card/Review"
 import { SeasonCard } from "src/components/blocks/Card/Season"
 import { Modal } from "src/components/blocks/Modal"
@@ -15,7 +15,7 @@ import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout"
 import { client } from "src/lib/apollo"
 import { supabase } from "src/lib/supabase"
-import { STORY_PAGE_SIZE } from "src/tools/page"
+import { REVIEW_PAGE_SIZE_BY_STORY, STORY_PAGE_SIZE } from "src/tools/page"
 import type { QueryReviewsByStoryId } from "src/types/Review/query"
 import type { QueryStories, QueryStoryById } from "src/types/Story/query"
 
@@ -54,11 +54,12 @@ const StoryQueryById = gql`
   }
 `
 const ReviewsQueryByStoryId = gql`
-  query QueryReviewsByStoryId($storyId: String!) {
-    QueryReviewsByStoryId(storyId: $storyId) {
+  query QueryReviewsByStoryId($storyId: String!, $page: Int, $pageSize: Int) {
+    QueryReviewsByStoryId(storyId: $storyId, page: $page, pageSize: $pageSize) {
       id
       user_id
       review_title
+      review_body
       stars
       created_at
       user {
@@ -67,6 +68,12 @@ const ReviewsQueryByStoryId = gql`
         image
       }
     }
+  }
+`
+
+const ReviewCountQueryByStoryId = gql`
+  query Query($storyId: String!) {
+    QueryReviewsCountByStoryId(storyId: $storyId)
   }
 `
 
@@ -137,19 +144,39 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 }
 
 const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
-  const { data } = useQuery<QueryReviewsByStoryId>(ReviewsQueryByStoryId, {
+  const [reviews, setReviews] = useState<
+    QueryReviewsByStoryId["QueryReviewsByStoryId"]
+  >([])
+  const [page, setPage] = useState(1)
+  const { data: reviewCountData } = useQuery<{
+    QueryReviewsCountByStoryId: number
+  }>(ReviewCountQueryByStoryId, {
     variables: {
       storyId: story.QueryStoryById.id,
     },
   })
 
+  const getPageReviewData = useCallback(async () => {
+    const { data } = await client.query<QueryReviewsByStoryId>({
+      query: ReviewsQueryByStoryId,
+      variables: {
+        storyId: story.QueryStoryById.id,
+        page: page,
+        pageSize: REVIEW_PAGE_SIZE_BY_STORY,
+      },
+    })
+
+    setReviews(pre => [...pre, ...data.QueryReviewsByStoryId])
+  }, [page, story.QueryStoryById.id])
+
+  useEffect(() => {
+    getPageReviewData()
+  }, [getPageReviewData])
+
   const user = supabase.auth.user()
   const isCreateReview = useMemo(
-    () =>
-      !!data?.QueryReviewsByStoryId?.find(
-        review => review?.user_id === user?.id
-      ),
-    [data?.QueryReviewsByStoryId, user?.id]
+    () => !!reviews?.find(review => review?.user_id === user?.id),
+    [reviews, user?.id]
   )
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false)
 
@@ -287,27 +314,45 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
               ),
             },
             {
-              label: `${data?.QueryReviewsByStoryId?.length}件のレビュー`,
+              label: `${reviewCountData?.QueryReviewsCountByStoryId}件のレビュー`,
               children: (
                 <div className="flex flex-col items-center py-4 w-full">
-                  {data?.QueryReviewsByStoryId &&
-                  data?.QueryReviewsByStoryId.length > 0 ? (
-                    <div
-                      className={cc([
-                        "grid gap-1 justify-center items-center w-full bg-purple-100",
-                        // data?.QueryReviewsByStoryId.lengthが3の倍数だったら, grid-cols-3にする
-                        data?.QueryReviewsByStoryId.length % 3 === 0
-                          ? "grid-cols-1 lg:grid-cols-3"
-                          : "grid-cols-1",
-                        // data?.QueryReviewsByStoryId.lengthが2の倍数だったら, grid-cols-2にする
-                        data?.QueryReviewsByStoryId.length % 2 === 0
-                          ? "grid-cols-1 sm:grid-cols-2"
-                          : "grid-cols-1",
-                      ])}
-                    >
-                      {data?.QueryReviewsByStoryId?.map(review => (
-                        <ReviewCard key={review?.id} {...review} />
-                      ))}
+                  {reviews && reviews.length > 0 ? (
+                    <div className="justify-center items-center w-full">
+                      <div
+                        className={cc([
+                          "grid gap-1 justify-center items-center w-full bg-purple-100",
+                          // reviews.lengthが3の倍数だったら, grid-cols-3にする
+                          reviews.length % 3 === 0
+                            ? "grid-cols-1 lg:grid-cols-3"
+                            : "grid-cols-1",
+                          // reviews.lengthが2の倍数だったら, grid-cols-2にする
+                          reviews.length % 2 === 0
+                            ? "grid-cols-1 sm:grid-cols-2"
+                            : "grid-cols-1",
+                        ])}
+                      >
+                        {reviews?.map(review => (
+                          <ReviewCard key={review?.id} {...review} />
+                        ))}
+                      </div>
+                      {/* handleChangePageSizeのボタンをつける */}
+                      {reviewCountData?.QueryReviewsCountByStoryId &&
+                        reviews.length <
+                          reviewCountData?.QueryReviewsCountByStoryId &&
+                        reviews.length <=
+                          reviewCountData?.QueryReviewsCountByStoryId && (
+                          <div className="flex justify-center items-center">
+                            <button
+                              className="py-2 px-4 font-bold text-white bg-purple-500 hover:bg-purple-700 rounded"
+                              onClick={() => {
+                                setPage(pre => pre + 1)
+                              }}
+                            >
+                              次の{REVIEW_PAGE_SIZE_BY_STORY}件
+                            </button>
+                          </div>
+                        )}
                     </div>
                   ) : (
                     <div className="flex flex-col items-center">

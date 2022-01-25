@@ -34,6 +34,23 @@ const CreateReview = gql`
   }
 `
 
+const ReviewsQueryByStoryId = gql`
+  query QueryReviewsByStoryId($storyId: String!) {
+    QueryReviewsByStoryId(storyId: $storyId) {
+      id
+      user_id
+      review_title
+      stars
+      created_at
+      user {
+        id
+        user_name
+        image
+      }
+    }
+  }
+`
+
 const reviewStars = [1, 2, 3, 4, 5]
 
 type FormProps = {
@@ -45,7 +62,14 @@ const CreateReviewFormComp: VFC<FormProps> = ({ userId }) => {
   const { storyId } = router.query
   const accessToken = supabase.auth.session()?.access_token
   const [createStory, { error: errorCreateReview, loading: isLoading }] =
-    useMutation<NexusGenArgTypes["Mutation"]["createReview"]>(CreateReview)
+    useMutation<NexusGenArgTypes["Mutation"]["createReview"]>(CreateReview, {
+      refetchQueries: [
+        {
+          query: ReviewsQueryByStoryId,
+          variables: { storyId: storyId },
+        },
+      ],
+    })
   const [stars, setStars] = useState<number>(1)
 
   const handleChangeStars = useCallback((star: number) => {
@@ -63,21 +87,29 @@ const CreateReviewFormComp: VFC<FormProps> = ({ userId }) => {
   const { reviewBody, reviewTitle } = watch()
 
   const handleSubmitData = useCallback(async () => {
-    await createStory({
-      variables: {
-        storyId: storyId as string,
-        reviewTitle: getValues("reviewTitle"),
-        reviewBody: getValues("reviewBody"),
-        stars: stars,
-        acessToken: accessToken,
-      },
-    }).then(() => {
-      toast.custom(t => (
-        <Alert t={t} title="ストーリーを作成しました" usage="success" />
-      ))
-      return router.push(`/myPage/${userId}/review`)
-    })
-  }, [accessToken, createStory, getValues, router, stars, storyId, userId])
+    !userId
+      ? toast.custom(t => (
+          <Alert
+            t={t}
+            title="認証のエラー"
+            usage="error"
+            message="ログインしてからレビューを作成してください"
+          />
+        ))
+      : await createStory({
+          variables: {
+            storyId: storyId as string,
+            reviewTitle: getValues("reviewTitle"),
+            reviewBody: getValues("reviewBody"),
+            stars: stars,
+            acessToken: accessToken,
+          },
+        }).then(() => {
+          toast.custom(t => (
+            <Alert t={t} title="ストーリーを作成しました" usage="success" />
+          ))
+        })
+  }, [accessToken, userId, createStory, getValues, stars, storyId])
 
   useEffect(() => {
     if (errorCreateReview) {
@@ -96,7 +128,7 @@ const CreateReviewFormComp: VFC<FormProps> = ({ userId }) => {
     <div className="w-full">
       <Toaster position="top-center" />
 
-      <form className="p-4" onSubmit={handleSubmit(handleSubmitData)}>
+      <form className="p-4 sm:p-8" onSubmit={handleSubmit(handleSubmitData)}>
         <div className="flex flex-col justify-center items-center mb-4 w-full">
           <div className="flex gap-2 items-center">
             {reviewStars.map(star => (

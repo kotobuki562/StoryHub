@@ -1,11 +1,13 @@
 import type { ObjectDefinitionBlock } from "nexus/dist/core"
-import { nonNull, nullable, stringArg } from "nexus/dist/core"
+import { intArg, nonNull, nullable, stringArg } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
 import { authArgs, decodeUserId, isSafe } from "src/pages/api/index.page"
 
 const reviewArgs = {
   searchTitle: nullable(stringArg()),
   serchUserId: nullable(stringArg()),
+  page: nullable(intArg()),
+  pageSize: nullable(intArg()),
 }
 
 const QueryReviews = (t: ObjectDefinitionBlock<"Query">) =>
@@ -87,15 +89,36 @@ const QueryReviewsByStoryId = (t: ObjectDefinitionBlock<"Query">) =>
     type: "Review",
     args: {
       storyId: nonNull(stringArg()),
+      ...reviewArgs,
     },
-    resolve: async (_parent, { storyId }) => {
+    resolve: async (_parent, args) => {
+      const { page, pageSize, storyId } = args
       const reviews = await prisma.review.findMany({
+        skip: pageSize && page ? pageSize * (Number(page) - 1) : undefined,
+        take: pageSize && page ? pageSize : undefined,
+
         orderBy: { created_at: "desc" },
         where: {
           story_id: storyId,
         },
       })
       return reviews
+    },
+  })
+
+const QueryReviewsCountByStoryId = (t: ObjectDefinitionBlock<"Query">) =>
+  t.field("QueryReviewsCountByStoryId", {
+    type: "Int",
+    args: {
+      storyId: nonNull(stringArg()),
+    },
+    resolve: async (_parent, { storyId }) => {
+      const count = await prisma.review.count({
+        where: {
+          story_id: storyId,
+        },
+      })
+      return count
     },
   })
 
@@ -115,4 +138,5 @@ export {
   QueryReviews,
   QueryReviewsByStoryId,
   QueryReviewsCount,
+  QueryReviewsCountByStoryId,
 }
