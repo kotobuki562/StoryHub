@@ -17,7 +17,12 @@ const QueryReviews = (t: ObjectDefinitionBlock<"Query">) =>
       ...reviewArgs,
     },
     resolve: async (_parent, args) => {
+      const { page, pageSize } = args
+      const skip = pageSize && page ? pageSize * (Number(page) - 1) : undefined
+      const take = pageSize && page ? pageSize : undefined
       const reviews = await prisma.review.findMany({
+        skip,
+        take,
         orderBy: { created_at: "desc" },
         where: {
           ...(args.searchTitle && {
