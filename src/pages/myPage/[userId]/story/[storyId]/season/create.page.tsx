@@ -134,7 +134,7 @@ const CreateSeason: NextPage = () => {
           usage="success"
         />
       ))
-      return router.push(`/myPage/${userId}/story`)
+      return router.push(`/myPage/${userId}/story/${storyId}`)
     })
   }, [
     createSeason,
