@@ -48,6 +48,7 @@ const CreateStoryPage: NextPage = () => {
   const { userId } = router.query
   const { storyImageUrls } = useStoryImage(userId as string)
   const [isPublish, setIsPublish] = useState<boolean>(false)
+  const [isStorage, setIsStorage] = useState<boolean>(true)
   const [storyImage, setStoryImage] = useState<string>("")
   const [isHiddenAgeCategoryMenu, setIsHiddenAgeCategoryMenu] =
     useState<boolean>(true)
@@ -60,6 +61,10 @@ const CreateStoryPage: NextPage = () => {
 
   const handleTogglePublish = useCallback(() => {
     setIsPublish(pre => !pre)
+  }, [])
+
+  const handleToggleStorage = useCallback(() => {
+    setIsStorage(pre => !pre)
   }, [])
 
   const handleToggleAgeCategoryMenu = useCallback(() => {
@@ -114,6 +119,7 @@ const CreateStoryPage: NextPage = () => {
       viewingRestriction: "",
       synopsis: "",
       title: "",
+      imageUrl: "",
     },
   })
 
@@ -127,7 +133,7 @@ const CreateStoryPage: NextPage = () => {
         publish: isPublish,
         acessToken: accessToken ? accessToken : null,
         storySynopsis: getValues("synopsis"),
-        storyImage: storyImage ? storyImage : null,
+        storyImage: isStorage ? storyImage : getValues("imageUrl"),
         viewingRestriction:
           getValues("viewingRestriction") === ""
             ? null
@@ -144,6 +150,7 @@ const CreateStoryPage: NextPage = () => {
     createStory,
     getValues,
     isPublish,
+    isStorage,
     router,
     storyCategoryes,
     storyImage,
@@ -170,7 +177,7 @@ const CreateStoryPage: NextPage = () => {
         <form className="p-4" onSubmit={handleSubmit(handleSubmitData)}>
           <div className="flex flex-col mb-4 w-full">
             <label className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500">
-              <p>公開する</p>
+              <p>{isPublish ? "公開する" : "公開しない"}</p>
             </label>
             <Switch
               checked={isPublish}
@@ -242,12 +249,21 @@ const CreateStoryPage: NextPage = () => {
               </p>
             )}
           </div>
+          <div className="flex flex-col mb-4 w-full">
+            <label className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500">
+              <p>
+                {isStorage ? "コンテンツから表紙を登録" : "URLから表紙を登録"}
+              </p>
+            </label>
+            <div className="mb-4">
+              <Switch
+                onToggle={handleToggleStorage}
+                checked={isStorage}
+                size="medium"
+              />
+            </div>
 
-          {storyImageUrls.length > 0 && (
-            <div className="flex flex-col mb-4 w-full">
-              <label className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500">
-                <p>表紙</p>
-              </label>
+            {storyImageUrls.length > 0 && isStorage ? (
               <div className="flex overflow-x-scroll gap-5 items-center mb-4 w-full">
                 {storyImageUrls.map(url => (
                   <button
@@ -269,9 +285,32 @@ const CreateStoryPage: NextPage = () => {
                   </button>
                 ))}
               </div>
-            </div>
-          )}
-
+            ) : (
+              <div>
+                <div className="mb-4">
+                  <Input
+                    label="URL"
+                    placeholder="画像のURLを入力してください"
+                    type="text"
+                    {...register("imageUrl", {
+                      required: true,
+                      maxLength: {
+                        value: 1000,
+                        message: "URLは1000文字以下です",
+                      },
+                    })}
+                  />
+                </div>
+                <div>
+                  <img
+                    className="object-cover object-center w-[210px] h-[297px]"
+                    src={getValues("imageUrl")}
+                    alt="preview"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
           <div className="flex flex-col mb-4 w-full">
             <label
               htmlFor="title"

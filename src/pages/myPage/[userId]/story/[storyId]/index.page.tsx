@@ -3,6 +3,7 @@
 import { gql, useMutation, useQuery } from "@apollo/client"
 import cc from "classcat"
 import type { NextPage } from "next"
+import Link from "next/link"
 import { useRouter } from "next/router"
 import { memo, useCallback, useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
@@ -80,6 +81,7 @@ const EditStoryPage: NextPage = () => {
   const { storyId, userId } = router.query
   const { storyImageUrls } = useStoryImage(userId as string)
   const [isPublish, setIsPublish] = useState<boolean>(false)
+  const [isStorage, setIsStorage] = useState<boolean>(true)
   const [storyImage, setStoryImage] = useState<string>("")
   const [isHiddenAgeCategoryMenu, setIsHiddenAgeCategoryMenu] =
     useState<boolean>(true)
@@ -104,6 +106,10 @@ const EditStoryPage: NextPage = () => {
 
   const handleTogglePublish = useCallback(() => {
     setIsPublish(pre => !pre)
+  }, [])
+
+  const handleToggleStorage = useCallback(() => {
+    setIsStorage(pre => !pre)
   }, [])
 
   const handleToggleAgeCategoryMenu = useCallback(() => {
@@ -159,6 +165,7 @@ const EditStoryPage: NextPage = () => {
       viewingRestriction: "",
       synopsis: "",
       title: "",
+      imageUrl: "",
     },
   })
 
@@ -174,7 +181,7 @@ const EditStoryPage: NextPage = () => {
         publish: isPublish,
         acessToken: accessToken ? accessToken : null,
         storySynopsis: getValues("synopsis"),
-        storyImage: storyImage ? storyImage : null,
+        storyImage: isStorage ? storyImage : getValues("imageUrl"),
         viewingRestriction:
           getValues("viewingRestriction") === ""
             ? null
@@ -182,20 +189,21 @@ const EditStoryPage: NextPage = () => {
       },
     }).then(() => {
       toast.custom(t => (
-        <Alert t={t} title="ストーリーを作成しました" usage="success" />
+        <Alert t={t} title="ストーリーを更新しました" usage="success" />
       ))
       return router.push(`/myPage/${userId}/story`)
     })
   }, [
-    accessToken,
     updateStory,
-    getValues,
-    isPublish,
-    router,
-    storyCategoryes,
-    storyId,
-    storyImage,
     userId,
+    storyId,
+    getValues,
+    storyCategoryes,
+    isPublish,
+    accessToken,
+    isStorage,
+    storyImage,
+    router,
   ])
 
   useEffect(() => {
@@ -224,6 +232,7 @@ const EditStoryPage: NextPage = () => {
       setValue("title", story_title as string)
       setValue("synopsis", story_synopsis as string)
       setValue("viewingRestriction", viewing_restriction as string)
+      setValue("imageUrl", story_image as string)
       setIsPublish(publish ? true : false)
       setStoryImage(story_image as string)
       setStoryCategoryes(story_categories as string[])
@@ -254,10 +263,19 @@ const EditStoryPage: NextPage = () => {
     <Layout>
       <Toaster position="top-center" />
       <div className="p-8">
+        <Link
+          href={{
+            pathname: `/myPage/${userId}/story/${storyId}/createSeason`,
+          }}
+        >
+          <a className="text-lg font-bold text-purple-500 underline">
+            シーズンの作成へ
+          </a>
+        </Link>
         <form className="p-4" onSubmit={handleSubmit(handleSubmitData)}>
           <div className="flex flex-col mb-4 w-full">
             <label className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500">
-              <p>公開する</p>
+              <p>{isPublish ? "公開する" : "公開しない"}</p>
             </label>
             <Switch
               checked={isPublish}
@@ -330,11 +348,21 @@ const EditStoryPage: NextPage = () => {
             )}
           </div>
 
-          {storyImageUrls.length > 0 && (
-            <div className="flex flex-col mb-4 w-full">
-              <label className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500">
-                <p>表紙</p>
-              </label>
+          <div className="flex flex-col mb-4 w-full">
+            <label className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500">
+              <p>
+                {isStorage ? "コンテンツから表紙を登録" : "URLから表紙を登録"}
+              </p>
+            </label>
+            <div className="mb-4">
+              <Switch
+                onToggle={handleToggleStorage}
+                checked={isStorage}
+                size="medium"
+              />
+            </div>
+
+            {storyImageUrls.length > 0 && isStorage ? (
               <div className="flex overflow-x-scroll gap-5 items-center mb-4 w-full">
                 {storyImageUrls.map(url => (
                   <button
@@ -356,8 +384,32 @@ const EditStoryPage: NextPage = () => {
                   </button>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <div>
+                <div className="mb-4">
+                  <Input
+                    label="URL"
+                    placeholder="画像のURLを入力してください"
+                    type="text"
+                    {...register("imageUrl", {
+                      required: true,
+                      maxLength: {
+                        value: 1000,
+                        message: "URLは1000文字以下です",
+                      },
+                    })}
+                  />
+                </div>
+                <div>
+                  <img
+                    className="object-cover object-center w-[210px] h-[297px]"
+                    src={getValues("imageUrl")}
+                    alt="preview"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
 
           <div className="flex flex-col mb-4 w-full">
             <label
