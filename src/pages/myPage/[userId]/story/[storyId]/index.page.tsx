@@ -14,7 +14,8 @@ import { Input } from "src/components/atoms/Input"
 import { Select } from "src/components/atoms/Select"
 import { Switch } from "src/components/atoms/Switch"
 import { TextArea } from "src/components/atoms/TextArea"
-import { ReviewCard, SeasonCard } from "src/components/blocks/Card"
+import { ReviewCard } from "src/components/blocks/Card"
+import { MySeasonCard } from "src/components/blocks/Card/MySeason"
 import { Menu } from "src/components/blocks/Menu"
 import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout"
@@ -82,6 +83,7 @@ const MyStoryQuery = gql`
         seasonUserId: $seasonUserId
       ) {
         id
+        publish
         season_title
         season_image
         created_at
@@ -573,7 +575,7 @@ const EditStoryPage: NextPage = () => {
                     <div className="flex flex-wrap gap-5 justify-center items-center w-full">
                       {myStoryData?.QueryMyStoryById.seasons?.map(
                         (season, index) => (
-                          <SeasonCard
+                          <MySeasonCard
                             characters={null}
                             created_at={undefined}
                             episodes={null}
@@ -590,6 +592,7 @@ const EditStoryPage: NextPage = () => {
                             key={season?.id}
                             {...season}
                             seasonNumber={index + 1}
+                            href={`/myPage/${userId}/story/${storyId}/season/${season?.id}`}
                           />
                         )
                       )}
@@ -611,7 +614,9 @@ const EditStoryPage: NextPage = () => {
               ),
             },
             {
-              label: `${reviews?.QueryReviewsByStoryId?.length || 0}件のレビュー`,
+              label: `${
+                reviews?.QueryReviewsByStoryId?.length || 0
+              }件のレビュー`,
               children: (
                 <div className="flex flex-col items-center py-4 w-full">
                   {reviews && reviews.QueryReviewsByStoryId.length > 0 ? (
