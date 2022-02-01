@@ -1,11 +1,28 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable import/no-default-export */
+/* eslint-disable @typescript-eslint/no-namespace */
 import { PrismaClient } from "@prisma/client"
 
-// PrismaClient is attached to the `global` object in development to prevent
-// exhausting your database connection limit.
-//
-// Learn more:
-// https://pris.ly/d/help/next-js-best-practices
+declare global {
+  namespace NodeJS {
+    interface Global {
+      prisma: PrismaClient
+    }
+  }
+}
 
-const prisma = new PrismaClient()
+let prisma: PrismaClient
+
+if (process.env.NODE_ENV === "production") {
+  prisma = new PrismaClient()
+} else {
+  // @ts-ignore
+  if (!global.prisma) {
+    // @ts-ignore
+    global.prisma = new PrismaClient()
+  }
+  // @ts-ignore
+  prisma = global.prisma
+}
 
 export default prisma

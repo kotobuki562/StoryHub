@@ -36,7 +36,7 @@ const TabComp: VFC<Props> = ({ color, values }) => {
                 color === "purple" && "bg-purple-500 text-white rounded-full",
                 isActive !== index &&
                   color === "purple" &&
-                  "bg-purple-100 text-purple-500 rounded-full",
+                  "bg-purple-100 text-purple-500/100 rounded-full",
               ])}
               onClick={() => onClick(index)}
             >

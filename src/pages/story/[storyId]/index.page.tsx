@@ -43,6 +43,7 @@ const StoryQueryById = gql`
       updated_at
       seasons {
         id
+        story_id
         season_title
         season_image
         created_at

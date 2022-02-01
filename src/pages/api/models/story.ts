@@ -30,13 +30,13 @@ const Story = objectType({
           seasonUserId &&
           isSafe(seasonAccessToken, seasonUserId)
           ? prisma.season.findMany({
-              orderBy: { created_at: "desc" },
+              orderBy: { created_at: "asc" },
               where: {
                 story_id: `${parent.id}`,
               },
             })
           : prisma.season.findMany({
-              orderBy: { created_at: "desc" },
+              orderBy: { created_at: "asc" },
               where: {
                 story_id: `${parent.id}`,
                 publish: true,
