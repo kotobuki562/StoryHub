@@ -24,6 +24,7 @@ const SeasonCardComp: VFC<
       <div>
         <h3 className="text-left">
           <Link
+            prefetch={false}
             href={{
               pathname: "/story/[storyId]/season/[seasonId]",
               query: { seasonId: id, storyId: story_id },

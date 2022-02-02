@@ -192,7 +192,7 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
   return (
     <Layout
       meta={{
-        pageName: `StoryHub | ${story.QueryStoryById?.user?.user_name}さんの作品。「${story.QueryStoryById.story_title}」`,
+        pageName: `SうにtoryHub | ${story.QueryStoryById?.user?.user_name}さんの作品。「${story.QueryStoryById.story_title}」`,
         description: `${story.QueryStoryById.story_synopsis}`,
         cardImage: `${
           story.QueryStoryById.story_image || "/img/StoryHubLogo.png"
@@ -200,27 +200,28 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
       }}
     >
       <div className="flex flex-col justify-center items-center p-8 w-full">
-        {story.QueryStoryById.story_title !== "非公開のストーリー" &&
-          user?.id &&
-          !isCreateReview && (
-            <>
-              <div className="fixed right-5 bottom-5 z-10">
-                <button
-                  onClick={handleOpenModal}
-                  className="flex flex-col justify-center items-center p-2 w-16 h-16 text-yellow-300 bg-purple-500 rounded-full focus:ring-2 ring-purple-300 duration-200 sm:p-4 sm:w-20 sm:h-20"
-                >
-                  <PencilAltIcon className="w-16 h-16 sm:w-20 sm:h-20" />
-                </button>
-              </div>
-              <Modal
-                isOpen={isOpenModal}
-                onClose={handleCloseModal}
-                title={`レビューを書く : ${story.QueryStoryById.story_title}`}
+        {story.QueryStoryById.story_title !== "非公開のストーリー" && user?.id && (
+          <>
+            <div className="fixed right-5 bottom-5 z-10">
+              <button
+                onClick={handleOpenModal}
+                className="flex flex-col justify-center items-center p-2 w-16 h-16 text-yellow-300 bg-purple-500 rounded-full focus:ring-2 ring-purple-300 duration-200 sm:p-4 sm:w-20 sm:h-20"
               >
-                <CreateReviewForm userId={user.id} />
-              </Modal>
-            </>
-          )}
+                <PencilAltIcon className="w-16 h-16 sm:w-20 sm:h-20" />
+              </button>
+            </div>
+            <Modal
+              isOpen={isOpenModal}
+              onClose={handleCloseModal}
+              title={`レビューを書く : ${story.QueryStoryById.story_title}`}
+            >
+              <CreateReviewForm
+                isCreateReview={isCreateReview}
+                userId={user.id}
+              />
+            </Modal>
+          </>
+        )}
 
         <Tab
           color="purple"

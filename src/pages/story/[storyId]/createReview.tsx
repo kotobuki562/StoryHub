@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import { gql, useMutation } from "@apollo/client"
-import { StarIcon } from "@heroicons/react/solid"
 import cc from "classcat"
 import { useRouter } from "next/router"
 import type { VFC } from "react"
@@ -13,6 +12,8 @@ import { Input } from "src/components/atoms/Input"
 import { TextArea } from "src/components/atoms/TextArea"
 import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { supabase } from "src/lib/supabase"
+
+import { Star } from "./star"
 
 const CreateReview = gql`
   mutation Mutation(
@@ -55,9 +56,10 @@ const reviewStars = [1, 2, 3, 4, 5]
 
 type FormProps = {
   userId: string
+  isCreateReview: boolean
 }
 
-const CreateReviewFormComp: VFC<FormProps> = ({ userId }) => {
+const CreateReviewFormComp: VFC<FormProps> = ({ isCreateReview, userId }) => {
   const router = useRouter()
   const { storyId } = router.query
   const accessToken = supabase.auth.session()?.access_token
@@ -132,17 +134,12 @@ const CreateReviewFormComp: VFC<FormProps> = ({ userId }) => {
         <div className="flex flex-col justify-center items-center mb-4 w-full">
           <div className="flex gap-2 items-center">
             {reviewStars.map(star => (
-              <button key={star} type="button">
-                <StarIcon
-                  className={cc([
-                    "w-10 h-10 sm:w-20 sm:h-20",
-                    {
-                      "text-gray-500": star > stars,
-                      "text-yellow-400": star <= stars,
-                    },
-                  ])}
-                  onClick={() => handleChangeStars(star)}
-                />
+              <button
+                key={star}
+                onClick={() => handleChangeStars(star)}
+                type="button"
+              >
+                <Star isActive={star <= stars} />
               </button>
             ))}
           </div>
@@ -200,10 +197,10 @@ const CreateReviewFormComp: VFC<FormProps> = ({ userId }) => {
 
         <div className="flex flex-col items-center w-full">
           <Button
-            disabled={isLoading}
+            disabled={isLoading || isCreateReview}
             isLoading={isLoading}
             type="submit"
-            text="レビュー作成"
+            text={isCreateReview ? "既にレビュー済み" : "レビュー作成"}
           />
         </div>
       </form>
