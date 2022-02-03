@@ -37,6 +37,7 @@ const StoryQueryById = gql`
       updated_at
       seasons {
         id
+        story_id
         season_title
         season_image
         created_at
@@ -76,6 +77,7 @@ const SeasonQueryById = gql`
 type StoryPageProps = {
   story: QueryStoryById
   season: QuerySeasonById
+  seasonId: string
 }
 
 export const getStaticPaths = async () => {
@@ -180,132 +182,178 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
     props: {
       story: data,
       season: seasonData,
+      seasonId: params?.seasonId,
     },
     revalidate: 60,
   }
 }
 
-const StoryPage: NextPage<StoryPageProps> = ({ season, story }) => (
-  <Layout
-    meta={{
-      pageName: `StoryHub | ${story.QueryStoryById.story_title}のシーズン 「${season.QuerySeasonById.season_title}」`,
-      description: `${season.QuerySeasonById.season_synopsis}`,
-      cardImage: `${
-        season.QuerySeasonById.season_image || "/img/StoryHubLogo.png"
-      }`,
-    }}
-  >
-    <div
-      className="flex relative flex-col"
-      style={{
-        backgroundImage: `url(${
+const StoryPage: NextPage<StoryPageProps> = ({ season, seasonId, story }) => {
+  const currentOtherSeasons = story.QueryStoryById.seasons
+    ? story.QueryStoryById.seasons.map(data => data)
+    : []
+  return (
+    <Layout
+      meta={{
+        pageName: `StoryHub | ${story.QueryStoryById.story_title}のシーズン 「${season.QuerySeasonById.season_title}」`,
+        description: `${season.QuerySeasonById.season_synopsis}`,
+        cardImage: `${
           season.QuerySeasonById.season_image || "/img/StoryHubLogo.png"
-        })`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        height: "100vh",
-        width: "100%",
+        }`,
       }}
     >
-      <div className="grid absolute inset-0 p-8 w-full bg-black/75">
-        <Tab
-          color="purple"
-          values={[
-            {
-              label: `${story.QueryStoryById.story_title}`,
-              children: (
-                <div className="flex flex-col justify-center items-center py-4 w-full">
-                  <div className="flex flex-col items-center w-[300px] sm:w-[400px] xl:w-[600px]">
-                    <div
-                      className="overflow-hidden mb-8 w-[210px] h-[297px] bg-center bg-cover rounded-lg sm:w-[300.38px] sm:h-[425px] xl:w-[375px] xl:h-[530.57px]"
-                      style={{
-                        backgroundImage: `url(${
-                          story.QueryStoryById.story_image ||
-                          "https://user-images.githubusercontent.com/67810971/149643400-9821f826-5f9c-45a2-a726-9ac1ea78fbe5.png"
-                        })`,
-                      }}
-                    />
-                    <div className="flex flex-col">
-                      <div className="flex flex-wrap gap-3 mb-4">
-                        {story.QueryStoryById.story_categories?.map(
-                          category => (
-                            <span
-                              key={category}
-                              className="py-1 px-2 text-sm font-bold text-purple-500 bg-yellow-300 rounded-r-full rounded-bl-full"
-                            >
-                              {category}
-                            </span>
-                          )
-                        )}
+      <div
+        className="flex relative flex-col w-full min-h-[100vh]"
+        style={{
+          backgroundImage: `url(${
+            story.QueryStoryById.story_image || "/img/StoryHubLogo.png"
+          })`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <div
+          className="grid overflow-scroll absolute inset-0 p-8 w-full h-[100vh] bg-black/60"
+          // style={{
+          //   height: "calc(100vh - 64px)",
+          // }}
+        >
+          <Tab
+            color="purple"
+            values={[
+              {
+                label: `${season.QuerySeasonById.season_title}`,
+                children: (
+                  <div className="flex flex-col justify-center items-center py-4 w-full">
+                    <div className="flex flex-col items-center w-[300px] sm:w-[400px] xl:w-[600px]">
+                      <div
+                        className="overflow-hidden mb-8 w-[297px] h-[210px] bg-center bg-cover rounded-lg sm:w-[425px] sm:h-[300.38px] xl:w-[530.57px] xl:h-[375px]"
+                        style={{
+                          backgroundImage: `url(${
+                            season.QuerySeasonById.season_image ||
+                            "https://user-images.githubusercontent.com/67810971/149643400-9821f826-5f9c-45a2-a726-9ac1ea78fbe5.png"
+                          })`,
+                        }}
+                      />
+                      <div className="flex flex-col w-full">
+                        <h2 className="mb-4 text-2xl font-bold text-white">
+                          {season.QuerySeasonById.season_title}
+                        </h2>
+                        <p className="mb-4 text-slate-200 whitespace-pre-wrap">
+                          {season.QuerySeasonById.season_synopsis}
+                        </p>
+                        <p className="text-right text-slate-400">
+                          {season.QuerySeasonById.created_at &&
+                            format(
+                              new Date(season.QuerySeasonById.created_at),
+                              "yyyy/MM/dd"
+                            )}
+                        </p>
                       </div>
-                      <h2 className="mb-4 text-2xl font-black">
-                        {story.QueryStoryById.story_title}
-                      </h2>
-                      <p className="mb-4 text-slate-600 whitespace-pre-wrap">
-                        {story.QueryStoryById.story_synopsis}
-                      </p>
-                      <p className="text-right text-slate-400">
-                        {story.QueryStoryById.created_at &&
-                          format(
-                            new Date(story.QueryStoryById.created_at),
-                            "yyyy/MM/dd"
-                          )}
-                      </p>
                     </div>
                   </div>
-                </div>
-              ),
-            },
-            {
-              label: `${story.QueryStoryById?.seasons?.length}個のシーズン`,
-              children: (
-                <div className="flex flex-col items-center py-4 w-full">
-                  {story.QueryStoryById.seasons &&
-                  story.QueryStoryById.seasons.length > 0 ? (
-                    <div className="flex flex-wrap gap-5 justify-center items-center w-full">
-                      {story.QueryStoryById.seasons?.map((season, index) => (
-                        <SeasonCard
-                          characters={null}
-                          created_at={undefined}
-                          episodes={null}
-                          id={null}
-                          objects={null}
-                          publish={null}
-                          season_image={null}
-                          season_synopsis={null}
-                          season_title={null}
-                          story={null}
-                          story_id={null}
-                          terminologies={null}
-                          updated_at={undefined}
-                          key={season?.id}
-                          {...season}
-                          seasonNumber={index + 1}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center">
-                      <h3 className="text-xl font-bold text-purple-500">
-                        シーズンが存在しません
-                      </h3>
+                ),
+              },
+              {
+                label: "ストーリー",
+                children: (
+                  <div className="flex flex-col justify-center items-center py-4 w-full">
+                    <div className="flex flex-col items-center w-[300px] sm:w-[400px] xl:w-[600px]">
                       <div
                         className="overflow-hidden mb-8 w-[210px] h-[297px] bg-center bg-cover rounded-lg sm:w-[300.38px] sm:h-[425px] xl:w-[375px] xl:h-[530.57px]"
                         style={{
-                          backgroundImage: `url("https://user-images.githubusercontent.com/67810971/149643400-9821f826-5f9c-45a2-a726-9ac1ea78fbe5.png")`,
+                          backgroundImage: `url(${
+                            story.QueryStoryById.story_image ||
+                            "https://user-images.githubusercontent.com/67810971/149643400-9821f826-5f9c-45a2-a726-9ac1ea78fbe5.png"
+                          })`,
                         }}
                       />
+                      <div className="flex flex-col">
+                        <div className="flex flex-wrap gap-3 mb-4">
+                          {story.QueryStoryById.story_categories?.map(
+                            category => (
+                              <span
+                                key={category}
+                                className="py-1 px-2 text-sm font-bold text-purple-500 bg-yellow-300 rounded-r-full rounded-bl-full"
+                              >
+                                {category}
+                              </span>
+                            )
+                          )}
+                        </div>
+                        <h2 className="mb-4 text-2xl font-bold text-white">
+                          {story.QueryStoryById.story_title}
+                        </h2>
+                        <p className="mb-4 text-slate-200 whitespace-pre-wrap">
+                          {story.QueryStoryById.story_synopsis}
+                        </p>
+                        <p className="text-right text-slate-400">
+                          {story.QueryStoryById.created_at &&
+                            format(
+                              new Date(story.QueryStoryById.created_at),
+                              "yyyy/MM/dd"
+                            )}
+                        </p>
+                      </div>
                     </div>
-                  )}
-                </div>
-              ),
-            },
-          ]}
-        />
+                  </div>
+                ),
+              },
+              {
+                label: `${currentOtherSeasons.length}個のシーズン`,
+                children: (
+                  <div className="flex flex-col items-center py-4 w-full">
+                    {currentOtherSeasons && currentOtherSeasons.length > 0 ? (
+                      <div className="flex flex-wrap gap-5 justify-center items-center w-full">
+                        {currentOtherSeasons.map((season, index) => {
+                          // eslint-disable-next-line no-console
+                          console.log(season?.id, seasonId)
+                          return (
+                            <SeasonCard
+                              characters={null}
+                              created_at={undefined}
+                              episodes={null}
+                              id={null}
+                              objects={null}
+                              publish={null}
+                              season_image={null}
+                              season_synopsis={null}
+                              season_title={null}
+                              story={null}
+                              story_id={null}
+                              terminologies={null}
+                              updated_at={undefined}
+                              key={season?.id}
+                              {...season}
+                              seasonNumber={index + 1}
+                              isCurrentSeason={season?.id === seasonId}
+                            />
+                          )
+                        })}
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center">
+                        <h3 className="text-xl font-bold text-purple-500">
+                          シーズンが存在しません
+                        </h3>
+                        <div
+                          className="overflow-hidden mb-8 w-[210px] h-[297px] bg-center bg-cover rounded-lg sm:w-[300.38px] sm:h-[425px] xl:w-[375px] xl:h-[530.57px]"
+                          style={{
+                            backgroundImage: `url("https://user-images.githubusercontent.com/67810971/149643400-9821f826-5f9c-45a2-a726-9ac1ea78fbe5.png")`,
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                ),
+              },
+            ]}
+          />
+        </div>
       </div>
-    </div>
-  </Layout>
-)
+    </Layout>
+  )
+}
 
 export default StoryPage
