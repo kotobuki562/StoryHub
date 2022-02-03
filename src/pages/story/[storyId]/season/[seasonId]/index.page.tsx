@@ -77,6 +77,7 @@ const SeasonQueryById = gql`
 type StoryPageProps = {
   story: QueryStoryById
   season: QuerySeasonById
+  seasonId: string
 }
 
 export const getStaticPaths = async () => {
@@ -181,12 +182,13 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
     props: {
       story: data,
       season: seasonData,
+      seasonId: params?.seasonId,
     },
     revalidate: 60,
   }
 }
 
-const StoryPage: NextPage<StoryPageProps> = ({ season, story }) => {
+const StoryPage: NextPage<StoryPageProps> = ({ season, seasonId, story }) => {
   const currentOtherSeasons = story.QueryStoryById.seasons
     ? story.QueryStoryById.seasons.map(data => data)
     : []
@@ -201,7 +203,7 @@ const StoryPage: NextPage<StoryPageProps> = ({ season, story }) => {
       }}
     >
       <div
-        className="flex relative flex-col min-h-[100vh]"
+        className="flex relative flex-col w-full min-h-[100vh]"
         style={{
           backgroundImage: `url(${
             story.QueryStoryById.story_image || "/img/StoryHubLogo.png"
@@ -209,11 +211,14 @@ const StoryPage: NextPage<StoryPageProps> = ({ season, story }) => {
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          height: "100%",
-          width: "100%",
         }}
       >
-        <div className="grid absolute inset-0 p-8 w-full bg-black/60">
+        <div
+          className="grid overflow-scroll absolute inset-0 p-8 w-full h-[100vh] bg-black/60"
+          // style={{
+          //   height: "calc(100vh - 64px)",
+          // }}
+        >
           <Tab
             color="purple"
             values={[
@@ -301,26 +306,31 @@ const StoryPage: NextPage<StoryPageProps> = ({ season, story }) => {
                   <div className="flex flex-col items-center py-4 w-full">
                     {currentOtherSeasons && currentOtherSeasons.length > 0 ? (
                       <div className="flex flex-wrap gap-5 justify-center items-center w-full">
-                        {currentOtherSeasons.map((season, index) => (
-                          <SeasonCard
-                            characters={null}
-                            created_at={undefined}
-                            episodes={null}
-                            id={null}
-                            objects={null}
-                            publish={null}
-                            season_image={null}
-                            season_synopsis={null}
-                            season_title={null}
-                            story={null}
-                            story_id={null}
-                            terminologies={null}
-                            updated_at={undefined}
-                            key={season?.id}
-                            {...season}
-                            seasonNumber={index + 1}
-                          />
-                        ))}
+                        {currentOtherSeasons.map((season, index) => {
+                          // eslint-disable-next-line no-console
+                          console.log(season?.id, seasonId)
+                          return (
+                            <SeasonCard
+                              characters={null}
+                              created_at={undefined}
+                              episodes={null}
+                              id={null}
+                              objects={null}
+                              publish={null}
+                              season_image={null}
+                              season_synopsis={null}
+                              season_title={null}
+                              story={null}
+                              story_id={null}
+                              terminologies={null}
+                              updated_at={undefined}
+                              key={season?.id}
+                              {...season}
+                              seasonNumber={index + 1}
+                              isCurrentSeason={season?.id === seasonId}
+                            />
+                          )
+                        })}
                       </div>
                     ) : (
                       <div className="flex flex-col items-center">

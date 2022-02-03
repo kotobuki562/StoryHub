@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import cc from "classcat"
 import Link from "next/link"
 import type { VFC } from "react"
 import { memo } from "react"
@@ -7,8 +8,16 @@ import type { NexusGenFieldTypes } from "src/generated/nexus-typegen"
 const SeasonCardComp: VFC<
   NexusGenFieldTypes["Season"] & {
     seasonNumber: number
+    isCurrentSeason?: boolean
   }
-> = ({ id, season_image, season_title, seasonNumber, story_id }) => (
+> = ({
+  id,
+  isCurrentSeason,
+  season_image,
+  season_title,
+  seasonNumber,
+  story_id,
+}) => (
   <article
     className="group overflow-hidden relative w-[300px] h-[200px] bg-center bg-cover rounded-lg shadow-lg hover:shadow-2xl transition duration-300 ease-in-out"
     style={{
@@ -30,7 +39,12 @@ const SeasonCardComp: VFC<
               query: { seasonId: id, storyId: story_id },
             }}
           >
-            <a className="font-bold text-center text-white sm:text-xl">
+            <a
+              className={cc([
+                "font-bold text-center sm:text-xl",
+                isCurrentSeason ? "text-purple-300" : "text-white",
+              ])}
+            >
               <span className="absolute inset-0"></span>
               {season_title && season_title.length > 20
                 ? season_title.slice(0, 20) + "..."

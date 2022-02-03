@@ -132,7 +132,7 @@ const CreateReviewFormComp: VFC<FormProps> = ({ isCreateReview, userId }) => {
 
       <form className="p-4 sm:p-8" onSubmit={handleSubmit(handleSubmitData)}>
         <div className="flex flex-col justify-center items-center mb-4 w-full">
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-1 items-center">
             {reviewStars.map(star => (
               <button
                 key={star}

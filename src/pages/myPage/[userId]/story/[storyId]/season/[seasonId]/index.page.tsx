@@ -17,23 +17,27 @@ import { LoadingLogo } from "src/components/Loading"
 import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { useStorage } from "src/hooks/storage/useStorage"
 import { supabase } from "src/lib/supabase"
-import type { QueryMyStoryById } from "src/types/Story/query"
+import type { QueryMySeasonById } from "src/types/Season/query"
 
-const SeasonCreate = gql`
+const SeasonUpdate = gql`
   mutation Mutation(
+    $seasonId: String!
     $storyId: String!
     $seasonTitle: String!
     $seasonSynopsis: String!
     $publish: Boolean!
     $acessToken: String!
+    $userId: String!
     $seasonImage: String
   ) {
-    createSeason(
+    updateSeason(
+      seasonId: $seasonId
       storyId: $storyId
       seasonTitle: $seasonTitle
       seasonSynopsis: $seasonSynopsis
       publish: $publish
       acessToken: $acessToken
+      userId: $userId
       seasonImage: $seasonImage
     ) {
       id
@@ -41,49 +45,62 @@ const SeasonCreate = gql`
   }
 `
 
-const MyStoryQuery = gql`
-  query QueryMyStoryById(
-    $queryMyStoryByIdId: String!
+const MySeasonQuery = gql`
+  query Query(
+    $queryMySeasonByIdId: String!
     $userId: String!
     $accessToken: String!
   ) {
-    QueryMyStoryById(
-      id: $queryMyStoryByIdId
+    QueryMySeasonById(
+      id: $queryMySeasonByIdId
       userId: $userId
       accessToken: $accessToken
     ) {
+      story_id
+      season_title
+      season_image
+      season_synopsis
+      publish
+      created_at
+      updated_at
       id
-      story_title
-      story_synopsis
-      story_image
+      story {
+        id
+        story_title
+        story_synopsis
+        story_image
+      }
     }
   }
 `
 
 const CreateSeason: NextPage = () => {
   const router = useRouter()
-  const { storyId, userId } = router.query
+  const { seasonId, storyId, userId } = router.query
   const { imageUrls } = useStorage(userId as string, "season")
   const [isPublish, setIsPublish] = useState<boolean>(false)
   const [isStorage, setIsStorage] = useState<boolean>(true)
   const [seasonImage, setSeasonImage] = useState<string>("")
   const accessToken = supabase.auth.session()?.access_token
   const {
-    data: myStoryData,
-    error: myStoryError,
-    loading: isMyStoryLoading,
-  } = useQuery<QueryMyStoryById>(MyStoryQuery, {
+    data: mySeason,
+    error: mySeasonError,
+    loading: isMySeasonLoading,
+  } = useQuery<QueryMySeasonById>(MySeasonQuery, {
     variables: {
-      queryMyStoryByIdId: storyId as string,
+      queryMySeasonByIdId: seasonId as string,
       userId: userId as string,
-      accessToken: `${accessToken}`,
+      accessToken: accessToken ? accessToken : null,
     },
   })
 
+  const { publish, season_image, season_synopsis, season_title, story } =
+    mySeason?.QueryMySeasonById || {}
+
   const [
-    createSeason,
-    { error: errorCreateSeason, loading: isLoadingCreateSeason },
-  ] = useMutation<NexusGenArgTypes["Mutation"]["createSeason"]>(SeasonCreate)
+    updateSeason,
+    { error: errorUpdateSeason, loading: isLoadingUpdateSeason },
+  ] = useMutation<NexusGenArgTypes["Mutation"]["updateSeason"]>(SeasonUpdate)
 
   const handleTogglePublish = useCallback(() => {
     setIsPublish(pre => !pre)
@@ -105,6 +122,7 @@ const CreateSeason: NextPage = () => {
     getValues,
     handleSubmit,
     register,
+    setValue,
     watch,
   } = useForm({
     defaultValues: {
@@ -116,53 +134,84 @@ const CreateSeason: NextPage = () => {
 
   const { synopsis, title } = watch()
 
+  useEffect(() => {
+    if (season_image) {
+      setSeasonImage(season_image)
+    }
+
+    if (publish) {
+      setIsPublish(publish)
+    }
+
+    if (season_synopsis) {
+      setValue("synopsis", season_synopsis)
+    }
+
+    if (season_title) {
+      setValue("title", season_title)
+    }
+  }, [publish, season_image, season_synopsis, season_title, setValue])
+
   const handleSubmitData = useCallback(async () => {
-    await createSeason({
+    await updateSeason({
       variables: {
+        seasonId: seasonId as string,
+        storyId: storyId as string,
+        publish: isPublish,
+        userId: userId as string,
         seasonTitle: getValues("title"),
         seasonSynopsis: getValues("synopsis"),
         seasonImage: isStorage ? seasonImage : getValues("imageUrl"),
-        storyId: storyId as string,
-        publish: isPublish,
         acessToken: accessToken ? accessToken : null,
       },
+      refetchQueries: [
+        {
+          query: MySeasonQuery,
+          variables: {
+            queryMySeasonByIdId: seasonId as string,
+            userId: userId as string,
+            accessToken: accessToken ? accessToken : null,
+          },
+        },
+      ],
     }).then(() => {
       toast.custom(t => (
         <Alert
           t={t}
-          title={`${myStoryData?.QueryMyStoryById.story_title}のシーズンを作成しました`}
+          title={`${mySeason?.QueryMySeasonById.season_title}のシーズンを更新しました`}
           usage="success"
         />
       ))
       return router.push(`/myPage/${userId}/story/${storyId}`)
     })
   }, [
-    createSeason,
+    updateSeason,
+    seasonId,
+    storyId,
+    isPublish,
+    userId,
     getValues,
     isStorage,
     seasonImage,
-    storyId,
-    isPublish,
     accessToken,
     router,
-    userId,
-    myStoryData?.QueryMyStoryById.story_title,
+    mySeason?.QueryMySeasonById.season_title,
   ])
 
   useEffect(() => {
-    if (errorCreateSeason || myStoryError) {
+    if (errorUpdateSeason || mySeasonError) {
       toast.custom(t => (
         <Alert
           t={t}
           title="エラーが発生しました"
           usage="error"
-          message={errorCreateSeason?.message || myStoryError?.message}
+          message={errorUpdateSeason?.message || mySeasonError?.message}
         />
       ))
     }
-  }, [errorCreateSeason, myStoryError])
+  }, [errorUpdateSeason, mySeasonError])
 
-  if (isMyStoryLoading || !userId || isLoadingCreateSeason) {
+  if (isMySeasonLoading || !userId || isLoadingUpdateSeason) {
     return (
       <Layout>
         <div className="flex flex-col justify-center items-center p-8 w-full h-screen">
@@ -172,7 +221,7 @@ const CreateSeason: NextPage = () => {
     )
   }
 
-  if (!isMyStoryLoading && myStoryError && !isLoadingCreateSeason) {
+  if (!isMySeasonLoading && mySeasonError && !isLoadingUpdateSeason) {
     return (
       <Layout>
         <div className="flex flex-col justify-center items-center p-8 w-full h-screen">
@@ -192,17 +241,15 @@ const CreateSeason: NextPage = () => {
               className="overflow-hidden mb-8 w-[210px] h-[297px] bg-center bg-cover rounded-lg sm:w-[300.38px] sm:h-[425px] xl:w-[375px] xl:h-[530.57px]"
               style={{
                 backgroundImage: `url(${
-                  myStoryData?.QueryMyStoryById.story_image ||
+                  story?.story_image ||
                   "https://user-images.githubusercontent.com/67810971/149643400-9821f826-5f9c-45a2-a726-9ac1ea78fbe5.png"
                 })`,
               }}
             />
             <div className="flex flex-col">
-              <h2 className="mb-4 text-2xl font-black">
-                {myStoryData?.QueryMyStoryById.story_title}
-              </h2>
+              <h2 className="mb-4 text-2xl font-black">{story?.story_title}</h2>
               <p className="text-slate-600 whitespace-pre-wrap">
-                {myStoryData?.QueryMyStoryById.story_synopsis}
+                {story?.story_synopsis}
               </p>
             </div>
           </div>
@@ -334,10 +381,10 @@ const CreateSeason: NextPage = () => {
 
           <div className="flex flex-col items-center w-full">
             <Button
-              disabled={isLoadingCreateSeason}
-              isLoading={isLoadingCreateSeason}
+              disabled={isLoadingUpdateSeason}
+              isLoading={isLoadingUpdateSeason}
               type="submit"
-              text="作成"
+              text="更新"
             />
           </div>
         </form>
