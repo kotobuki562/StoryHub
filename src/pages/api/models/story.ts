@@ -46,33 +46,36 @@ const Story = objectType({
     })
     t.list.field("reviews", {
       type: "Review",
-      resolve: (parent) =>
-        prisma.review.findMany({
+      resolve: parent => {
+        return prisma.review.findMany({
           orderBy: { created_at: "desc" },
           where: {
             story_id: `${parent.id}`,
           },
-        }),
+        })
+      },
     })
     t.list.field("favorites", {
       type: "Favorite",
-      resolve: parent =>
-        parent.id
+      resolve: parent => {
+        return parent.id
           ? prisma.favorite.findMany({
               where: {
                 story_id: parent.id,
               },
             })
-          : [],
+          : []
+      },
     })
     t.field("user", {
       type: "User",
-      resolve: parent =>
-        prisma.user.findUnique({
+      resolve: parent => {
+        return prisma.user.findUnique({
           where: {
             id: `${parent.user_id}`,
           },
-        }),
+        })
+      },
     })
   },
 })

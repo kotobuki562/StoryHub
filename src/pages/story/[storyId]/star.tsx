@@ -71,31 +71,23 @@ const StarComp: VFC<StarProps> = ({ isActive }) => {
   if (isActive) {
     return (
       <div className="relative" ref={iconRef}>
-        <div ref={topRightIcon} className="absolute top-0">
-          <div className="relative">
-            <div className="absolute top-0 left-1">
-              <StarIcon className="w-3 h-3 text-yellow-400 sm:w-6 sm:h-6" />
-            </div>
-            <div className="absolute top-0 right-1">
-              <StarIcon className="w-3 h-3 text-yellow-400 sm:w-6 sm:h-6" />
-            </div>
-
-            <div className="absolute right-[3.5px] sm:right-7 sm:-bottom-20">
-              <StarIcon className="w-3 h-3 text-yellow-400 sm:w-6 sm:h-6" />
-            </div>
-            <div className="absolute -right-1 -bottom-16">
-              <StarIcon className="w-3 h-3 text-yellow-400 sm:w-6 sm:h-6" />
-            </div>
-            <div className="absolute -bottom-16 -left-1">
-              <StarIcon className="w-3 h-3 text-yellow-400 sm:w-6 sm:h-6" />
-            </div>
+        <div ref={topRightIcon} className="absolute inset-x-0 top-0">
+          <div className="flex">
+            <StarIcon className="w-3 h-3 text-yellow-400 sm:w-6 sm:h-6" />
+            <StarIcon className="w-3 h-3 text-yellow-400 sm:w-6 sm:h-6" />
+            <StarIcon className="w-3 h-3 text-yellow-400 sm:w-6 sm:h-6" />
+            <StarIcon className="w-3 h-3 text-yellow-400 sm:w-6 sm:h-6" />
+            <StarIcon className="w-3 h-3 text-yellow-400 sm:w-6 sm:h-6" />
           </div>
         </div>
         <StarIcon className="w-12 h-12 text-yellow-400 sm:w-20 sm:h-20" />
 
-        {/* <div ref={bottomLeftIcon} className="absolute bottom-0 -left-3 sm:-bottom-3 sm:-left-3">
-          <StarIcon className="w-6 h-6 text-yellow-400 sm:w-10 sm:h-10" />
-        </div> */}
+        <div
+          ref={bottomLeftIcon}
+          className="absolute bottom-0 -left-3 sm:-bottom-3 sm:-left-3"
+        >
+          {/* <StarIcon className="w-6 h-6 text-yellow-400 sm:w-10 sm:h-10" /> */}
+        </div>
       </div>
     )
   }

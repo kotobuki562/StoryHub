@@ -53,14 +53,16 @@ const UploadStoryImageFormComp: VFC<UpdateImageFormProps> = ({ userId }) => {
               upsert: true,
             })
             .then(async () => {
-              toast.custom(t => (
-                <Alert
-                  t={t}
-                  title="アップロード完了"
-                  usage="success"
-                  message="アップロードが完了しました"
-                />
-              ))
+              toast.custom(t => {
+                return (
+                  <Alert
+                    t={t}
+                    title="アップロード完了"
+                    usage="success"
+                    message="アップロードが完了しました"
+                  />
+                )
+              })
               const { data } = await supabase.storage
                 .from("management")
                 .list(`${userId}/story`, {
@@ -75,14 +77,16 @@ const UploadStoryImageFormComp: VFC<UpdateImageFormProps> = ({ userId }) => {
               router.push(`/myPage/${userId}/contents`)
             })
             .catch(error => {
-              toast.custom(t => (
-                <Alert
-                  t={t}
-                  title="エラーが発生しました"
-                  usage="error"
-                  message={error.message}
-                />
-              ))
+              toast.custom(t => {
+                return (
+                  <Alert
+                    t={t}
+                    title="エラーが発生しました"
+                    usage="error"
+                    message={error.message}
+                  />
+                )
+              })
             })
             .finally(() => {
               setIsLoadingFunction(false)

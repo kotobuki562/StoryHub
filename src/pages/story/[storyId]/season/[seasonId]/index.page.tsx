@@ -89,8 +89,8 @@ export const getStaticPaths = async () => {
     },
   })
 
-  const paths = data.QueryStories.map(story =>
-    story.seasons?.map(season => {
+  const paths = data.QueryStories.map(story => {
+    return story.seasons?.map(season => {
       return {
         params: {
           storyId: story.id,
@@ -98,7 +98,7 @@ export const getStaticPaths = async () => {
         },
       }
     })
-  )
+  })
 
   return {
     paths: paths.flat(),
@@ -190,7 +190,9 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 
 const StoryPage: NextPage<StoryPageProps> = ({ season, seasonId, story }) => {
   const currentOtherSeasons = story.QueryStoryById.seasons
-    ? story.QueryStoryById.seasons.map(data => data)
+    ? story.QueryStoryById.seasons.map(data => {
+        return data
+      })
     : []
   return (
     <Layout
@@ -272,14 +274,16 @@ const StoryPage: NextPage<StoryPageProps> = ({ season, seasonId, story }) => {
                       <div className="flex flex-col">
                         <div className="flex flex-wrap gap-3 mb-4">
                           {story.QueryStoryById.story_categories?.map(
-                            category => (
-                              <span
-                                key={category}
-                                className="py-1 px-2 text-sm font-bold text-purple-500 bg-yellow-300 rounded-r-full rounded-bl-full"
-                              >
-                                {category}
-                              </span>
-                            )
+                            category => {
+                              return (
+                                <span
+                                  key={category}
+                                  className="py-1 px-2 text-sm font-bold text-purple-500 bg-yellow-300 rounded-r-full rounded-bl-full"
+                                >
+                                  {category}
+                                </span>
+                              )
+                            }
                           )}
                         </div>
                         <h2 className="mb-4 text-2xl font-bold text-white">

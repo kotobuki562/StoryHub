@@ -93,10 +93,9 @@ const UserQueryById = gql`
 const ProfilePage = () => {
   const { userId } = useRouter().query
   const accessToken = supabase.auth.session()?.access_token
-  const isMeState = useMemo(
-    () => isMe(`${userId}`, `${accessToken}`),
-    [accessToken, userId]
-  )
+  const isMeState = useMemo(() => {
+    return isMe(`${userId}`, `${accessToken}`)
+  }, [accessToken, userId])
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
@@ -182,14 +181,16 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (error || errorUpdateUser) {
-      toast.custom(t => (
-        <Alert
-          t={t}
-          title="エラーが発生しました"
-          usage="error"
-          message={errorUpdateUser?.message || error?.message}
-        />
-      ))
+      toast.custom(t => {
+        return (
+          <Alert
+            t={t}
+            title="エラーが発生しました"
+            usage="error"
+            message={errorUpdateUser?.message || error?.message}
+          />
+        )
+      })
     }
   }, [error, errorUpdateUser])
 

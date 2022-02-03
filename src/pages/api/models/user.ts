@@ -68,25 +68,27 @@ const User = objectType({
     })
     t.list.field("follows", {
       type: "Follow",
-      resolve: parent =>
-        parent.id
+      resolve: parent => {
+        return parent.id
           ? prisma.follow.findMany({
               where: {
                 user_id: parent.id,
               },
             })
-          : [],
+          : []
+      },
     })
     t.list.field("favorites", {
       type: "Favorite",
-      resolve: parent =>
-        parent.id
+      resolve: parent => {
+        return parent.id
           ? prisma.favorite.findMany({
               where: {
                 user_id: parent.id,
               },
             })
-          : [],
+          : []
+      },
     })
   },
 })

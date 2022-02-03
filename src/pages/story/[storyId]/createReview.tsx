@@ -90,14 +90,16 @@ const CreateReviewFormComp: VFC<FormProps> = ({ isCreateReview, userId }) => {
 
   const handleSubmitData = useCallback(async () => {
     !userId
-      ? toast.custom(t => (
-          <Alert
-            t={t}
-            title="認証のエラー"
-            usage="error"
-            message="ログインしてからレビューを作成してください"
-          />
-        ))
+      ? toast.custom(t => {
+          return (
+            <Alert
+              t={t}
+              title="認証のエラー"
+              usage="error"
+              message="ログインしてからレビューを作成してください"
+            />
+          )
+        })
       : await createStory({
           variables: {
             storyId: storyId as string,
@@ -107,22 +109,26 @@ const CreateReviewFormComp: VFC<FormProps> = ({ isCreateReview, userId }) => {
             acessToken: accessToken,
           },
         }).then(() => {
-          toast.custom(t => (
-            <Alert t={t} title="ストーリーを作成しました" usage="success" />
-          ))
+          toast.custom(t => {
+            return (
+              <Alert t={t} title="ストーリーを作成しました" usage="success" />
+            )
+          })
         })
   }, [accessToken, userId, createStory, getValues, stars, storyId])
 
   useEffect(() => {
     if (errorCreateReview) {
-      toast.custom(t => (
-        <Alert
-          t={t}
-          title="エラーが発生しました"
-          usage="error"
-          message={errorCreateReview?.message}
-        />
-      ))
+      toast.custom(t => {
+        return (
+          <Alert
+            t={t}
+            title="エラーが発生しました"
+            usage="error"
+            message={errorCreateReview?.message}
+          />
+        )
+      })
     }
   }, [errorCreateReview])
 
@@ -133,15 +139,19 @@ const CreateReviewFormComp: VFC<FormProps> = ({ isCreateReview, userId }) => {
       <form className="p-4 sm:p-8" onSubmit={handleSubmit(handleSubmitData)}>
         <div className="flex flex-col justify-center items-center mb-4 w-full">
           <div className="flex gap-1 items-center">
-            {reviewStars.map(star => (
-              <button
-                key={star}
-                onClick={() => handleChangeStars(star)}
-                type="button"
-              >
-                <Star isActive={star <= stars} />
-              </button>
-            ))}
+            {reviewStars.map(star => {
+              return (
+                <button
+                  key={star}
+                  onClick={() => {
+                    return handleChangeStars(star)
+                  }}
+                  type="button"
+                >
+                  <Star isActive={star <= stars} />
+                </button>
+              )
+            })}
           </div>
         </div>
 

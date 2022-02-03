@@ -13,7 +13,7 @@
     "generate:prisma": "prisma generate",
     "ts-node": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\"",
     "generate:nexus": "ts-node --transpile-only -P nexus.tsconfig.json src/pages/api",
-    "lint": "next lint",
+    "lint": "eslint ./src -c .eslintrc.js --ext .ts,.js,.tsx,.jsx --fix",
     "prettier": "prettier --check .",
     "fix": "run-s -l -c fix:lint fix:prettier",
     "fix:lint": "next lint --fix",

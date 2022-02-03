@@ -44,14 +44,15 @@ const Episode = objectType({
     })
     t.field("season", {
       type: "Season",
-      resolve: parent =>
-        parent.season_id
+      resolve: parent => {
+        return parent.season_id
           ? prisma.season.findUnique({
               where: {
                 id: parent.season_id,
               },
             })
-          : null,
+          : null
+      },
     })
   },
 })

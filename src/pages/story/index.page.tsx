@@ -64,28 +64,29 @@ export const getStaticProps = async () => {
 const HomePage: NextPage<HomePageProps> = ({
   publishStoriesCount,
   stories,
-}) => (
-  <Layout
-    meta={{
-      pageName: `StoryHub | 妄想を、吐き出せ`,
-      description: `StoryHubはあなたの思い描いた物語を自由に創作するプラットフォームです。あなたも今すぐ「妄想を、吐き出せ」`,
-      cardImage: `/img/StoryHubLogo.png`,
-    }}
-  >
-    <div className="p-8">
-      <div className="flex flex-wrap gap-8 justify-center mb-8 w-full">
-        {stories.QueryStories.map(story => (
-          <StoryCard key={story.id} {...story} />
-        ))}
+}) => {
+  return (
+    <Layout
+      meta={{
+        pageName: `StoryHub | 妄想を、吐き出せ`,
+        description: `StoryHubはあなたの思い描いた物語を自由に創作するプラットフォームです。あなたも今すぐ「妄想を、吐き出せ」`,
+        cardImage: `/img/StoryHubLogo.png`,
+      }}
+    >
+      <div className="p-8">
+        <div className="flex flex-wrap gap-8 justify-center mb-8 w-full">
+          {stories.QueryStories.map(story => {
+            return <StoryCard key={story.id} {...story} />
+          })}
+        </div>
+        <Pagination
+          totalCount={publishStoriesCount}
+          usecase="story"
+          page={STORY_PAGE_SIZE}
+        />
       </div>
-      <Pagination
-        totalCount={publishStoriesCount}
-        usecase="story"
-        page={STORY_PAGE_SIZE}
-      />
-    </div>
-  </Layout>
-  
-)
+    </Layout>
+  )
+}
 
 export default HomePage

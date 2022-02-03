@@ -10,8 +10,8 @@ const reviewArgs = {
   pageSize: nullable(intArg()),
 }
 
-const QueryReviews = (t: ObjectDefinitionBlock<"Query">) =>
-  t.list.field("QueryReviews", {
+const QueryReviews = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.list.field("QueryReviews", {
     type: "Review",
     args: {
       ...reviewArgs,
@@ -36,16 +36,17 @@ const QueryReviews = (t: ObjectDefinitionBlock<"Query">) =>
       return reviews
     },
   })
+}
 
-const QueryMyReviews = (t: ObjectDefinitionBlock<"Query">) =>
-  t.list.field("QueryMyReviews", {
+const QueryMyReviews = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.list.field("QueryMyReviews", {
     type: "Review",
     args: {
       accessToken: nonNull(stringArg()),
       ...reviewArgs,
     },
-    resolve: (_parent, args) =>
-      prisma.review.findMany({
+    resolve: (_parent, args) => {
+      return prisma.review.findMany({
         orderBy: { created_at: "desc" },
         where: {
           ...(args.searchTitle && {
@@ -53,11 +54,13 @@ const QueryMyReviews = (t: ObjectDefinitionBlock<"Query">) =>
           }),
           user_id: `${decodeUserId(args.accessToken)}`,
         },
-      }),
+      })
+    },
   })
+}
 
-const QueryReviewById = (t: ObjectDefinitionBlock<"Query">) =>
-  t.field("QueryReviewById", {
+const QueryReviewById = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryReviewById", {
     type: "Review",
     args: {
       id: nonNull(stringArg()),
@@ -71,9 +74,10 @@ const QueryReviewById = (t: ObjectDefinitionBlock<"Query">) =>
       return review
     },
   })
+}
 
-const QueryMyReviewById = (t: ObjectDefinitionBlock<"Query">) =>
-  t.field("QueryMyReviewById", {
+const QueryMyReviewById = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryMyReviewById", {
     type: "Review",
     args: {
       id: nonNull(stringArg()),
@@ -88,9 +92,10 @@ const QueryMyReviewById = (t: ObjectDefinitionBlock<"Query">) =>
       return isSafe(accessToken, userId) ? review : null
     },
   })
+}
 
-const QueryReviewsByStoryId = (t: ObjectDefinitionBlock<"Query">) =>
-  t.list.field("QueryReviewsByStoryId", {
+const QueryReviewsByStoryId = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.list.field("QueryReviewsByStoryId", {
     type: "Review",
     args: {
       storyId: nonNull(stringArg()),
@@ -110,9 +115,10 @@ const QueryReviewsByStoryId = (t: ObjectDefinitionBlock<"Query">) =>
       return reviews
     },
   })
+}
 
-const QueryReviewsCountByStoryId = (t: ObjectDefinitionBlock<"Query">) =>
-  t.field("QueryReviewsCountByStoryId", {
+const QueryReviewsCountByStoryId = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryReviewsCountByStoryId", {
     type: "Int",
     args: {
       storyId: nonNull(stringArg()),
@@ -126,15 +132,17 @@ const QueryReviewsCountByStoryId = (t: ObjectDefinitionBlock<"Query">) =>
       return count
     },
   })
+}
 
-const QueryReviewsCount = (t: ObjectDefinitionBlock<"Query">) =>
-  t.field("QueryReviewsCount", {
+const QueryReviewsCount = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryReviewsCount", {
     type: "Int",
     resolve: async (_parent, _args) => {
       const count = await prisma.review.count()
       return count
     },
   })
+}
 
 export {
   QueryMyReviewById,

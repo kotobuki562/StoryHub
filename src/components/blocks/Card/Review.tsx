@@ -35,18 +35,20 @@ const ReviewCardComp: VFC<NexusGenFieldTypes["Review"]> = ({
       </div>
       {stars && (
         <div className="flex gap-1 items-center mb-4">
-          {reviewStars.map(star => (
-            <StarIcon
-              key={star}
-              className={cc([
-                "w-8 h-8",
-                {
-                  "text-gray-500": star > stars,
-                  "text-yellow-400": star <= stars,
-                },
-              ])}
-            />
-          ))}
+          {reviewStars.map(star => {
+            return (
+              <StarIcon
+                key={star}
+                className={cc([
+                  "w-8 h-8",
+                  {
+                    "text-gray-500": star > stars,
+                    "text-yellow-400": star <= stars,
+                  },
+                ])}
+              />
+            )
+          })}
         </div>
       )}
       <div className="flex flex-col justify-start mb-4 w-full">

@@ -77,7 +77,9 @@ const HeaderComp = () => {
   const [isHiddenNotification, setHiddenNotification] = useState<boolean>(true)
   const [isHiddenSearch, setHiddenSearch] = useState<boolean>(true)
   const userInfo = supabase.auth.user()
-  const accessToken = useMemo(() => supabase.auth.session()?.access_token, [])
+  const accessToken = useMemo(() => {
+    return supabase.auth.session()?.access_token
+  }, [])
   const { data: user } = useQuery<QueryMe>(Me, {
     variables: {
       accessToken,
@@ -151,35 +153,51 @@ const HeaderComp = () => {
   }, [router.asPath])
 
   const onToggleUserAccodion = useCallback(() => {
-    setOpenUserAccodion(pre => !pre)
+    setOpenUserAccodion(pre => {
+      return !pre
+    })
   }, [])
 
   const onToggleUserActionAccodion = useCallback(() => {
-    setOpenUserActionAccodion(pre => !pre)
+    setOpenUserActionAccodion(pre => {
+      return !pre
+    })
   }, [])
 
   const onToggleUserStoryAccordion = useCallback(() => {
-    setOpenUserStoryAccordion(pre => !pre)
+    setOpenUserStoryAccordion(pre => {
+      return !pre
+    })
   }, [])
 
   const onToggleUserSettingMaterial = useCallback(() => {
-    setOpenUserSettingMaterial(pre => !pre)
+    setOpenUserSettingMaterial(pre => {
+      return !pre
+    })
   }, [])
 
   const onToggleMainManu = useCallback(() => {
-    setHiddenMainManu(pre => !pre)
+    setHiddenMainManu(pre => {
+      return !pre
+    })
   }, [])
 
   const onToggleUserManu = useCallback(() => {
-    setHiddenUserManu(pre => !pre)
+    setHiddenUserManu(pre => {
+      return !pre
+    })
   }, [])
 
   const onToggleNotification = useCallback(() => {
-    setHiddenNotification(pre => !pre)
+    setHiddenNotification(pre => {
+      return !pre
+    })
   }, [])
 
   const onToggleSearch = useCallback(() => {
-    setHiddenSearch(pre => !pre)
+    setHiddenSearch(pre => {
+      return !pre
+    })
   }, [])
 
   const handleCloseMainManu = useCallback(() => {
@@ -239,20 +257,22 @@ const HeaderComp = () => {
             }
           >
             <div className="flex flex-col">
-              {mainLinks.map(({ href, icon, label }) => (
-                <Link key={label} href={href}>
-                  <a
-                    className={cc([
-                      "py-2 px-4 w-[200px] text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
-                      router.pathname === href &&
-                        "bg-slate-100 text-purple-400",
-                    ])}
-                  >
-                    <p>{label}</p>
-                    <div className="w-8">{icon}</div>
-                  </a>
-                </Link>
-              ))}
+              {mainLinks.map(({ href, icon, label }) => {
+                return (
+                  <Link key={label} href={href}>
+                    <a
+                      className={cc([
+                        "py-2 px-4 w-[200px] text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                        router.pathname === href &&
+                          "bg-slate-100 text-purple-400",
+                      ])}
+                    >
+                      <p>{label}</p>
+                      <div className="w-8">{icon}</div>
+                    </a>
+                  </Link>
+                )
+              })}
             </div>
           </Menu>
         </div>
@@ -388,20 +408,22 @@ const HeaderComp = () => {
                         </a>
                       </Link>
 
-                      {userLinks.map(({ href, icon, label }) => (
-                        <Link key={label} href={href}>
-                          <a
-                            className={cc([
-                              "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
-                              router.pathname === href &&
-                                "bg-slate-100 text-purple-400",
-                            ])}
-                          >
-                            <p>{label}</p>
-                            <div className="w-8">{icon}</div>
-                          </a>
-                        </Link>
-                      ))}
+                      {userLinks.map(({ href, icon, label }) => {
+                        return (
+                          <Link key={label} href={href}>
+                            <a
+                              className={cc([
+                                "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                                router.pathname === href &&
+                                  "bg-slate-100 text-purple-400",
+                              ])}
+                            >
+                              <p>{label}</p>
+                              <div className="w-8">{icon}</div>
+                            </a>
+                          </Link>
+                        )
+                      })}
                     </Accordion>
                   </div>
                   <div className="mb-4">
@@ -426,20 +448,22 @@ const HeaderComp = () => {
                         </div>
                       }
                     >
-                      {userStoryLinks.map(({ href, icon, label }) => (
-                        <Link key={label} href={href}>
-                          <a
-                            className={cc([
-                              "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
-                              router.pathname === href &&
-                                "bg-slate-100 text-purple-400",
-                            ])}
-                          >
-                            <p>{label}</p>
-                            <div className="w-8">{icon}</div>
-                          </a>
-                        </Link>
-                      ))}
+                      {userStoryLinks.map(({ href, icon, label }) => {
+                        return (
+                          <Link key={label} href={href}>
+                            <a
+                              className={cc([
+                                "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                                router.pathname === href &&
+                                  "bg-slate-100 text-purple-400",
+                              ])}
+                            >
+                              <p>{label}</p>
+                              <div className="w-8">{icon}</div>
+                            </a>
+                          </Link>
+                        )
+                      })}
                     </Accordion>
                   </div>
                   <div className="mb-4">
@@ -464,20 +488,22 @@ const HeaderComp = () => {
                         </div>
                       }
                     >
-                      {userSettingMaterialLinks.map(({ href, icon, label }) => (
-                        <Link key={label} href={href}>
-                          <a
-                            className={cc([
-                              "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
-                              router.pathname === href &&
-                                "bg-slate-100 text-purple-400",
-                            ])}
-                          >
-                            <p>{label}</p>
-                            <div className="w-8">{icon}</div>
-                          </a>
-                        </Link>
-                      ))}
+                      {userSettingMaterialLinks.map(({ href, icon, label }) => {
+                        return (
+                          <Link key={label} href={href}>
+                            <a
+                              className={cc([
+                                "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                                router.pathname === href &&
+                                  "bg-slate-100 text-purple-400",
+                              ])}
+                            >
+                              <p>{label}</p>
+                              <div className="w-8">{icon}</div>
+                            </a>
+                          </Link>
+                        )
+                      })}
                     </Accordion>
                   </div>
 

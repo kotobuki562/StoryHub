@@ -150,15 +150,21 @@ const EditStoryPage: NextPage = () => {
   const [storyCategoryes, setStoryCategoryes] = useState<string[]>([])
 
   const handleTogglePublish = useCallback(() => {
-    setIsPublish(pre => !pre)
+    setIsPublish(pre => {
+      return !pre
+    })
   }, [])
 
   const handleToggleStorage = useCallback(() => {
-    setIsStorage(pre => !pre)
+    setIsStorage(pre => {
+      return !pre
+    })
   }, [])
 
   const handleToggleAgeCategoryMenu = useCallback(() => {
-    setIsHiddenAgeCategoryMenu(pre => !pre)
+    setIsHiddenAgeCategoryMenu(pre => {
+      return !pre
+    })
   }, [])
 
   const handleHiddenAgeCategoryMenu = useCallback(() => {
@@ -175,18 +181,24 @@ const EditStoryPage: NextPage = () => {
   const handleChangeStoryCategory = useCallback(
     (category: string) => {
       if (storyCategoryes.includes(category)) {
-        setStoryCategoryes(pre => pre.filter(c => c !== category))
+        setStoryCategoryes(pre => {
+          return pre.filter(c => {
+            return c !== category
+          })
+        })
       } else {
         setStoryCategoryes(pre => {
           if (pre.length > 2) {
-            toast.custom(t => (
-              <Alert
-                t={t}
-                title="カテゴリーが多すぎます"
-                usage="warning"
-                message="カテゴリは最大3つまでです"
-              />
-            ))
+            toast.custom(t => {
+              return (
+                <Alert
+                  t={t}
+                  title="カテゴリーが多すぎます"
+                  usage="warning"
+                  message="カテゴリは最大3つまでです"
+                />
+              )
+            })
             return pre
           }
           return [...pre, category]
@@ -233,9 +245,9 @@ const EditStoryPage: NextPage = () => {
             : getValues("viewingRestriction"),
       },
     }).then(() => {
-      toast.custom(t => (
-        <Alert t={t} title="ストーリーを更新しました" usage="success" />
-      ))
+      toast.custom(t => {
+        return <Alert t={t} title="ストーリーを更新しました" usage="success" />
+      })
       return router.push(`/myPage/${userId}/story`)
     })
   }, [
@@ -253,14 +265,16 @@ const EditStoryPage: NextPage = () => {
 
   useEffect(() => {
     if (errorCreateStory || myStoryError) {
-      toast.custom(t => (
-        <Alert
-          t={t}
-          title="エラーが発生しました"
-          usage="error"
-          message={errorCreateStory?.message || myStoryError?.message}
-        />
-      ))
+      toast.custom(t => {
+        return (
+          <Alert
+            t={t}
+            title="エラーが発生しました"
+            usage="error"
+            message={errorCreateStory?.message || myStoryError?.message}
+          />
+        )
+      })
     }
   }, [errorCreateStory, myStoryError])
 
@@ -336,36 +350,42 @@ const EditStoryPage: NextPage = () => {
                       <p>カテゴリー</p>
                     </label>
                     <div className="flex flex-wrap gap-2 mb-4 w-full">
-                      {categories.map(data => (
-                        <button
-                          className={cc([
-                            "py-1 px-2 rounded-full duration-200",
-                            storyCategoryes.includes(data.category_title)
-                              ? "text-white bg-purple-500"
-                              : "bg-purple-100 text-purple-300",
-                          ])}
-                          key={data.category_title}
-                          type="button"
-                          onClick={() =>
-                            handleChangeStoryCategory(data.category_title)
-                          }
-                        >
-                          {data.category_title}
-                        </button>
-                      ))}
+                      {categories.map(data => {
+                        return (
+                          <button
+                            className={cc([
+                              "py-1 px-2 rounded-full duration-200",
+                              storyCategoryes.includes(data.category_title)
+                                ? "text-white bg-purple-500"
+                                : "bg-purple-100 text-purple-300",
+                            ])}
+                            key={data.category_title}
+                            type="button"
+                            onClick={() => {
+                              return handleChangeStoryCategory(
+                                data.category_title
+                              )
+                            }}
+                          >
+                            {data.category_title}
+                          </button>
+                        )
+                      })}
                     </div>
                     <label className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500">
                       <p>選択中</p>
                     </label>
                     <div className="flex flex-wrap gap-4 w-full">
-                      {storyCategoryes.map(category => (
-                        <div
-                          className="py-2 px-4 text-yellow-300 bg-purple-500 rounded-full"
-                          key={category}
-                        >
-                          {category}
-                        </div>
-                      ))}
+                      {storyCategoryes.map(category => {
+                        return (
+                          <div
+                            className="py-2 px-4 text-yellow-300 bg-purple-500 rounded-full"
+                            key={category}
+                          >
+                            {category}
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
 
@@ -416,26 +436,28 @@ const EditStoryPage: NextPage = () => {
 
                     {storyImageUrls.length > 0 && isStorage ? (
                       <div className="flex overflow-x-scroll gap-5 items-center mb-4 w-full">
-                        {storyImageUrls.map(url => (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              handleSelectStoryImage(url)
-                            }}
-                            className={cc([
-                              "min-w-[210px]",
-                              storyImage === url &&
-                                "border-4 border-yellow-500",
-                            ])}
-                            key={url}
-                          >
-                            <img
-                              className="w-[210px] h-[297px]"
-                              src={url}
-                              alt="ストーリー画像"
-                            />
-                          </button>
-                        ))}
+                        {storyImageUrls.map(url => {
+                          return (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleSelectStoryImage(url)
+                              }}
+                              className={cc([
+                                "min-w-[210px]",
+                                storyImage === url &&
+                                  "border-4 border-yellow-500",
+                              ])}
+                              key={url}
+                            >
+                              <img
+                                className="w-[210px] h-[297px]"
+                                src={url}
+                                alt="ストーリー画像"
+                              />
+                            </button>
+                          )
+                        })}
                       </div>
                     ) : (
                       <div>
@@ -477,42 +499,46 @@ const EditStoryPage: NextPage = () => {
                         viewer={<p className="text-purple-500">年齢制限詳細</p>}
                       >
                         <div className="grid grid-cols-1 gap-2 w-[300px]">
-                          {ageCategories.map(category => (
-                            <div
-                              key={category.nameJa}
-                              className="flex text-sm font-bold text-left text-slate-500"
-                            >
-                              <p className="min-w-[70px] text-purple-500">
-                                {category.nameJa}...
-                              </p>
-                              <p>{category.description}</p>
-                            </div>
-                          ))}
+                          {ageCategories.map(category => {
+                            return (
+                              <div
+                                key={category.nameJa}
+                                className="flex text-sm font-bold text-left text-slate-500"
+                              >
+                                <p className="min-w-[70px] text-purple-500">
+                                  {category.nameJa}...
+                                </p>
+                                <p>{category.description}</p>
+                              </div>
+                            )
+                          })}
                         </div>
                       </Menu>
                     </label>
                     <Controller
                       name="viewingRestriction"
                       control={control}
-                      render={({ field: { onChange, value } }) => (
-                        <Select
-                          onChange={onChange}
-                          label="年齢制限"
-                          value={value}
-                          options={[
-                            {
-                              value: "",
-                              label: "---",
-                            },
-                            ...ageCategories.map(category => {
-                              return {
-                                value: category.nameJa,
-                                label: category.nameJa,
-                              }
-                            }),
-                          ]}
-                        />
-                      )}
+                      render={({ field: { onChange, value } }) => {
+                        return (
+                          <Select
+                            onChange={onChange}
+                            label="年齢制限"
+                            value={value}
+                            options={[
+                              {
+                                value: "",
+                                label: "---",
+                              },
+                              ...ageCategories.map(category => {
+                                return {
+                                  value: category.nameJa,
+                                  label: category.nameJa,
+                                }
+                              }),
+                            ]}
+                          />
+                        )
+                      }}
                     />
                     {errors && errors.viewingRestriction && (
                       <p className="text-xs italic text-red-500">
@@ -576,27 +602,29 @@ const EditStoryPage: NextPage = () => {
                   myStoryData?.QueryMyStoryById.seasons.length > 0 ? (
                     <div className="flex flex-wrap gap-5 justify-center items-center w-full">
                       {myStoryData?.QueryMyStoryById.seasons?.map(
-                        (season, index) => (
-                          <MySeasonCard
-                            characters={null}
-                            created_at={undefined}
-                            episodes={null}
-                            id={null}
-                            objects={null}
-                            publish={null}
-                            season_image={null}
-                            season_synopsis={null}
-                            season_title={null}
-                            story={null}
-                            story_id={null}
-                            terminologies={null}
-                            updated_at={undefined}
-                            key={season?.id}
-                            {...season}
-                            seasonNumber={index + 1}
-                            href={`/myPage/${userId}/story/${storyId}/season/${season?.id}`}
-                          />
-                        )
+                        (season, index) => {
+                          return (
+                            <MySeasonCard
+                              characters={null}
+                              created_at={undefined}
+                              episodes={null}
+                              id={null}
+                              objects={null}
+                              publish={null}
+                              season_image={null}
+                              season_synopsis={null}
+                              season_title={null}
+                              story={null}
+                              story_id={null}
+                              terminologies={null}
+                              updated_at={undefined}
+                              key={season?.id}
+                              {...season}
+                              seasonNumber={index + 1}
+                              href={`/myPage/${userId}/story/${storyId}/season/${season?.id}`}
+                            />
+                          )
+                        }
                       )}
                     </div>
                   ) : (
@@ -636,9 +664,9 @@ const EditStoryPage: NextPage = () => {
                             : "grid-cols-1",
                         ])}
                       >
-                        {reviews.QueryReviewsByStoryId?.map(review => (
-                          <ReviewCard key={review?.id} {...review} />
-                        ))}
+                        {reviews.QueryReviewsByStoryId?.map(review => {
+                          return <ReviewCard key={review?.id} {...review} />
+                        })}
                       </div>
                     </div>
                   ) : (

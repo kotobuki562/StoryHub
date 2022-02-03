@@ -3,16 +3,23 @@
 import { gsap } from "gsap"
 import type { ReactNode } from "react"
 import type { VFC } from "react"
-import { memo, useEffect, useRef, useState } from "react"
+import { memo, useCallback, useEffect, useRef, useState } from "react"
 
 type Props = {
-  title: string
   isOpen: boolean
   onClose: () => void
   children: ReactNode
+  header?: ReactNode
+  footer?: ReactNode
 }
 
-const ModalComp: VFC<Props> = ({ children, isOpen, onClose, title }) => {
+const ModalComp: VFC<Props> = ({
+  children,
+  footer,
+  header,
+  isOpen,
+  onClose,
+}) => {
   const modalVeil = useRef<HTMLDivElement>(null)
   const modalDialog = useRef<HTMLDivElement>(null)
   const modalContent = useRef<HTMLDivElement>(null)
@@ -62,10 +69,10 @@ const ModalComp: VFC<Props> = ({ children, isOpen, onClose, title }) => {
   //   modalTween.reversed(!isOpen);
   // }, [modalTween, isOpen]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     modalTween.reverse()
     gsap.delayedCall(modalTween.duration(), onClose)
-  }
+  }, [modalTween])
 
   return (
     <div className={`${isOpen ? "block" : "hidden"} fixed inset-0 z-50`}>
@@ -77,16 +84,23 @@ const ModalComp: VFC<Props> = ({ children, isOpen, onClose, title }) => {
       <div className="flex flex-col justify-center items-center w-screen h-full">
         <div
           ref={modalDialog}
-          className="overflow-scroll inset-0 z-50 w-[300px] h-[500px] bg-white rounded-xl sm:w-[500px] sm:h-[600px] lg:w-[700px]"
+          className="overflow-scroll inset-0 z-50 w-[300px] max-h-[800px] bg-white rounded-xl xs:w-[400px] sm:w-[500px] lg:w-[700px]"
         >
           <div
             ref={modalContent}
-            className="flex relative flex-col justify-center items-center p-2"
+            className="flex relative flex-col justify-center items-center"
           >
-            <div className="sticky top-0 z-10 py-2 mb-4 w-full text-2xl font-bold bg-white">
-              {title.length > 20 ? `${title.slice(0, 20)}...` : title}
-            </div>
+            {header && (
+              <div className="sticky top-0 z-10 p-4 w-full bg-purple-100">
+                {header}
+              </div>
+            )}
             {children}
+            {footer && (
+              <div className="sticky bottom-0 z-10 p-4 w-full bg-purple-100">
+                {footer}
+              </div>
+            )}
           </div>
         </div>
       </div>

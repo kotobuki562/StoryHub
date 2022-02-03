@@ -13,23 +13,24 @@ const signupUser = (t: ObjectDefinitionBlock<"Mutation">) => {
       email: nonNull(stringArg()),
       password: nonNull(stringArg()),
     },
-    resolve: async (_, args, _ctx) =>
-      await supabase.auth
+    resolve: async (_, args, _ctx) => {
+      return await supabase.auth
         .signUp({
           email: args.email,
           password: args.password,
         })
-        .then(res =>
-          prisma.user.create({
+        .then(res => {
+          return prisma.user.create({
             data: {
               id: `${res?.user?.id}`,
               user_name: `${args.userName}`,
             },
           })
-        )
+        })
         .catch(error => {
           throw new Error(error)
-        }),
+        })
+    },
   })
 }
 
@@ -42,15 +43,16 @@ const createUser = (t: ObjectDefinitionBlock<"Mutation">) => {
       image: nullable(stringArg()),
       accessToken: nonNull(stringArg()),
     },
-    resolve: (_, args, _ctx) =>
-      prisma.user.create({
+    resolve: (_, args, _ctx) => {
+      return prisma.user.create({
         data: {
           id: `${decodeUserId(args.accessToken)}`,
           user_name: `${args.userName}`,
           user_deal: `${args.userDeal}`,
           image: `${args.image}`,
         },
-      }),
+      })
+    },
   })
 }
 
@@ -63,8 +65,8 @@ const updateUser = (t: ObjectDefinitionBlock<"Mutation">) => {
       image: nullable(stringArg()),
       accessToken: nonNull(stringArg()),
     },
-    resolve: (_, args, _ctx) =>
-      prisma.user.update({
+    resolve: (_, args, _ctx) => {
+      return prisma.user.update({
         where: {
           id: `${decodeUserId(args.accessToken)}`,
         },
@@ -74,7 +76,8 @@ const updateUser = (t: ObjectDefinitionBlock<"Mutation">) => {
           image: `${args.image}`,
           updated_at: new Date(),
         },
-      }),
+      })
+    },
   })
 }
 
@@ -84,12 +87,13 @@ const deleteUser = (t: ObjectDefinitionBlock<"Mutation">) => {
     args: {
       accessToken: nonNull(stringArg()),
     },
-    resolve: (_, args, _ctx) =>
-      prisma.user.delete({
+    resolve: (_, args, _ctx) => {
+      return prisma.user.delete({
         where: {
           id: `${decodeUserId(args.accessToken)}`,
         },
-      }),
+      })
+    },
   })
 }
 

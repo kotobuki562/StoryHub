@@ -27,21 +27,23 @@ export const Terminology = objectType({
     t.nullable.date("updated_at")
     t.field("settingMaterial", {
       type: "SettingMaterial",
-      resolve: parent =>
-        prisma.settingMaterial.findUnique({
+      resolve: parent => {
+        return prisma.settingMaterial.findUnique({
           where: {
             id: `${parent.setting_material_id}`,
           },
-        }),
+        })
+      },
     })
     t.field("season", {
       type: "Season",
-      resolve: parent =>
-        prisma.season.findUnique({
+      resolve: parent => {
+        return prisma.season.findUnique({
           where: {
             id: `${parent.season_id}`,
           },
-        }),
+        })
+      },
     })
   },
 })

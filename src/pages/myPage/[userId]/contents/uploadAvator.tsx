@@ -49,24 +49,28 @@ const UploadAvatorFormComp: VFC<UpdateImageFormProps> = ({ userId }) => {
               upsert: true,
             })
             .then(() => {
-              toast.custom(t => (
-                <Alert
-                  t={t}
-                  title="アップロード完了"
-                  usage="success"
-                  message="アップロードが完了しました"
-                />
-              ))
+              toast.custom(t => {
+                return (
+                  <Alert
+                    t={t}
+                    title="アップロード完了"
+                    usage="success"
+                    message="アップロードが完了しました"
+                  />
+                )
+              })
             })
             .catch(error => {
-              toast.custom(t => (
-                <Alert
-                  t={t}
-                  title="エラーが発生しました"
-                  usage="error"
-                  message={error.message}
-                />
-              ))
+              toast.custom(t => {
+                return (
+                  <Alert
+                    t={t}
+                    title="エラーが発生しました"
+                    usage="error"
+                    message={error.message}
+                  />
+                )
+              })
             })
             .finally(() => {
               setIsLoadingFunction(false)
