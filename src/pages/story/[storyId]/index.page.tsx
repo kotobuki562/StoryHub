@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable import/no-default-export */
 import { useQuery } from "@apollo/client"
-import { PencilAltIcon } from "@heroicons/react/solid"
+import { PencilAltIcon, XCircleIcon } from "@heroicons/react/solid"
 import cc from "classcat"
 import { format } from "date-fns"
 import gql from "graphql-tag"
@@ -216,7 +216,29 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
             <Modal
               isOpen={isOpenModal}
               onClose={handleCloseModal}
-              header={`レビューを書く : ${story.QueryStoryById.story_title}`}
+              header={
+                <div className="flex items-center h-full">
+                  <div className="p-4 font-bold text-white bg-purple-500">
+                    <PencilAltIcon className="w-8 h-8" />
+                  </div>
+                  <p className="overflow-y-scroll px-4 max-h-[64px] text-base font-bold text-purple-500 sm:text-2xl no-scrollbar">
+                    {story.QueryStoryById.story_title}のレビューを作成
+                  </p>
+                </div>
+              }
+              footer={
+                <div className="flex items-center h-full">
+                  <p className="overflow-y-scroll px-4 max-h-[64px] text-base font-bold text-purple-500 sm:text-2xl no-scrollbar">
+                    {story.QueryStoryById.story_title}のレビューを作成
+                  </p>
+                  <button
+                    onClick={handleCloseModal}
+                    className="p-4 font-bold text-white bg-purple-500 no-scrollbar"
+                  >
+                    <XCircleIcon className="w-8 h-8" />
+                  </button>
+                </div>
+              }
             >
               <CreateReviewForm
                 isCreateReview={isCreateReview}

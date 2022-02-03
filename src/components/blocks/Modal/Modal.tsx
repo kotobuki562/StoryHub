@@ -26,13 +26,18 @@ const ModalComp: VFC<Props> = ({
   const [modalTween] = useState(gsap.timeline({ paused: true }))
 
   useEffect(() => {
-    if (modalContent.current) {
+    if (modalVeil.current) {
       modalTween.from(modalVeil.current, {
         opacity: 0,
         display: "none",
         ease: "power4.inOut",
         duration: 0.5,
       })
+    }
+  }, [modalTween])
+
+  useEffect(() => {
+    if (modalDialog.current) {
       modalTween.from(modalDialog.current, {
         scale: 0,
         opacity: 0,
@@ -40,6 +45,11 @@ const ModalComp: VFC<Props> = ({
         ease: "power4.inOut",
         duration: 0.5,
       })
+    }
+  }, [modalTween])
+
+  useEffect(() => {
+    if (modalContent.current) {
       modalTween.from(modalContent.current.childNodes, {
         y: 100,
         opacity: 0,
@@ -50,12 +60,6 @@ const ModalComp: VFC<Props> = ({
       })
     }
   }, [modalTween])
-  //   modalTween
-  //     .to(modalVeil, 0.25, { autoAlpha: 1 })
-  //     .to(modalDialog, 0.35, { y: 0, autoAlpha: 1 })
-  //     .from(modalContent.current.children, 0.35, { y: 15, opacity: 0, stagger: 0.1 }, "-=0.15")
-  //     .reverse();
-  // }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -72,7 +76,7 @@ const ModalComp: VFC<Props> = ({
   const handleClose = useCallback(() => {
     modalTween.reverse()
     gsap.delayedCall(modalTween.duration(), onClose)
-  }, [modalTween])
+  }, [modalTween, onClose])
 
   return (
     <div className={`${isOpen ? "block" : "hidden"} fixed inset-0 z-50`}>
@@ -81,23 +85,23 @@ const ModalComp: VFC<Props> = ({
         onClick={handleClose}
         className="absolute inset-0 bg-gray-900 opacity-75"
       />
-      <div className="flex flex-col justify-center items-center w-screen h-full">
+      <div className="flex overflow-scroll overscroll-none flex-col justify-center items-center w-screen h-full no-scrollbar">
         <div
           ref={modalDialog}
-          className="overflow-scroll inset-0 z-50 w-[300px] max-h-[800px] bg-white rounded-xl xs:w-[400px] sm:w-[500px] lg:w-[700px]"
+          className="overflow-scroll overscroll-none inset-0 z-50 w-[330px] h-full max-h-[800px] bg-white rounded-xl xs:w-[400px] sm:w-[500px] lg:w-[700px] no-scrollbar"
         >
           <div
             ref={modalContent}
             className="flex relative flex-col justify-center items-center"
           >
             {header && (
-              <div className="sticky top-0 z-10 p-4 w-full bg-purple-100">
+              <div className="sticky top-0 z-10 w-full bg-purple-100">
                 {header}
               </div>
             )}
             {children}
             {footer && (
-              <div className="sticky bottom-0 z-10 p-4 w-full bg-purple-100">
+              <div className="sticky bottom-0 z-10 w-full bg-purple-100">
                 {footer}
               </div>
             )}
