@@ -88,24 +88,24 @@ const ModalComp: VFC<Props> = ({
       <div className="flex overflow-scroll overscroll-none flex-col justify-center items-center w-screen h-full no-scrollbar">
         <div
           ref={modalDialog}
-          className="overflow-scroll overscroll-none inset-0 z-50 w-[330px] h-full max-h-[800px] bg-white rounded-xl xs:w-[400px] sm:w-[500px] lg:w-[700px] no-scrollbar"
+          className="overflow-scroll overscroll-none relative inset-0 z-50 w-[330px] h-full max-h-[700px] bg-white rounded-xl xs:w-[400px] sm:w-[500px] lg:w-[700px] no-scrollbar"
         >
+          {header && (
+            <div className="sticky top-0 z-10 w-full bg-purple-100">
+              {header}
+            </div>
+          )}
           <div
             ref={modalContent}
             className="flex relative flex-col justify-center items-center"
           >
-            {header && (
-              <div className="sticky top-0 z-10 w-full bg-purple-100">
-                {header}
-              </div>
-            )}
             {children}
-            {footer && (
-              <div className="sticky bottom-0 z-10 w-full bg-purple-100">
-                {footer}
-              </div>
-            )}
           </div>
+          {footer && (
+            <div className="sticky bottom-0 z-10 w-full bg-purple-100">
+              {footer}
+            </div>
+          )}
         </div>
       </div>
     </div>

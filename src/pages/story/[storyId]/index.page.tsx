@@ -217,7 +217,7 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
               isOpen={isOpenModal}
               onClose={handleCloseModal}
               header={
-                <div className="flex items-center h-full">
+                <div className="flex justify-between items-center h-full">
                   <div className="p-4 font-bold text-white bg-purple-500">
                     <PencilAltIcon className="w-8 h-8" />
                   </div>
@@ -227,7 +227,7 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
                 </div>
               }
               footer={
-                <div className="flex items-center h-full">
+                <div className="flex justify-between items-center h-full">
                   <p className="overflow-y-scroll px-4 max-h-[64px] text-base font-bold text-purple-500 sm:text-2xl no-scrollbar">
                     {story.QueryStoryById.story_title}のレビューを作成
                   </p>

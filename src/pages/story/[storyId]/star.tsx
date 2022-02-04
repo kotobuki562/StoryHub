@@ -34,11 +34,13 @@ const StarComp: VFC<StarProps> = ({ isActive }) => {
         ease: "back.out(3)",
         // rotate: 120,
         duration: 0.5,
+
         stagger: 0.3,
       })
-      timeline.from(topRightIcon.current, {
+      timeline.to(topRightIcon.current, {
         rotate: 360,
-        duration: 0.8,
+        duration: 1,
+        scale: 1.3,
         stagger: 0.3,
       })
       timeline.to(topRightIcon.current, {
@@ -48,8 +50,12 @@ const StarComp: VFC<StarProps> = ({ isActive }) => {
         // 45度傾ける
         rotation: 0,
         ease: "back.out(3)",
-        duration: 0.5,
+        duration: 1,
         stagger: 0.3,
+      })
+      timeline.to(iconRef.current, {
+        // 紫色になる
+        color: "#8e44ad",
       })
     }
   }, [timeline])
@@ -67,11 +73,11 @@ const StarComp: VFC<StarProps> = ({ isActive }) => {
       <div className="relative" ref={iconRef}>
         <div ref={topRightIcon} className="absolute inset-x-0 top-0">
           <div className="flex relative w-12 h-12 sm:w-20 sm:h-20">
-            <StarIcon className="absolute right-1 w-3 h-3 text-purple-400 sm:right-2 sm:w-6 sm:h-6" />
-            <StarIcon className="absolute left-1 w-3 h-3 text-purple-400 sm:left-2 sm:w-6 sm:h-6" />
-            <StarIcon className="absolute -right-1 bottom-3 w-3 h-3 text-purple-400 sm:right-0 sm:bottom-4 sm:w-6 sm:h-6" />
-            <StarIcon className="absolute bottom-3 -left-1 w-3 h-3 text-purple-400 sm:bottom-4 sm:left-0 sm:w-6 sm:h-6" />
-            <StarIcon className="absolute right-[17.5px] -bottom-1 w-3 h-3 text-purple-400 sm:right-7 sm:-bottom-1 sm:w-6 sm:h-6" />
+            <StarIcon className="absolute right-1 w-4 h-4 text-purple-400 sm:right-2 sm:w-6 sm:h-6" />
+            <StarIcon className="absolute left-1 w-4 h-4 text-purple-400 sm:left-2 sm:w-6 sm:h-6" />
+            <StarIcon className="absolute -right-1 bottom-3 w-4 h-4 text-purple-400 sm:right-0 sm:bottom-4 sm:w-6 sm:h-6" />
+            <StarIcon className="absolute bottom-3 -left-1 w-4 h-4 text-purple-400 sm:bottom-4 sm:left-0 sm:w-6 sm:h-6" />
+            <StarIcon className="absolute right-[17.5px] -bottom-1 w-4 h-4 text-purple-400 sm:right-7 sm:-bottom-1 sm:w-6 sm:h-6" />
           </div>
         </div>
         <StarIcon className="w-12 h-12 text-yellow-400 sm:w-20 sm:h-20" />

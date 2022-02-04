@@ -13,6 +13,7 @@ import { TextArea } from "src/components/atoms/TextArea"
 import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { supabase } from "src/lib/supabase"
 
+import { Face } from "./face"
 import { Star } from "./star"
 
 const CreateReview = gql`
@@ -52,7 +53,8 @@ const ReviewsQueryByStoryId = gql`
   }
 `
 
-const reviewStars = [1, 2, 3, 4, 5]
+const reviewStars: [1, 2, 3, 4, 5] = [1, 2, 3, 4, 5]
+type Star = 1 | 2 | 3 | 4 | 5
 
 type FormProps = {
   userId: string
@@ -72,9 +74,9 @@ const CreateReviewFormComp: VFC<FormProps> = ({ isCreateReview, userId }) => {
         },
       ],
     })
-  const [stars, setStars] = useState<number>(1)
+  const [stars, setStars] = useState<Star>(1)
 
-  const handleChangeStars = useCallback((star: number) => {
+  const handleChangeStars = useCallback((star: Star) => {
     setStars(star)
   }, [])
 
@@ -138,7 +140,7 @@ const CreateReviewFormComp: VFC<FormProps> = ({ isCreateReview, userId }) => {
 
       <form className="p-4 sm:p-8" onSubmit={handleSubmit(handleSubmitData)}>
         <div className="flex flex-col justify-center items-center mb-4 w-full">
-          <div className="flex gap-1 items-center">
+          <div className="flex gap-1 items-center mb-8">
             {reviewStars.map(star => {
               return (
                 <button
@@ -153,6 +155,7 @@ const CreateReviewFormComp: VFC<FormProps> = ({ isCreateReview, userId }) => {
               )
             })}
           </div>
+          <Face star={stars} />
         </div>
 
         <div className="flex flex-col mb-4 w-full">
