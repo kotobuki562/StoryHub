@@ -2,7 +2,7 @@
 /* eslint-disable import/no-default-export */
 import "react-image-crop/dist/ReactCrop.css"
 
-import { useMutation, useQuery } from "@apollo/client"
+import { useMutation } from "@apollo/client"
 import { PencilAltIcon } from "@heroicons/react/solid"
 import { gql } from "graphql-tag"
 import { useRouter } from "next/router"
@@ -16,6 +16,7 @@ import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout"
 import { LoadingLogo } from "src/components/Loading"
 import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
+import { useSwrQuery } from "src/hooks/swr"
 import { supabase } from "src/lib/supabase"
 import { isMe } from "src/tools/state"
 import type { QueryUserById } from "src/types/User/query"
@@ -42,50 +43,13 @@ const UpdateUserMutation = gql`
   }
 `
 const UserQueryById = gql`
-  query QueryUserById(
-    $queryUserByIdId: String!
-    $storyPage: Int!
-    $storyPageSize: Int!
-    $storyAccessToken: String
-    $reviewPage: Int!
-    $reviewPageSize: Int!
-    $reviewAccessToken: String
-  ) {
+  query QueryUserById($queryUserByIdId: String!) {
     QueryUserById(id: $queryUserByIdId) {
       id
       user_name
       user_deal
       image
       updated_at
-      stories(
-        storyPage: $storyPage
-        storyPageSize: $storyPageSize
-        storyAccessToken: $storyAccessToken
-      ) {
-        id
-        user_id
-        story_title
-        story_synopsis
-        story_categories
-        story_image
-        viewing_restriction
-        created_at
-        updated_at
-        publish
-      }
-      reviews(
-        reviewPage: $reviewPage
-        reviewPageSize: $reviewPageSize
-        reviewAccessToken: $reviewAccessToken
-      ) {
-        id
-        story_id
-        review_title
-        review_body
-        stars
-        created_at
-        updated_at
-      }
     }
   }
 `
@@ -107,21 +71,8 @@ const ProfilePage = () => {
     setIsModalOpen(false)
   }, [])
 
-  const {
-    data,
-    error,
-    loading: isLoading,
-  } = useQuery<QueryUserById>(UserQueryById, {
-    variables: {
-      queryUserByIdId: userId,
-      storyPage: 1,
-      storyPageSize: 10,
-      reviewPage: 1,
-      reviewPageSize: 10,
-      reviewAccessToken: `${accessToken}`,
-      storyAccessToken: `${accessToken}`,
-    },
-    fetchPolicy: "cache-and-network",
+  const { data, error, isLoading } = useSwrQuery<QueryUserById>(UserQueryById, {
+    queryUserByIdId: userId,
   })
 
   const {
@@ -194,7 +145,7 @@ const ProfilePage = () => {
     }
   }, [error, errorUpdateUser])
 
-  if (isLoading || !userId) {
+  if (isLoading) {
     return (
       <Layout>
         <div className="flex flex-col justify-center items-center p-8 w-full h-screen">
@@ -204,7 +155,7 @@ const ProfilePage = () => {
     )
   }
 
-  if (!isLoading && error) {
+  if (!data && error) {
     return (
       <Layout>
         <div className="flex flex-col justify-center items-center p-8 w-full h-screen">
@@ -314,8 +265,8 @@ const ProfilePage = () => {
                     <div className="flex flex-col items-center w-full">
                       <Button
                         usage="base"
-                        disabled={isLoadingUpdateUser || isLoading}
-                        isLoading={isLoadingUpdateUser || isLoading}
+                        disabled={isLoadingUpdateUser}
+                        isLoading={isLoadingUpdateUser}
                         type="submit"
                         text="更新"
                       />

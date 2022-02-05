@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { useMutation, useQuery } from "@apollo/client"
+import { useMutation } from "@apollo/client"
 import {
   BellIcon,
   BookmarkIcon,
@@ -19,7 +19,7 @@ import {
   UserGroupIcon,
 } from "@heroicons/react/solid"
 import cc from "classcat"
-import { request } from "graphql-request"
+import { format } from "date-fns"
 import gql from "graphql-tag"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -27,9 +27,9 @@ import { memo, useCallback, useMemo, useState } from "react"
 import { Accordion } from "src/components/blocks/Accodion"
 import { Menu } from "src/components/blocks/Menu"
 import type { NexusGenObjects } from "src/generated/nexus-typegen"
+import { useSwrQuery } from "src/hooks/swr"
 import { supabase } from "src/lib/supabase"
 import type { QueryNotificationsForUser } from "src/types/Notification/query"
-import useSWR, { mutate } from "swr"
 
 const Me = gql`
   query QueryMe($accessToken: String!) {
@@ -46,6 +46,7 @@ const NotificationsQuery = gql`
   query Query($accessToken: String!) {
     QueryNotificationsForUser(accessToken: $accessToken) {
       id
+      created_at
       user {
         user_name
         image
@@ -54,6 +55,7 @@ const NotificationsQuery = gql`
       review {
         id
         review_title
+        stars
       }
     }
   }
@@ -125,26 +127,13 @@ const HeaderComp = () => {
     return supabase.auth.session()?.access_token
   }, [])
 
-  // NotificationsQueryをuseSWRで行う
-  const { data: notifications } = useSWR<QueryNotificationsForUser>(
-    `/api`,
-    async (url: string) => {
-      const response = await request(url, NotificationsQuery, {
-        accessToken,
-      })
-      return response
-    },
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      refreshInterval: 0,
-    }
-  )
-
-  const { data: user } = useQuery<QueryMe>(Me, {
-    variables: {
+  const { data: notifications, mutate } =
+    useSwrQuery<QueryNotificationsForUser>(NotificationsQuery, {
       accessToken,
-    },
+    })
+
+  const { data: user } = useSwrQuery<QueryMe>(Me, {
+    accessToken,
   })
 
   const [deleteNotification] = useMutation(NotificationDelete)
@@ -158,11 +147,10 @@ const HeaderComp = () => {
           notificationId: id,
           receiverId: userInfo?.id,
         },
-      }).then(() => {
-        mutate(`/api`)
       })
+      await mutate()
     },
-    [accessToken, deleteNotification, userInfo?.id]
+    [accessToken, deleteNotification, mutate, userInfo?.id]
   )
 
   const handleDeleteAllNotifications = useCallback(async () => {
@@ -170,10 +158,9 @@ const HeaderComp = () => {
       variables: {
         accessToken,
       },
-    }).then(() => {
-      mutate(`/api`)
     })
-  }, [accessToken, deleteAllNotifications])
+    await mutate()
+  }, [accessToken, deleteAllNotifications, mutate])
 
   const userLinks = [
     {
@@ -403,7 +390,10 @@ const HeaderComp = () => {
                     : "text-purple-500 hover:bg-slate-100 ",
                 ])}
               >
-                {notifications?.QueryNotificationsForUser.length}
+                {notifications?.QueryNotificationsForUser &&
+                notifications?.QueryNotificationsForUser.length >= 9
+                  ? "9+"
+                  : notifications?.QueryNotificationsForUser.length}
               </div>
               <BellIcon
                 className={cc([
@@ -416,17 +406,21 @@ const HeaderComp = () => {
             </div>
           }
         >
-          <div className="overflow-scroll w-[200px] max-h-screen no-scrollbar">
+          <div className="overflow-scroll w-[210px] max-h-screen no-scrollbar">
             {notifications?.QueryNotificationsForUser &&
             notifications?.QueryNotificationsForUser.length > 0 ? (
               <div className="grid grid-cols-1 gap-3">
-                <button onClick={handleDeleteAllNotifications}>
-                  全て既読にする
+                <button
+                  className="py-2 w-full font-bold text-purple-500 bg-purple-100 rounded-md"
+                  onClick={handleDeleteAllNotifications}
+                >
+                  {notifications?.QueryNotificationsForUser.length}
+                  件全て既読にする
                 </button>
                 {notifications?.QueryNotificationsForUser.map(data => {
                   return (
-                    <div key={data.id}>
-                      <div className="flex items-center">
+                    <div className="group" key={data.id}>
+                      <div className="flex items-center mb-2">
                         <div className="mr-2 min-w-[2rem]">
                           <img
                             className="w-8 h-8 rounded-full"
@@ -435,11 +429,42 @@ const HeaderComp = () => {
                           />
                         </div>
                         <p className="text-sm">
-                          {data.user?.user_name}さんからの通知
+                          {data.user?.user_name}さんから
                         </p>
                       </div>
+                      {data.review && (
+                        <Link
+                          href={{
+                            pathname: "/review/[reviewId]",
+                            query: { reviewId: data.review.id },
+                          }}
+                        >
+                          <a className="flex items-center py-1 px-2 mb-2 text-purple-500 bg-purple-100 rounded-full duration-200">
+                            <div className="mr-2 min-w-[2rem]">
+                              <img
+                                className="w-8 h-8 rounded-full"
+                                src={`/img/${data.review.stars}.svg`}
+                                alt="avatar"
+                              />
+                            </div>
+                            <p className="text-sm">
+                              {data.review.review_title}
+                            </p>
+                          </a>
+                        </Link>
+                      )}
+                      {data.created_at && (
+                        <p className="text-xs text-right text-slate-600">
+                          {format(
+                            new Date(data.created_at),
+                            "yyyy/MM/dd HH:mm"
+                          )}
+                        </p>
+                      )}
+
                       <div>
                         <button
+                          className="text-purple-500"
                           onClick={() => {
                             return handleDeleteNotification(data.id as string)
                           }}

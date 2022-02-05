@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @next/next/no-img-element */
-import { gql, useMutation, useQuery } from "@apollo/client"
+import { gql, useMutation } from "@apollo/client"
 import { PlusIcon } from "@heroicons/react/solid"
 import cc from "classcat"
 import type { NextPage } from "next"
@@ -23,6 +23,7 @@ import { Layout } from "src/components/Layout"
 import { LoadingLogo } from "src/components/Loading"
 import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { useStoryImage } from "src/hooks/storage/useStoryImage"
+import { useSwrQuery } from "src/hooks/swr"
 import { supabase } from "src/lib/supabase"
 import { ageCategories, categories } from "src/tools/options"
 import type { QueryReviewsByStoryId } from "src/types/Review/query"
@@ -121,25 +122,24 @@ const EditStoryPage: NextPage = () => {
   const [isHiddenAgeCategoryMenu, setIsHiddenAgeCategoryMenu] =
     useState<boolean>(true)
   const accessToken = supabase.auth.session()?.access_token
+
   const {
     data: myStoryData,
     error: myStoryError,
-    loading: isMyStoryLoading,
-  } = useQuery<QueryMyStoryById>(MyStoryQuery, {
-    variables: {
-      queryMyStoryByIdId: storyId as string,
-      userId: userId as string,
-      accessToken: `${accessToken}`,
-      seasonAccessToken: `${accessToken}`,
-      seasonUserId: userId as string,
-    },
+    isLoading: isMyStoryLoading,
+    mutate,
+  } = useSwrQuery<QueryMyStoryById>(MyStoryQuery, {
+    queryMyStoryByIdId: storyId as string,
+    userId: userId as string,
+    accessToken: `${accessToken}`,
+    seasonAccessToken: `${accessToken}`,
+    seasonUserId: userId as string,
   })
-  const { data: reviews } = useQuery<QueryReviewsByStoryId>(
+
+  const { data: reviews } = useSwrQuery<QueryReviewsByStoryId>(
     ReviewsQueryByStoryId,
     {
-      variables: {
-        storyId: storyId as string,
-      },
+      storyId: storyId as string,
     }
   )
 
@@ -248,6 +248,7 @@ const EditStoryPage: NextPage = () => {
       toast.custom(t => {
         return <Alert t={t} title="ストーリーを更新しました" usage="success" />
       })
+      mutate()
       return router.push(`/myPage/${userId}/story`)
     })
   }, [
@@ -260,6 +261,7 @@ const EditStoryPage: NextPage = () => {
     accessToken,
     isStorage,
     storyImage,
+    mutate,
     router,
   ])
 
