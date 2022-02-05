@@ -33,11 +33,8 @@ const ReviewQuery = gql`
     QueryReviews(page: $page, pageSize: $pageSize) {
       id
       story_id
-      user_id
       review_title
-      review_body
       stars
-      created_at
       user {
         id
         user_name

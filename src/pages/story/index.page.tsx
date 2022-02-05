@@ -73,7 +73,7 @@ const HomePage: NextPage<HomePageProps> = ({
         cardImage: `/img/StoryHubLogo.png`,
       }}
     >
-      <div className="p-8">
+      <div className="p-8 bg-purple-50">
         <div className="flex flex-wrap gap-8 justify-center mb-8 w-full">
           {stories.QueryStories.map(story => {
             return <StoryCard key={story.id} {...story} />
