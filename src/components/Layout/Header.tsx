@@ -162,6 +162,12 @@ const HeaderComp = () => {
     await mutate()
   }, [accessToken, deleteAllNotifications, mutate])
 
+  const notificationLength = useMemo(() => {
+    return notifications?.QueryNotificationsForUser
+      ? notifications?.QueryNotificationsForUser.length
+      : 0
+  }, [notifications])
+
   const userLinks = [
     {
       href: `/myPage/${user?.QueryMe?.id}/review`,
@@ -382,19 +388,19 @@ const HeaderComp = () => {
           onClose={handleCloseNotification}
           viewer={
             <div className="relative mr-4 w-10">
-              <div
-                className={cc([
-                  "absolute -top-3 -right-3 w-7 h-7 rounded-full flex flex-col items-center justify-center",
-                  !isHiddenNotification
-                    ? "text-white bg-purple-500 border-2 border-white"
-                    : "text-purple-500 hover:bg-slate-100 ",
-                ])}
-              >
-                {notifications?.QueryNotificationsForUser &&
-                notifications?.QueryNotificationsForUser.length >= 9
-                  ? "9+"
-                  : notifications?.QueryNotificationsForUser.length}
-              </div>
+              {notificationLength !== 0 && (
+                <div
+                  className={cc([
+                    "absolute -top-3 -right-3 w-7 h-7 rounded-full flex flex-col items-center justify-center",
+                    !isHiddenNotification
+                      ? "text-white bg-purple-500 border-2 border-white"
+                      : "text-purple-500 hover:bg-slate-100 ",
+                  ])}
+                >
+                  {notificationLength >= 9 ? "9+" : notificationLength}
+                </div>
+              )}
+
               <BellIcon
                 className={cc([
                   "p-2 w-10 h-10 duration-200 rounded-full",
@@ -407,14 +413,13 @@ const HeaderComp = () => {
           }
         >
           <div className="overflow-scroll w-[210px] max-h-screen no-scrollbar">
-            {notifications?.QueryNotificationsForUser &&
-            notifications?.QueryNotificationsForUser.length > 0 ? (
+            {notificationLength > 0 ? (
               <div className="grid grid-cols-1 gap-3">
                 <button
                   className="py-2 w-full font-bold text-purple-500 bg-purple-100 rounded-md"
                   onClick={handleDeleteAllNotifications}
                 >
-                  {notifications?.QueryNotificationsForUser.length}
+                  {notificationLength}
                   件全て既読にする
                 </button>
                 {notifications?.QueryNotificationsForUser.map(data => {

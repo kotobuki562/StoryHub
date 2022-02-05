@@ -208,4 +208,8 @@ model Notification {
   review      Review?   @relation(fields: [review_id], references: [id])
   favorite    Favorite? @relation(fields: [favorite_id], references: [id])
   follow      Follow?   @relation(fields: [follow_id], references: [id])
+
+  @@unique([receiver_id, review_id])
+  @@unique([receiver_id, favorite_id])
+  @@unique([receiver_id, follow_id])
 }

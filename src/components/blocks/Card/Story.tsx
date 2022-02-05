@@ -28,7 +28,7 @@ const StoryCardComp: VFC<NexusGenFieldTypes["Story"]> = ({
           <div className="flex text-sm sm:text-base">
             <div className="mr-2 min-w-[2rem]">
               <img
-                className="w-8 h-8 rounded-full"
+                className="object-cover object-center w-8 h-8 rounded-full"
                 src={user?.image || "/img/Vector.png"}
                 alt={user?.user_name || "avatar"}
               />
