@@ -21,12 +21,13 @@ model User {
   follows          Follow[]
   favorites        Favorite[]
   settingMaterials SettingMaterial[]
+  Notification     Notification[]
 }
 
 model Review {
   id           String    @id @unique @default(uuid())
-  user_id      String?
-  story_id     String?
+  user_id      String
+  story_id     String
   review_title String
   review_body  String
   stars        Int       @default(1)
@@ -35,24 +36,31 @@ model Review {
   user         User?     @relation(fields: [user_id], references: [id])
   story        Story?    @relation(fields: [story_id], references: [id])
 
+  Notification Notification[]
   @@unique([user_id, story_id])
 }
 
 model Favorite {
-  id         Int      @id @unique @default(autoincrement())
+  id         String   @id @unique @default(uuid())
   user_id    String
   story_id   String
   created_at DateTime @default(now())
   user       User?    @relation(fields: [user_id], references: [id])
   story      Story?   @relation(fields: [story_id], references: [id])
+
+  Notification Notification[]
+  @@unique([user_id, story_id])
 }
 
 model Follow {
-  id         Int      @id @unique @default(autoincrement())
+  id         String   @id @unique @default(uuid())
   user_id    String
-  follow_id  String?
+  follow_id  String
   created_at DateTime @default(now())
   user       User?    @relation(fields: [user_id], references: [id])
+
+  Notification Notification[]
+  @@unique([user_id, follow_id])
 }
 
 model SettingMaterial {
@@ -70,6 +78,8 @@ model SettingMaterial {
   characters             Character[]
   objects                Object[]
   terminologies          Terminology[]
+
+  @@unique([user_id, story_id])
 }
 
 model Character {
@@ -184,4 +194,18 @@ model Page {
   created_at DateTime  @default(now())
   updated_at DateTime?
   chapter    Chapter?  @relation(fields: [chapter_id], references: [id])
+}
+
+model Notification {
+  id          String    @id @unique @default(uuid())
+  user_id     String
+  receiver_id String
+  review_id   String?
+  favorite_id String?
+  follow_id   String?
+  created_at  DateTime  @default(now())
+  user        User?     @relation(fields: [user_id], references: [id])
+  review      Review?   @relation(fields: [review_id], references: [id])
+  favorite    Favorite? @relation(fields: [favorite_id], references: [id])
+  follow      Follow?   @relation(fields: [follow_id], references: [id])
 }

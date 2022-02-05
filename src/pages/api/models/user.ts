@@ -90,6 +90,16 @@ const User = objectType({
           : []
       },
     })
+    t.list.field("notifications", {
+      type: "Notification",
+      resolve: parent => {
+        return prisma.notification.findMany({
+          where: {
+            receiver_id: `${parent.id}`,
+          },
+        })
+      },
+    })
   },
 })
 

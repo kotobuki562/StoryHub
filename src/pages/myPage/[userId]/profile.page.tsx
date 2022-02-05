@@ -243,11 +243,7 @@ const ProfilePage = () => {
         </div>
       )}
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        title="プロフィールを編集"
-      >
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
         <div className="flex flex-col justify-center items-center w-full">
           <Tab
             color="purple"
@@ -317,6 +313,7 @@ const ProfilePage = () => {
 
                     <div className="flex flex-col items-center w-full">
                       <Button
+                        usage="base"
                         disabled={isLoadingUpdateUser || isLoading}
                         isLoading={isLoadingUpdateUser || isLoading}
                         type="submit"

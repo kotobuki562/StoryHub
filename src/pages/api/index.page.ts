@@ -17,6 +17,7 @@ import { Character } from "src/pages/api/models/character"
 import { Episode } from "src/pages/api/models/episode"
 import { Favorite } from "src/pages/api/models/favorite"
 import { Follow } from "src/pages/api/models/follow"
+import { Notification } from "src/pages/api/models/notification"
 import { Object } from "src/pages/api/models/object"
 import { Page } from "src/pages/api/models/page"
 import { Review } from "src/pages/api/models/review"
@@ -25,6 +26,11 @@ import { SettingMaterial } from "src/pages/api/models/settingMaterial"
 import { Story } from "src/pages/api/models/story"
 import { Terminology } from "src/pages/api/models/terminology"
 import { User } from "src/pages/api/models/user"
+import {
+  createNotification,
+  deleteAllNotifications,
+  deleteNotification,
+} from "src/pages/api/mutations/notification"
 import {
   createReview,
   deleteReview,
@@ -77,6 +83,7 @@ import {
   QueryMyFavoritesByUser,
 } from "src/pages/api/queries/favorite"
 import { QueryFollowers, QueryFollowing } from "src/pages/api/queries/follow"
+import { QueryNotificationsForUser } from "src/pages/api/queries/notification"
 import {
   QueryMyObjectById,
   QueryMyObjects,
@@ -262,6 +269,9 @@ const Query = objectType({
     QueryFavoritesByStory(t)
     QueryMyFavoritesByUser(t)
     QueryMyFavoritesByStory(t)
+
+    // 通知のクエリ
+    QueryNotificationsForUser(t)
   },
 })
 
@@ -288,6 +298,11 @@ const Mutation = objectType({
     createReview(t)
     updateReview(t)
     deleteReview(t)
+
+    // 通知のミューテーション
+    createNotification(t)
+    deleteAllNotifications(t)
+    deleteNotification(t)
   },
 })
 
@@ -308,6 +323,7 @@ export const schema = makeSchema({
     Object,
     SettingMaterial,
     User,
+    Notification,
     GQLDate,
   ],
   outputs: {

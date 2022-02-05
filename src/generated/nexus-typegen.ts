@@ -78,17 +78,26 @@ export interface NexusGenObjects {
   }
   Favorite: { // root type
     created_at?: NexusGenScalars['DateTime'] | null; // DateTime
-    id?: number | null; // Int
+    id?: string | null; // String
     story_id?: string | null; // String
     user_id?: string | null; // String
   }
   Follow: { // root type
     created_at?: NexusGenScalars['DateTime'] | null; // DateTime
     follow_id?: string | null; // String
-    id?: number | null; // Int
+    id?: string | null; // String
     user_id?: string | null; // String
   }
   Mutation: {};
+  Notification: { // root type
+    created_at?: NexusGenScalars['DateTime'] | null; // DateTime
+    favorite_id?: string | null; // String
+    follow_id?: string | null; // String
+    id?: string | null; // ID
+    receiver_id?: string | null; // String
+    review_id?: string | null; // String
+    user_id?: string | null; // String
+  }
   Object: { // root type
     created_at?: NexusGenScalars['DateTime'] | null; // DateTime
     id?: string | null; // ID
@@ -225,7 +234,8 @@ export interface NexusGenFieldTypes {
   }
   Favorite: { // field return type
     created_at: NexusGenScalars['DateTime'] | null; // DateTime
-    id: number | null; // Int
+    id: string | null; // String
+    notifications: Array<NexusGenRootTypes['Notification'] | null> | null; // [Notification]
     story: NexusGenRootTypes['Story'] | null; // Story
     story_id: string | null; // String
     user: NexusGenRootTypes['User'] | null; // User
@@ -234,15 +244,19 @@ export interface NexusGenFieldTypes {
   Follow: { // field return type
     created_at: NexusGenScalars['DateTime'] | null; // DateTime
     follow_id: string | null; // String
-    id: number | null; // Int
+    id: string | null; // String
+    notifications: Array<NexusGenRootTypes['Notification'] | null> | null; // [Notification]
     user: NexusGenRootTypes['User'] | null; // User
     user_id: string | null; // String
   }
   Mutation: { // field return type
+    createNotification: NexusGenRootTypes['Notification'] | null; // Notification
     createReview: NexusGenRootTypes['Review'] | null; // Review
     createSeason: NexusGenRootTypes['Season'] | null; // Season
     createStory: NexusGenRootTypes['Story'] | null; // Story
     createUser: NexusGenRootTypes['User'] | null; // User
+    deleteAllNotifications: NexusGenRootTypes['Notification'] | null; // Notification
+    deleteNotification: NexusGenRootTypes['Notification'] | null; // Notification
     deleteReview: NexusGenRootTypes['Review'] | null; // Review
     deleteSeason: NexusGenRootTypes['Season'] | null; // Season
     deleteStory: NexusGenRootTypes['Story'] | null; // Story
@@ -252,6 +266,19 @@ export interface NexusGenFieldTypes {
     updateSeason: NexusGenRootTypes['Season'] | null; // Season
     updateStory: NexusGenRootTypes['Story'] | null; // Story
     updateUser: NexusGenRootTypes['User'] | null; // User
+  }
+  Notification: { // field return type
+    created_at: NexusGenScalars['DateTime'] | null; // DateTime
+    favorite: NexusGenRootTypes['Favorite'] | null; // Favorite
+    favorite_id: string | null; // String
+    follow: NexusGenRootTypes['Follow'] | null; // Follow
+    follow_id: string | null; // String
+    id: string | null; // ID
+    receiver_id: string | null; // String
+    review: NexusGenRootTypes['Review'] | null; // Review
+    review_id: string | null; // String
+    user: NexusGenRootTypes['User'] | null; // User
+    user_id: string | null; // String
   }
   Object: { // field return type
     created_at: NexusGenScalars['DateTime'] | null; // DateTime
@@ -313,6 +340,7 @@ export interface NexusGenFieldTypes {
     QueryMyStoryById: NexusGenRootTypes['Story'] | null; // Story
     QueryMyTerminologies: Array<NexusGenRootTypes['Terminology'] | null> | null; // [Terminology]
     QueryMyTerminologyById: NexusGenRootTypes['Terminology'] | null; // Terminology
+    QueryNotificationsForUser: Array<NexusGenRootTypes['Notification'] | null> | null; // [Notification]
     QueryObjectById: NexusGenRootTypes['Object'] | null; // Object
     QueryObjects: Array<NexusGenRootTypes['Object'] | null> | null; // [Object]
     QueryObjectsCountByPublish: number | null; // Int
@@ -347,6 +375,7 @@ export interface NexusGenFieldTypes {
   Review: { // field return type
     created_at: NexusGenScalars['DateTime'] | null; // DateTime
     id: string | null; // ID
+    notifications: Array<NexusGenRootTypes['Notification'] | null> | null; // [Notification]
     review_body: string | null; // String
     review_title: string | null; // String
     stars: number | null; // Int
@@ -422,6 +451,7 @@ export interface NexusGenFieldTypes {
     follows: Array<NexusGenRootTypes['Follow'] | null> | null; // [Follow]
     id: string | null; // ID
     image: string | null; // String
+    notifications: Array<NexusGenRootTypes['Notification'] | null> | null; // [Notification]
     reviews: Array<NexusGenRootTypes['Review'] | null> | null; // [Review]
     stories: Array<NexusGenRootTypes['Story'] | null> | null; // [Story]
     updated_at: NexusGenScalars['DateTime'] | null; // DateTime
@@ -472,7 +502,8 @@ export interface NexusGenFieldTypeNames {
   }
   Favorite: { // field return type name
     created_at: 'DateTime'
-    id: 'Int'
+    id: 'String'
+    notifications: 'Notification'
     story: 'Story'
     story_id: 'String'
     user: 'User'
@@ -481,15 +512,19 @@ export interface NexusGenFieldTypeNames {
   Follow: { // field return type name
     created_at: 'DateTime'
     follow_id: 'String'
-    id: 'Int'
+    id: 'String'
+    notifications: 'Notification'
     user: 'User'
     user_id: 'String'
   }
   Mutation: { // field return type name
+    createNotification: 'Notification'
     createReview: 'Review'
     createSeason: 'Season'
     createStory: 'Story'
     createUser: 'User'
+    deleteAllNotifications: 'Notification'
+    deleteNotification: 'Notification'
     deleteReview: 'Review'
     deleteSeason: 'Season'
     deleteStory: 'Story'
@@ -499,6 +534,19 @@ export interface NexusGenFieldTypeNames {
     updateSeason: 'Season'
     updateStory: 'Story'
     updateUser: 'User'
+  }
+  Notification: { // field return type name
+    created_at: 'DateTime'
+    favorite: 'Favorite'
+    favorite_id: 'String'
+    follow: 'Follow'
+    follow_id: 'String'
+    id: 'ID'
+    receiver_id: 'String'
+    review: 'Review'
+    review_id: 'String'
+    user: 'User'
+    user_id: 'String'
   }
   Object: { // field return type name
     created_at: 'DateTime'
@@ -560,6 +608,7 @@ export interface NexusGenFieldTypeNames {
     QueryMyStoryById: 'Story'
     QueryMyTerminologies: 'Terminology'
     QueryMyTerminologyById: 'Terminology'
+    QueryNotificationsForUser: 'Notification'
     QueryObjectById: 'Object'
     QueryObjects: 'Object'
     QueryObjectsCountByPublish: 'Int'
@@ -594,6 +643,7 @@ export interface NexusGenFieldTypeNames {
   Review: { // field return type name
     created_at: 'DateTime'
     id: 'ID'
+    notifications: 'Notification'
     review_body: 'String'
     review_title: 'String'
     stars: 'Int'
@@ -669,6 +719,7 @@ export interface NexusGenFieldTypeNames {
     follows: 'Follow'
     id: 'ID'
     image: 'String'
+    notifications: 'Notification'
     reviews: 'Review'
     stories: 'Story'
     updated_at: 'DateTime'
@@ -691,6 +742,13 @@ export interface NexusGenArgTypes {
     }
   }
   Mutation: {
+    createNotification: { // args
+      accessToken: string; // String!
+      favoriteId?: string | null; // String
+      followId?: string | null; // String
+      receiverId: string; // String!
+      reviewId?: string | null; // String
+    }
     createReview: { // args
       acessToken: string; // String!
       reviewBody: string; // String!
@@ -720,6 +778,14 @@ export interface NexusGenArgTypes {
       image?: string | null; // String
       userDeal: string; // String!
       userName: string; // String!
+    }
+    deleteAllNotifications: { // args
+      accessToken: string; // String!
+    }
+    deleteNotification: { // args
+      accessToken: string; // String!
+      notificationId: string; // String!
+      receiverId: string; // String!
     }
     deleteReview: { // args
       acessToken: string; // String!
@@ -928,6 +994,9 @@ export interface NexusGenArgTypes {
       accessToken: string; // String!
       terminologyId: string; // String!
       userId: string; // String!
+    }
+    QueryNotificationsForUser: { // args
+      accessToken: string; // String!
     }
     QueryObjectById: { // args
       objectId: string; // String!
