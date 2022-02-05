@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable import/no-default-export */
-import { useQuery } from "@apollo/client"
 import gql from "graphql-tag"
 import type { NextPage } from "next"
 import { useRouter } from "next/router"
@@ -10,6 +9,7 @@ import { Alert } from "src/components/atoms/Alert"
 import { MyStoryCard } from "src/components/blocks/Card"
 import { Layout } from "src/components/Layout"
 import { LoadingLogo } from "src/components/Loading"
+import { useSwrQuery } from "src/hooks/swr"
 import { supabase } from "src/lib/supabase"
 import type { QueryMyStories } from "src/types/Story/query"
 
@@ -34,15 +34,14 @@ const HomePage: NextPage = () => {
   const router = useRouter()
   const { userId } = router.query
   const accessToken = supabase.auth.session()?.access_token
+
   const {
     data,
     error: errorInfo,
-    loading: isLoading,
-  } = useQuery<QueryMyStories>(MyStoriesQuery, {
-    variables: {
-      userId: userId as string,
-      accessToken: `${accessToken}`,
-    },
+    isLoading,
+  } = useSwrQuery<QueryMyStories>(MyStoriesQuery, {
+    userId: userId as string,
+    accessToken: `${accessToken}`,
   })
 
   useEffect(() => {

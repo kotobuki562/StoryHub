@@ -154,6 +154,7 @@ const UploadAvatorFormComp: VFC<UpdateImageFormProps> = ({ userId }) => {
       </div>
 
       <Button
+      usage="base"
         disabled={isLoadingFunction || !upImgUrl}
         isLoading={isLoadingFunction}
         onClick={handleUpdateUserProfileImage}
