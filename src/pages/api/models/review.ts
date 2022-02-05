@@ -32,6 +32,16 @@ const Review = objectType({
           : null
       },
     })
+    t.list.field("notifications", {
+      type: "Notification",
+      resolve: parent => {
+        return prisma.notification.findMany({
+          where: {
+            review_id: `${parent.id}`,
+          },
+        })
+      },
+    })
   },
 })
 

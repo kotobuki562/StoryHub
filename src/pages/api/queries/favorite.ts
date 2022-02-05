@@ -9,14 +9,13 @@ const QueryFavoritesByUser = (t: ObjectDefinitionBlock<"Query">) => {
     args: {
       userId: nonNull(stringArg()),
     },
-    resolve: async (_parent, args) => {
-      const favorites = await prisma.favorite.findMany({
+    resolve: (_parent, args) => {
+      return prisma.favorite.findMany({
         orderBy: { created_at: "desc" },
         where: {
           user_id: args.userId,
         },
       })
-      return favorites
     },
   })
 }
@@ -27,14 +26,13 @@ const QueryFavoritesByStory = (t: ObjectDefinitionBlock<"Query">) => {
     args: {
       storyId: nonNull(stringArg()),
     },
-    resolve: async (_parent, args) => {
-      const favorites = await prisma.favorite.findMany({
+    resolve: (_parent, args) => {
+      return prisma.favorite.findMany({
         orderBy: { created_at: "desc" },
         where: {
           story_id: args.storyId,
         },
       })
-      return favorites
     },
   })
 }
@@ -45,14 +43,13 @@ const QueryMyFavoritesByUser = (t: ObjectDefinitionBlock<"Query">) => {
     args: {
       accessToken: nonNull(stringArg()),
     },
-    resolve: async (_parent, args) => {
-      const favorites = await prisma.favorite.findMany({
+    resolve: (_parent, args) => {
+      return prisma.favorite.findMany({
         orderBy: { created_at: "desc" },
         where: {
           user_id: `${decodeUserId(args.accessToken)}`,
         },
       })
-      return favorites
     },
   })
 }
@@ -64,15 +61,14 @@ const QueryMyFavoritesByStory = (t: ObjectDefinitionBlock<"Query">) => {
       accessToken: nonNull(stringArg()),
       storyId: nonNull(stringArg()),
     },
-    resolve: async (_parent, args) => {
-      const favorites = await prisma.favorite.findMany({
+    resolve: (_parent, args) => {
+      return prisma.favorite.findMany({
         orderBy: { created_at: "desc" },
         where: {
           story_id: args.storyId,
           user_id: `${decodeUserId(args.accessToken)}`,
         },
       })
-      return favorites
     },
   })
 }

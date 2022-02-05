@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { useQuery } from "@apollo/client"
+import { useMutation, useQuery } from "@apollo/client"
 import {
   BellIcon,
   BookmarkIcon,
@@ -19,6 +19,7 @@ import {
   UserGroupIcon,
 } from "@heroicons/react/solid"
 import cc from "classcat"
+import { request } from "graphql-request"
 import gql from "graphql-tag"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -27,6 +28,8 @@ import { Accordion } from "src/components/blocks/Accodion"
 import { Menu } from "src/components/blocks/Menu"
 import type { NexusGenObjects } from "src/generated/nexus-typegen"
 import { supabase } from "src/lib/supabase"
+import type { QueryNotificationsForUser } from "src/types/Notification/query"
+import useSWR, { mutate } from "swr"
 
 const Me = gql`
   query QueryMe($accessToken: String!) {
@@ -35,6 +38,47 @@ const Me = gql`
       user_name
       user_deal
       image
+    }
+  }
+`
+
+const NotificationsQuery = gql`
+  query Query($accessToken: String!) {
+    QueryNotificationsForUser(accessToken: $accessToken) {
+      id
+      user {
+        user_name
+        image
+        id
+      }
+      review {
+        id
+        review_title
+      }
+    }
+  }
+`
+
+const NotificationDelete = gql`
+  mutation Mutation(
+    $accessToken: String!
+    $notificationId: String!
+    $receiverId: String!
+  ) {
+    deleteNotification(
+      accessToken: $accessToken
+      notificationId: $notificationId
+      receiverId: $receiverId
+    ) {
+      id
+    }
+  }
+`
+
+const NotificationAllDelete = gql`
+  mutation DeleteAllNotifications($accessToken: String!) {
+    deleteAllNotifications(accessToken: $accessToken) {
+      id
     }
   }
 `
@@ -80,30 +124,75 @@ const HeaderComp = () => {
   const accessToken = useMemo(() => {
     return supabase.auth.session()?.access_token
   }, [])
+
+  // NotificationsQueryをuseSWRで行う
+  const { data: notifications } = useSWR<QueryNotificationsForUser>(
+    `/api`,
+    async (url: string) => {
+      const response = await request(url, NotificationsQuery, {
+        accessToken,
+      })
+      return response
+    },
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      refreshInterval: 0,
+    }
+  )
+
   const { data: user } = useQuery<QueryMe>(Me, {
     variables: {
       accessToken,
     },
   })
 
+  const [deleteNotification] = useMutation(NotificationDelete)
+  const [deleteAllNotifications] = useMutation(NotificationAllDelete)
+
+  const handleDeleteNotification = useCallback(
+    async (id: string) => {
+      await deleteNotification({
+        variables: {
+          accessToken,
+          notificationId: id,
+          receiverId: userInfo?.id,
+        },
+      }).then(() => {
+        mutate(`/api`)
+      })
+    },
+    [accessToken, deleteNotification, userInfo?.id]
+  )
+
+  const handleDeleteAllNotifications = useCallback(async () => {
+    await deleteAllNotifications({
+      variables: {
+        accessToken,
+      },
+    }).then(() => {
+      mutate(`/api`)
+    })
+  }, [accessToken, deleteAllNotifications])
+
   const userLinks = [
     {
-      href: `/myPage/${user?.QueryMe.id}/review`,
+      href: `/myPage/${user?.QueryMe?.id}/review`,
       label: "レビュー",
       icon: <FireIcon className="w-6 h-6" />,
     },
     {
-      href: `/myPage/${user?.QueryMe.id}/follow`,
+      href: `/myPage/${user?.QueryMe?.id}/follow`,
       label: "フォロー",
       icon: <UserGroupIcon className="w-6 h-6" />,
     },
     {
-      href: `/myPage/${user?.QueryMe.id}/favorite`,
+      href: `/myPage/${user?.QueryMe?.id}/favorite`,
       label: "ブックマーク",
       icon: <BookmarkIcon className="w-6 h-6" />,
     },
     {
-      href: `/myPage/${user?.QueryMe.id}/contents`,
+      href: `/myPage/${user?.QueryMe?.id}/contents`,
       label: "コンテンツ",
       icon: <PhotographIcon className="w-6 h-6" />,
     },
@@ -111,12 +200,12 @@ const HeaderComp = () => {
 
   const userStoryLinks = [
     {
-      href: `/myPage/${user?.QueryMe.id}/story`,
+      href: `/myPage/${user?.QueryMe?.id}/story`,
       label: "一覧で見る",
       icon: <BookOpenIcon className="w-6 h-6" />,
     },
     {
-      href: `/myPage/${user?.QueryMe.id}/story/create`,
+      href: `/myPage/${user?.QueryMe?.id}/story/create`,
       label: "作成する",
       icon: <PencilIcon className="w-6 h-6" />,
     },
@@ -124,12 +213,12 @@ const HeaderComp = () => {
 
   const userSettingMaterialLinks = [
     {
-      href: `/myPage/${user?.QueryMe.id}/settingMaterial`,
+      href: `/myPage/${user?.QueryMe?.id}/settingMaterial`,
       label: "一覧で見る",
       icon: <PhotographIcon className="w-6 h-6" />,
     },
     {
-      href: `/myPage/${user?.QueryMe.id}/settingMaterial/create`,
+      href: `/myPage/${user?.QueryMe?.id}/settingMaterial/create`,
       label: "作成する",
       icon: <PencilIcon className="w-6 h-6" />,
     },
@@ -305,7 +394,17 @@ const HeaderComp = () => {
           onToggle={onToggleNotification}
           onClose={handleCloseNotification}
           viewer={
-            <div className="mr-4 w-10">
+            <div className="relative mr-4 w-10">
+              <div
+                className={cc([
+                  "absolute -top-3 -right-3 w-7 h-7 rounded-full flex flex-col items-center justify-center",
+                  !isHiddenNotification
+                    ? "text-white bg-purple-500 border-2 border-white"
+                    : "text-purple-500 hover:bg-slate-100 ",
+                ])}
+              >
+                {notifications?.QueryNotificationsForUser.length}
+              </div>
               <BellIcon
                 className={cc([
                   "p-2 w-10 h-10 duration-200 rounded-full",
@@ -317,8 +416,44 @@ const HeaderComp = () => {
             </div>
           }
         >
-          <div>
-            <p className="text-slate-400">現在通知は届いていません</p>
+          <div className="overflow-scroll w-[200px] max-h-screen no-scrollbar">
+            {notifications?.QueryNotificationsForUser &&
+            notifications?.QueryNotificationsForUser.length > 0 ? (
+              <div className="grid grid-cols-1 gap-3">
+                <button onClick={handleDeleteAllNotifications}>
+                  全て既読にする
+                </button>
+                {notifications?.QueryNotificationsForUser.map(data => {
+                  return (
+                    <div key={data.id}>
+                      <div className="flex items-center">
+                        <div className="mr-2 min-w-[2rem]">
+                          <img
+                            className="w-8 h-8 rounded-full"
+                            src={data.user?.image || "/img/Vector.png"}
+                            alt="avatar"
+                          />
+                        </div>
+                        <p className="text-sm">
+                          {data.user?.user_name}さんからの通知
+                        </p>
+                      </div>
+                      <div>
+                        <button
+                          onClick={() => {
+                            return handleDeleteNotification(data.id as string)
+                          }}
+                        >
+                          既読にする
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <p className="text-slate-400">現在通知は届いていません</p>
+            )}
           </div>
         </Menu>
 
@@ -338,7 +473,7 @@ const HeaderComp = () => {
                 <div className="mr-2">
                   <img
                     className="w-8 h-8 rounded-full"
-                    src={user?.QueryMe.image || "/img/Vector.png"}
+                    src={user?.QueryMe?.image || "/img/Vector.png"}
                     alt="avatar"
                   />
                 </div>
@@ -358,12 +493,12 @@ const HeaderComp = () => {
                       <div className="mr-2 min-w-[40px]">
                         <img
                           className="w-10 h-10 rounded-full"
-                          src={user.QueryMe.image || "/img/Vector.png"}
-                          alt={user.QueryMe.user_name || "avatar"}
+                          src={user.QueryMe?.image || "/img/Vector.png"}
+                          alt={user.QueryMe?.user_name || "avatar"}
                         />
                       </div>
                       <div className="overflow-scroll no-scrollbar">
-                        <p className="font-bold">{user.QueryMe.user_name}</p>
+                        <p className="font-bold">{user.QueryMe?.user_name}</p>
                         <p className="text-sm text-slate-400">
                           {userInfo?.email}
                         </p>
@@ -392,12 +527,12 @@ const HeaderComp = () => {
                         </div>
                       }
                     >
-                      <Link href={`/myPage/${user?.QueryMe.id}/profile`}>
+                      <Link href={`/myPage/${user?.QueryMe?.id}/profile`}>
                         <a
                           className={cc([
                             "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
                             router.pathname ===
-                              `/myPage/${user?.QueryMe.id}/profile` &&
+                              `/myPage/${user?.QueryMe?.id}/profile` &&
                               "bg-slate-100 text-purple-400",
                           ])}
                         >

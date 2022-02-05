@@ -27,7 +27,7 @@ const createReview = (t: ObjectDefinitionBlock<"Mutation">) => {
       stars: nonNull(intArg()),
       acessToken: nonNull(stringArg()),
     },
-    resolve: (_, args, _ctx) => {
+    resolve: async (_, args, _ctx) => {
       return prisma.review.create({
         data: {
           user_id: `${decodeUserId(args.acessToken)}`,

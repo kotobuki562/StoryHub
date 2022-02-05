@@ -55,24 +55,42 @@ const ReviewsQueryByStoryId = gql`
   }
 `
 
+const NotificationCreate = gql`
+  mutation CreateNotification(
+    $accessToken: String!
+    $receiverId: String!
+    $reviewId: String
+  ) {
+    createNotification(
+      accessToken: $accessToken
+      receiverId: $receiverId
+      reviewId: $reviewId
+    ) {
+      id
+    }
+  }
+`
+
 type FormProps = {
   userId: string
   isCreateReview: boolean
+  createrId: string
 }
 
-const CreateReviewFormComp: VFC<FormProps> = ({ isCreateReview, userId }) => {
+const CreateReviewFormComp: VFC<FormProps> = ({
+  createrId,
+  isCreateReview,
+  userId,
+}) => {
   const router = useRouter()
   const { storyId } = router.query
   const accessToken = supabase.auth.session()?.access_token
   const [createStory, { error: errorCreateReview, loading: isLoading }] =
-    useMutation<NexusGenArgTypes["Mutation"]["createReview"]>(CreateReview, {
-      refetchQueries: [
-        {
-          query: ReviewsQueryByStoryId,
-          variables: { storyId: storyId },
-        },
-      ],
-    })
+    useMutation(CreateReview)
+  const [createNotification] =
+    useMutation<NexusGenArgTypes["Mutation"]["createNotification"]>(
+      NotificationCreate
+    )
   const [stars, setStars] = useState<Star>(1)
 
   const handleChangeStars = useCallback((star: Star) => {
@@ -109,14 +127,39 @@ const CreateReviewFormComp: VFC<FormProps> = ({ isCreateReview, userId }) => {
             stars: stars,
             acessToken: accessToken,
           },
-        }).then(() => {
+          refetchQueries: [
+            {
+              query: ReviewsQueryByStoryId,
+              variables: { storyId: storyId },
+            },
+          ],
+        }).then(async res => {
+          const { id } = res.data.createReview
+          await createNotification({
+            variables: {
+              accessToken: accessToken,
+              receiverId: createrId,
+              reviewId: id,
+            },
+          })
           toast.custom(t => {
             return (
               <Alert t={t} title="ストーリーを作成しました" usage="success" />
             )
           })
+          router.push(`/review/${id}`)
         })
-  }, [accessToken, userId, createStory, getValues, stars, storyId])
+  }, [
+    userId,
+    createStory,
+    storyId,
+    getValues,
+    stars,
+    accessToken,
+    createNotification,
+    createrId,
+    router,
+  ])
 
   useEffect(() => {
     if (errorCreateReview) {
