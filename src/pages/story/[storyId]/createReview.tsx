@@ -147,6 +147,7 @@ const CreateReviewFormComp: VFC<FormProps> = ({
               <Alert t={t} title="ストーリーを作成しました" usage="success" />
             )
           })
+          router.push(`/review/${id}`)
         })
   }, [
     userId,
@@ -157,6 +158,7 @@ const CreateReviewFormComp: VFC<FormProps> = ({
     accessToken,
     createNotification,
     createrId,
+    router,
   ])
 
   useEffect(() => {
