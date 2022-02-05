@@ -17,14 +17,16 @@ export const useStorage = (userId: string, path: string) => {
         sortBy: { column: "name", order: "asc" },
       })
     if (error) {
-      toast.custom(t => (
-        <Alert
-          t={t}
-          title="エラーが発生しました"
-          usage="error"
-          message={error.message}
-        />
-      ))
+      toast.custom(t => {
+        return (
+          <Alert
+            t={t}
+            title="エラーが発生しました"
+            usage="error"
+            message={error.message}
+          />
+        )
+      })
     }
     setFolder(data)
   }, [path, userId])
@@ -53,30 +55,35 @@ export const useStorage = (userId: string, path: string) => {
         .from("management")
         .remove([`${userId}/${path}/${urlWithoutPublic}`])
       if (error) {
-        toast.custom(t => (
-          <Alert
-            t={t}
-            title="エラーが発生しました"
-            usage="error"
-            message={error.message}
-          />
-        ))
+        toast.custom(t => {
+          return (
+            <Alert
+              t={t}
+              title="エラーが発生しました"
+              usage="error"
+              message={error.message}
+            />
+          )
+        })
       }
       if (data) {
-        toast.custom(t => (
-          <Alert
-            t={t}
-            title="削除しました"
-            usage="success"
-            message="画像を削除しました"
-          />
-        ))
+        toast.custom(t => {
+          return (
+            <Alert
+              t={t}
+              title="削除しました"
+              usage="success"
+              message="画像を削除しました"
+            />
+          )
+        })
         setImageUrls(pre => {
-          const newUrls = pre.filter(
-            url =>
+          const newUrls = pre.filter(url => {
+            return (
               url !==
               `https://phwmepkoueewrufhxbnu.supabase.co/storage/v1/object/public/management/${userId}/${path}/${urlWithoutPublic}`
-          )
+            )
+          })
           return newUrls
         })
       }

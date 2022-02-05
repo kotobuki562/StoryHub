@@ -103,11 +103,15 @@ const CreateSeason: NextPage = () => {
   ] = useMutation<NexusGenArgTypes["Mutation"]["updateSeason"]>(SeasonUpdate)
 
   const handleTogglePublish = useCallback(() => {
-    setIsPublish(pre => !pre)
+    setIsPublish(pre => {
+      return !pre
+    })
   }, [])
 
   const handleToggleStorage = useCallback(() => {
-    setIsStorage(pre => !pre)
+    setIsStorage(pre => {
+      return !pre
+    })
   }, [])
 
   const handleSelectSeasonImage = useCallback(
@@ -175,13 +179,15 @@ const CreateSeason: NextPage = () => {
         },
       ],
     }).then(() => {
-      toast.custom(t => (
-        <Alert
-          t={t}
-          title={`${mySeason?.QueryMySeasonById.season_title}のシーズンを更新しました`}
-          usage="success"
-        />
-      ))
+      toast.custom(t => {
+        return (
+          <Alert
+            t={t}
+            title={`${mySeason?.QueryMySeasonById.season_title}のシーズンを更新しました`}
+            usage="success"
+          />
+        )
+      })
       return router.push(`/myPage/${userId}/story/${storyId}`)
     })
   }, [
@@ -200,14 +206,16 @@ const CreateSeason: NextPage = () => {
 
   useEffect(() => {
     if (errorUpdateSeason || mySeasonError) {
-      toast.custom(t => (
-        <Alert
-          t={t}
-          title="エラーが発生しました"
-          usage="error"
-          message={errorUpdateSeason?.message || mySeasonError?.message}
-        />
-      ))
+      toast.custom(t => {
+        return (
+          <Alert
+            t={t}
+            title="エラーが発生しました"
+            usage="error"
+            message={errorUpdateSeason?.message || mySeasonError?.message}
+          />
+        )
+      })
     }
   }, [errorUpdateSeason, mySeasonError])
 
@@ -311,25 +319,27 @@ const CreateSeason: NextPage = () => {
 
             {imageUrls.length > 0 && isStorage ? (
               <div className="flex overflow-x-scroll gap-5 items-center mb-4 w-full">
-                {imageUrls.map(url => (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleSelectSeasonImage(url)
-                    }}
-                    className={cc([
-                      "min-w-[297px]",
-                      seasonImage === url && "border-4 border-yellow-500",
-                    ])}
-                    key={url}
-                  >
-                    <img
-                      className="w-[297px] h-[210px]"
-                      src={url}
-                      alt="シーズン画像"
-                    />
-                  </button>
-                ))}
+                {imageUrls.map(url => {
+                  return (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleSelectSeasonImage(url)
+                      }}
+                      className={cc([
+                        "min-w-[297px]",
+                        seasonImage === url && "border-4 border-yellow-500",
+                      ])}
+                      key={url}
+                    >
+                      <img
+                        className="w-[297px] h-[210px]"
+                        src={url}
+                        alt="シーズン画像"
+                      />
+                    </button>
+                  )
+                })}
               </div>
             ) : (
               <div>
@@ -381,6 +391,7 @@ const CreateSeason: NextPage = () => {
 
           <div className="flex flex-col items-center w-full">
             <Button
+              usage="base"
               disabled={isLoadingUpdateSeason}
               isLoading={isLoadingUpdateSeason}
               type="submit"

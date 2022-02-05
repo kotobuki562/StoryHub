@@ -3,8 +3,8 @@ import { nonNull, stringArg } from "nexus/dist/core"
 import prisma from "src/lib/prisma"
 import { decodeUserId } from "src/pages/api/index.page"
 
-const QueryFollowers = (t: ObjectDefinitionBlock<"Query">) =>
-  t.list.field("QueryFollowers", {
+const QueryFollowers = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.list.field("QueryFollowers", {
     type: "Follow",
     args: {
       accessToken: nonNull(stringArg()),
@@ -19,9 +19,10 @@ const QueryFollowers = (t: ObjectDefinitionBlock<"Query">) =>
       return followers
     },
   })
+}
 
-const QueryFollowing = (t: ObjectDefinitionBlock<"Query">) =>
-  t.list.field("QueryFollowing", {
+const QueryFollowing = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.list.field("QueryFollowing", {
     type: "Follow",
     args: {
       accessToken: nonNull(stringArg()),
@@ -36,5 +37,6 @@ const QueryFollowing = (t: ObjectDefinitionBlock<"Query">) =>
       return following
     },
   })
+}
 
 export { QueryFollowers, QueryFollowing }

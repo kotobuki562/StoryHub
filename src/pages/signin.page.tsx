@@ -13,9 +13,14 @@ import Resizer from "react-image-file-resizer"
 import { Layout } from "src/components/Layout"
 import { supabase } from "src/lib/supabase"
 
-const ReactQuill = dynamic(() => import("react-quill"), {
-  ssr: false,
-})
+const ReactQuill = dynamic(
+  () => {
+    return import("react-quill")
+  },
+  {
+    ssr: false,
+  }
+)
 
 const modules = {
   toolbar: {
@@ -57,8 +62,8 @@ const formats = [
 
 const resizeFile = (
   file: Blob
-): Promise<string | Blob | File | ProgressEvent<FileReader>> =>
-  new Promise(resolve => {
+): Promise<string | Blob | File | ProgressEvent<FileReader>> => {
+  return new Promise(resolve => {
     Resizer.imageFileResizer(
       file,
       400,
@@ -72,6 +77,7 @@ const resizeFile = (
       "base64"
     )
   })
+}
 
 const Signin = () => {
   const [password, setPassword] = useState("")
@@ -104,13 +110,17 @@ const Signin = () => {
   const onSelectFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader()
-      reader.addEventListener("load", () => setUpImg(reader.result as string))
+      reader.addEventListener("load", () => {
+        return setUpImg(reader.result as string)
+      })
       reader.readAsDataURL(e.target.files[0])
     }
   }, [])
 
   const onChangeImage = useCallback(() => {
-    setText(pre => pre + `<img src="${imageUrl}">`)
+    setText(pre => {
+      return pre + `<img src="${imageUrl}">`
+    })
   }, [imageUrl])
 
   const onSaveTextByLocalStorage = useCallback(() => {
@@ -138,9 +148,9 @@ const Signin = () => {
             type: "image/png",
           })
           const reader = new FileReader()
-          reader.addEventListener("load", () =>
-            setUpImg(reader.result as string)
-          )
+          reader.addEventListener("load", () => {
+            return setUpImg(reader.result as string)
+          })
 
           reader.readAsDataURL(blobData)
         } catch (e) {
@@ -279,7 +289,6 @@ const Signin = () => {
         >
           StoryHub
         </h3>
-  
 
         <div>
           <img src="/img/StoryHubLogo.png" alt="Logo" />
@@ -288,9 +297,16 @@ const Signin = () => {
             modules={modules}
             formats={formats}
             value={text}
-            onChange={e => setText(e)}
+            onChange={e => {
+              return setText(e)
+            }}
           />
-          <input type="text" onChange={e => setImageUrl(e.target.value)} />
+          <input
+            type="text"
+            onChange={e => {
+              return setImageUrl(e.target.value)
+            }}
+          />
           <div className="flex justify-around">
             <button onClick={onChangeImage}>Image</button>
             <button onClick={onSaveTextByLocalStorage}>SAVE</button>
@@ -329,13 +345,13 @@ const Signin = () => {
           {previewCanvasRef.current && (
             <button
               type="button"
-              onClick={async () =>
-                await uploadPreview(
+              onClick={async () => {
+                return await uploadPreview(
                   previewCanvasRef.current as HTMLCanvasElement,
                   `${user?.id}`,
                   crop
                 )
-              }
+              }}
             >
               Download cropped image
             </button>
@@ -382,13 +398,17 @@ const Signin = () => {
             <h1>Signup user</h1>
             <input
               autoFocus
-              onChange={e => setPassword(e.target.value)}
+              onChange={e => {
+                return setPassword(e.target.value)
+              }}
               placeholder="Password"
               type="password"
               value={password}
             />
             <input
-              onChange={e => setEmail(e.target.value)}
+              onChange={e => {
+                return setEmail(e.target.value)
+              }}
               placeholder="Email address)"
               type="text"
               value={email}
@@ -416,7 +436,9 @@ const Signin = () => {
             <h1>Reset Password</h1>
             <input
               autoFocus
-              onChange={e => setPassword(e.target.value)}
+              onChange={e => {
+                return setPassword(e.target.value)
+              }}
               placeholder="Password"
               type="password"
               value={password}

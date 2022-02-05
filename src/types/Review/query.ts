@@ -8,3 +8,11 @@ export interface QueryReviewsByStoryId {
 export type QueryReviews = {
   QueryReviews: NexusGenFieldTypes["Review"][]
 }
+
+export type QueryReviewById = {
+  QueryReviewById: NexusGenFieldTypes["Review"]
+}
+
+export type QueryReviewsCount = {
+  QueryReviewsCount: number
+}

@@ -128,12 +128,13 @@ const Season = objectType({
     })
     t.field("story", {
       type: "Story",
-      resolve: parent =>
-        prisma.story.findUnique({
+      resolve: parent => {
+        return prisma.story.findUnique({
           where: {
             id: `${parent.story_id}`,
           },
-        }),
+        })
+      },
     })
   },
 })

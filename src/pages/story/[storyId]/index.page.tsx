@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable import/no-default-export */
 import { useQuery } from "@apollo/client"
-import { PencilAltIcon } from "@heroicons/react/solid"
+import { PencilAltIcon, XCircleIcon } from "@heroicons/react/solid"
 import cc from "classcat"
 import { format } from "date-fns"
 import gql from "graphql-tag"
@@ -167,7 +167,9 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
       },
     })
 
-    setReviews(pre => [...pre, ...data.QueryReviewsByStoryId])
+    setReviews(pre => {
+      return [...pre, ...data.QueryReviewsByStoryId]
+    })
   }, [page, story.QueryStoryById.id])
 
   useEffect(() => {
@@ -175,10 +177,11 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
   }, [getPageReviewData])
 
   const user = supabase.auth.user()
-  const isCreateReview = useMemo(
-    () => !!reviews?.find(review => review?.user_id === user?.id),
-    [reviews, user?.id]
-  )
+  const isCreateReview = useMemo(() => {
+    return !!reviews?.find(review => {
+      return review?.user_id === user?.id
+    })
+  }, [reviews, user?.id])
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false)
 
   const handleOpenModal = useCallback(() => {
@@ -213,7 +216,29 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
             <Modal
               isOpen={isOpenModal}
               onClose={handleCloseModal}
-              title={`レビューを書く : ${story.QueryStoryById.story_title}`}
+              header={
+                <div className="flex justify-between items-center h-full">
+                  <div className="p-4 font-bold text-white bg-purple-500">
+                    <PencilAltIcon className="w-8 h-8" />
+                  </div>
+                  <p className="overflow-y-scroll px-4 max-h-[64px] text-base font-bold text-purple-500 sm:text-2xl no-scrollbar">
+                    {story.QueryStoryById.story_title}のレビューを作成
+                  </p>
+                </div>
+              }
+              footer={
+                <div className="flex justify-between items-center h-full">
+                  <p className="overflow-y-scroll px-4 max-h-[64px] text-base font-bold text-purple-500 sm:text-2xl no-scrollbar">
+                    {story.QueryStoryById.story_title}のレビューを作成
+                  </p>
+                  <button
+                    onClick={handleCloseModal}
+                    className="p-4 font-bold text-white bg-purple-500 no-scrollbar"
+                  >
+                    <XCircleIcon className="w-8 h-8" />
+                  </button>
+                </div>
+              }
             >
               <CreateReviewForm
                 isCreateReview={isCreateReview}
@@ -243,14 +268,16 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
                     <div className="flex flex-col">
                       <div className="flex flex-wrap gap-3 mb-4">
                         {story.QueryStoryById.story_categories?.map(
-                          category => (
-                            <span
-                              key={category}
-                              className="py-1 px-2 text-sm font-bold text-purple-500 bg-yellow-300 rounded-r-full rounded-bl-full"
-                            >
-                              {category}
-                            </span>
-                          )
+                          category => {
+                            return (
+                              <span
+                                key={category}
+                                className="py-1 px-2 text-sm font-bold text-purple-500 bg-yellow-300 rounded-r-full rounded-bl-full"
+                              >
+                                {category}
+                              </span>
+                            )
+                          }
                         )}
                       </div>
                       <h2 className="mb-4 text-2xl font-black">
@@ -278,26 +305,28 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
                   {story.QueryStoryById.seasons &&
                   story.QueryStoryById.seasons.length > 0 ? (
                     <div className="flex flex-wrap gap-5 justify-center items-center w-full">
-                      {story.QueryStoryById.seasons?.map((season, index) => (
-                        <SeasonCard
-                          characters={null}
-                          created_at={undefined}
-                          episodes={null}
-                          id={null}
-                          objects={null}
-                          publish={null}
-                          season_image={null}
-                          season_synopsis={null}
-                          season_title={null}
-                          story={null}
-                          story_id={null}
-                          terminologies={null}
-                          updated_at={undefined}
-                          key={season?.id}
-                          {...season}
-                          seasonNumber={index + 1}
-                        />
-                      ))}
+                      {story.QueryStoryById.seasons?.map((season, index) => {
+                        return (
+                          <SeasonCard
+                            characters={null}
+                            created_at={undefined}
+                            episodes={null}
+                            id={null}
+                            objects={null}
+                            publish={null}
+                            season_image={null}
+                            season_synopsis={null}
+                            season_title={null}
+                            story={null}
+                            story_id={null}
+                            terminologies={null}
+                            updated_at={undefined}
+                            key={season?.id}
+                            {...season}
+                            seasonNumber={index + 1}
+                          />
+                        )
+                      })}
                     </div>
                   ) : (
                     <div className="flex flex-col items-center">
@@ -334,9 +363,9 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
                             : "grid-cols-1",
                         ])}
                       >
-                        {reviews?.map(review => (
-                          <ReviewCard key={review?.id} {...review} />
-                        ))}
+                        {reviews?.map(review => {
+                          return <ReviewCard key={review?.id} {...review} />
+                        })}
                       </div>
                       {/* handleChangePageSizeのボタンをつける */}
                       {reviewCountData?.QueryReviewsCountByStoryId &&
@@ -348,7 +377,9 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
                             <button
                               className="py-2 px-4 font-bold text-white bg-purple-500 hover:bg-purple-700 rounded"
                               onClick={() => {
-                                setPage(pre => pre + 1)
+                                setPage(pre => {
+                                  return pre + 1
+                                })
                               }}
                             >
                               次の{REVIEW_PAGE_SIZE_BY_STORY}件

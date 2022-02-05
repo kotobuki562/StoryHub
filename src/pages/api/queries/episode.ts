@@ -8,8 +8,8 @@ const episodeArgs = {
   serchSeasonId: nullable(stringArg()),
 }
 
-const QueryEpisodes = (t: ObjectDefinitionBlock<"Query">) =>
-  t.list.field("QueryEpisodes", {
+const QueryEpisodes = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.list.field("QueryEpisodes", {
     type: "Episode",
     args: {
       ...episodeArgs,
@@ -31,16 +31,17 @@ const QueryEpisodes = (t: ObjectDefinitionBlock<"Query">) =>
       return seasons
     },
   })
+}
 
-const QueryMyEpisodes = (t: ObjectDefinitionBlock<"Query">) =>
-  t.list.field("QueryMyEpisodes", {
+const QueryMyEpisodes = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.list.field("QueryMyEpisodes", {
     type: "Episode",
     args: {
       ...episodeArgs,
       ...authArgs,
     },
-    resolve: (_parent, args) =>
-      isSafe(args.accessToken, args.userId)
+    resolve: (_parent, args) => {
+      return isSafe(args.accessToken, args.userId)
         ? prisma.episode.findMany({
             orderBy: { created_at: "desc" },
             where: {
@@ -52,61 +53,71 @@ const QueryMyEpisodes = (t: ObjectDefinitionBlock<"Query">) =>
               }),
             },
           })
-        : null,
+        : null
+    },
   })
+}
 
-const QueryEpisodeById = (t: ObjectDefinitionBlock<"Query">) =>
-  t.field("QueryEpisodeById", {
+const QueryEpisodeById = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryEpisodeById", {
     type: "Episode",
     args: {
       id: nonNull(stringArg()),
     },
-    resolve: (_parent, args) =>
-      prisma.episode.findUnique({
+    resolve: (_parent, args) => {
+      return prisma.episode.findUnique({
         where: {
           id: args.id,
         },
-      }),
+      })
+    },
   })
+}
 
-const QueryMyEpisodeById = (t: ObjectDefinitionBlock<"Query">) =>
-  t.field("QueryMyEpisodeById", {
+const QueryMyEpisodeById = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryMyEpisodeById", {
     type: "Episode",
     args: {
       id: nonNull(stringArg()),
       ...authArgs,
     },
-    resolve: (_parent, args) =>
-      isSafe(args.accessToken, args.userId)
+    resolve: (_parent, args) => {
+      return isSafe(args.accessToken, args.userId)
         ? prisma.episode.findUnique({
             where: {
               id: args.id,
             },
           })
-        : null,
+        : null
+    },
   })
+}
 
-const QueryEpisodesCountByPublish = (t: ObjectDefinitionBlock<"Query">) =>
-  t.field("QueryEpisodesCountByPublish", {
+const QueryEpisodesCountByPublish = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryEpisodesCountByPublish", {
     type: "Int",
-    resolve: (_parent, _args) =>
-      prisma.episode.count({
+    resolve: (_parent, _args) => {
+      return prisma.episode.count({
         where: {
           publish: true,
         },
-      }),
+      })
+    },
   })
+}
 
-const QueryEpisodesCountByUnPublish = (t: ObjectDefinitionBlock<"Query">) =>
-  t.field("QueryEpisodesCountByUnPublish", {
+const QueryEpisodesCountByUnPublish = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryEpisodesCountByUnPublish", {
     type: "Int",
-    resolve: (_parent, _args) =>
-      prisma.episode.count({
+    resolve: (_parent, _args) => {
+      return prisma.episode.count({
         where: {
           publish: false,
         },
-      }),
+      })
+    },
   })
+}
 
 export {
   QueryEpisodeById,

@@ -29,10 +29,9 @@ const ProfilePage = () => {
   } = useStorage(userId as string, "season")
 
   const accessToken = supabase.auth.session()?.access_token
-  const isMeState = useMemo(
-    () => isMe(`${userId}`, `${accessToken}`),
-    [accessToken, userId]
-  )
+  const isMeState = useMemo(() => {
+    return isMe(`${userId}`, `${accessToken}`)
+  }, [accessToken, userId])
 
   const getAvatorImageUrl = useCallback(() => {
     const { publicURL } = supabase.storage
@@ -69,24 +68,26 @@ const ProfilePage = () => {
               ストーリー表紙
             </h3>
             <div className="flex overflow-x-scroll gap-8 items-center w-[300px] xs:w-[500px] md:w-[700px]">
-              {storyImageUrls.map(url => (
-                <div className="relative min-w-[210px]" key={url}>
-                  <button
-                    className="absolute top-1 right-1"
-                    onClick={() => {
-                      handleDeleteStoryImage(url)
-                    }}
-                  >
-                    <XCircleIcon className="w-8 h-8 text-red-500" />
-                  </button>
-                  <img
-                    key={url}
-                    className="w-[210px] h-[297px]"
-                    src={url}
-                    alt=""
-                  />
-                </div>
-              ))}
+              {storyImageUrls.map(url => {
+                return (
+                  <div className="relative min-w-[210px]" key={url}>
+                    <button
+                      className="absolute top-1 right-1"
+                      onClick={() => {
+                        handleDeleteStoryImage(url)
+                      }}
+                    >
+                      <XCircleIcon className="w-8 h-8 text-red-500" />
+                    </button>
+                    <img
+                      key={url}
+                      className="w-[210px] h-[297px]"
+                      src={url}
+                      alt=""
+                    />
+                  </div>
+                )
+              })}
             </div>
             {storyImageUrls.length <= 2 && (
               <UploadStoryImageForm
@@ -99,24 +100,26 @@ const ProfilePage = () => {
               シーズン表紙
             </h3>
             <div className="flex overflow-x-scroll gap-8 items-center w-[300px] xs:w-[500px] md:w-[700px]">
-              {seasonImageUrls.map(url => (
-                <div className="relative min-w-[297px]" key={url}>
-                  <button
-                    className="absolute top-1 right-1"
-                    onClick={() => {
-                      handleDeleteSeasonImage(url)
-                    }}
-                  >
-                    <XCircleIcon className="w-8 h-8 text-red-500" />
-                  </button>
-                  <img
-                    key={url}
-                    className="w-[297px] h-[210px]"
-                    src={url}
-                    alt=""
-                  />
-                </div>
-              ))}
+              {seasonImageUrls.map(url => {
+                return (
+                  <div className="relative min-w-[297px]" key={url}>
+                    <button
+                      className="absolute top-1 right-1"
+                      onClick={() => {
+                        handleDeleteSeasonImage(url)
+                      }}
+                    >
+                      <XCircleIcon className="w-8 h-8 text-red-500" />
+                    </button>
+                    <img
+                      key={url}
+                      className="w-[297px] h-[210px]"
+                      src={url}
+                      alt=""
+                    />
+                  </div>
+                )
+              })}
             </div>
             {seasonImageUrls.length <= 2 && (
               <UploadSeasonImageForm

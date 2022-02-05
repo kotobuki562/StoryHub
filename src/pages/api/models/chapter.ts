@@ -48,14 +48,15 @@ const Chapter = objectType({
     })
     t.field("episode", {
       type: "Episode",
-      resolve: parent =>
-        parent.episode_id
+      resolve: parent => {
+        return parent.episode_id
           ? prisma.episode.findUnique({
               where: {
                 id: parent.episode_id,
               },
             })
-          : null,
+          : null
+      },
     })
   },
 })

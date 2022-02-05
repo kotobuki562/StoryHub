@@ -46,22 +46,24 @@ export const SettingMaterial = objectType({
     t.nullable.date("updated_at")
     t.field("user", {
       type: "User",
-      resolve: parent =>
-        prisma.user.findUnique({
+      resolve: parent => {
+        return prisma.user.findUnique({
           where: {
             id: `${parent.user_id}`,
           },
-        }),
+        })
+      },
     })
     t.field("story", {
       type: "Story",
       args: characterArgs,
-      resolve: parent =>
-        prisma.story.findUnique({
+      resolve: parent => {
+        return prisma.story.findUnique({
           where: {
             id: `${parent.story_id}`,
           },
-        }),
+        })
+      },
     })
     t.list.field("character", {
       type: "Character",

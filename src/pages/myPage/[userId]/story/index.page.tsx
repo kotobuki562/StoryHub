@@ -47,14 +47,16 @@ const HomePage: NextPage = () => {
 
   useEffect(() => {
     if (errorInfo) {
-      toast.custom(t => (
-        <Alert
-          t={t}
-          title="エラーが発生しました"
-          usage="error"
-          message={errorInfo?.message}
-        />
-      ))
+      toast.custom(t => {
+        return (
+          <Alert
+            t={t}
+            title="エラーが発生しました"
+            usage="error"
+            message={errorInfo?.message}
+          />
+        )
+      })
     }
   }, [errorInfo])
 
@@ -90,9 +92,9 @@ const HomePage: NextPage = () => {
         {data?.QueryMyStories && (
           <div className="flex flex-wrap gap-8 justify-center w-full">
             {data?.QueryMyStories.length > 0 ? (
-              data?.QueryMyStories.map(story => (
-                <MyStoryCard key={story.id} {...story} />
-              ))
+              data?.QueryMyStories.map(story => {
+                return <MyStoryCard key={story.id} {...story} />
+              })
             ) : (
               <div className="flex flex-col justify-center items-center w-full h-full">
                 <h1 className="text-xl font-bold text-center sm:text-3xl">

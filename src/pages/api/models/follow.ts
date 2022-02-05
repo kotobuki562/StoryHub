@@ -10,12 +10,13 @@ const Follow = objectType({
     t.date("created_at")
     t.field("user", {
       type: "User",
-      resolve: parent =>
-        parent.user_id
+      resolve: parent => {
+        return parent.user_id
           ? prisma.user.findUnique({
               where: { id: parent.user_id },
             })
-          : null,
+          : null
+      },
     })
   },
 })

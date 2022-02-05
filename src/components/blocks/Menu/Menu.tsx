@@ -19,7 +19,9 @@ type Props = {
 export const Menu: VFC<Props> = memo(
   ({ children, isHidden, onClose, onToggle, position, viewer }) => {
     const popoverRef = useRef<HTMLDivElement>(null)
-    const timeline = useMemo(() => gsap.timeline({ paused: true }), [])
+    const timeline = useMemo(() => {
+      return gsap.timeline({ paused: true })
+    }, [])
 
     useEffect(() => {
       if (popoverRef.current) {

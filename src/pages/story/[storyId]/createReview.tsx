@@ -12,8 +12,11 @@ import { Input } from "src/components/atoms/Input"
 import { TextArea } from "src/components/atoms/TextArea"
 import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { supabase } from "src/lib/supabase"
+import type { Star } from "src/tools/options"
+import { reviewStars } from "src/tools/options"
 
-import { Star } from "./star"
+import { Face } from "./face"
+import { StarContent } from "./star"
 
 const CreateReview = gql`
   mutation Mutation(
@@ -52,8 +55,6 @@ const ReviewsQueryByStoryId = gql`
   }
 `
 
-const reviewStars = [1, 2, 3, 4, 5]
-
 type FormProps = {
   userId: string
   isCreateReview: boolean
@@ -72,9 +73,9 @@ const CreateReviewFormComp: VFC<FormProps> = ({ isCreateReview, userId }) => {
         },
       ],
     })
-  const [stars, setStars] = useState<number>(1)
+  const [stars, setStars] = useState<Star>(1)
 
-  const handleChangeStars = useCallback((star: number) => {
+  const handleChangeStars = useCallback((star: Star) => {
     setStars(star)
   }, [])
 
@@ -90,14 +91,16 @@ const CreateReviewFormComp: VFC<FormProps> = ({ isCreateReview, userId }) => {
 
   const handleSubmitData = useCallback(async () => {
     !userId
-      ? toast.custom(t => (
-          <Alert
-            t={t}
-            title="認証のエラー"
-            usage="error"
-            message="ログインしてからレビューを作成してください"
-          />
-        ))
+      ? toast.custom(t => {
+          return (
+            <Alert
+              t={t}
+              title="認証のエラー"
+              usage="error"
+              message="ログインしてからレビューを作成してください"
+            />
+          )
+        })
       : await createStory({
           variables: {
             storyId: storyId as string,
@@ -107,22 +110,26 @@ const CreateReviewFormComp: VFC<FormProps> = ({ isCreateReview, userId }) => {
             acessToken: accessToken,
           },
         }).then(() => {
-          toast.custom(t => (
-            <Alert t={t} title="ストーリーを作成しました" usage="success" />
-          ))
+          toast.custom(t => {
+            return (
+              <Alert t={t} title="ストーリーを作成しました" usage="success" />
+            )
+          })
         })
   }, [accessToken, userId, createStory, getValues, stars, storyId])
 
   useEffect(() => {
     if (errorCreateReview) {
-      toast.custom(t => (
-        <Alert
-          t={t}
-          title="エラーが発生しました"
-          usage="error"
-          message={errorCreateReview?.message}
-        />
-      ))
+      toast.custom(t => {
+        return (
+          <Alert
+            t={t}
+            title="エラーが発生しました"
+            usage="error"
+            message={errorCreateReview?.message}
+          />
+        )
+      })
     }
   }, [errorCreateReview])
 
@@ -132,17 +139,22 @@ const CreateReviewFormComp: VFC<FormProps> = ({ isCreateReview, userId }) => {
 
       <form className="p-4 sm:p-8" onSubmit={handleSubmit(handleSubmitData)}>
         <div className="flex flex-col justify-center items-center mb-4 w-full">
-          <div className="flex gap-1 items-center">
-            {reviewStars.map(star => (
-              <button
-                key={star}
-                onClick={() => handleChangeStars(star)}
-                type="button"
-              >
-                <Star isActive={star <= stars} />
-              </button>
-            ))}
+          <div className="flex gap-1 items-center mb-8">
+            {reviewStars.map(star => {
+              return (
+                <button
+                  key={star}
+                  onClick={() => {
+                    return handleChangeStars(star)
+                  }}
+                  type="button"
+                >
+                  <StarContent isActive={star <= stars} />
+                </button>
+              )
+            })}
           </div>
+          <Face star={stars} />
         </div>
 
         <div className="flex flex-col mb-4 w-full">
@@ -197,6 +209,7 @@ const CreateReviewFormComp: VFC<FormProps> = ({ isCreateReview, userId }) => {
 
         <div className="flex flex-col items-center w-full">
           <Button
+            usage="base"
             disabled={isLoading || isCreateReview}
             isLoading={isLoading}
             type="submit"
