@@ -2,17 +2,11 @@
 import { gsap } from "gsap"
 import type { VFC } from "react"
 import { useEffect, useRef, useState } from "react"
+import type { Star } from "src/tools/options"
+import { reviewState } from "src/tools/options"
 
 type Props = {
-  star: 1 | 2 | 3 | 4 | 5
-}
-
-const review = {
-  1: "BAD",
-  2: "SOSO",
-  3: "GOOD",
-  4: "EXCELLENT",
-  5: "WOW",
+  star: Star
 }
 
 export const Face: VFC<Props> = ({ star }) => {
@@ -41,7 +35,7 @@ export const Face: VFC<Props> = ({ star }) => {
   return (
     <div className="flex flex-col items-center w-full">
       <h3 className="mb-4 text-4xl font-black text-yellow-400">
-        {review[star]}
+        {reviewState[star]}
       </h3>
       <div className="flex flex-col items-center w-full" ref={faceRef}>
         <img className="w-1/2 h-1/2" src={`/img/${star}.svg`} alt={`${star}`} />

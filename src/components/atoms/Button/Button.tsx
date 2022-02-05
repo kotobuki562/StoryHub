@@ -5,6 +5,7 @@ import { memo } from "react"
 
 type ButtonProps = {
   type?: "button" | "submit" | "reset"
+  usage: "base" | "reject"
   isLoading?: boolean
   text: string
   disabled?: boolean
@@ -17,6 +18,7 @@ const ButtonComp: VFC<ButtonProps> = ({
   onClick,
   text,
   type,
+  usage,
 }) => {
   return (
     <button
@@ -25,7 +27,8 @@ const ButtonComp: VFC<ButtonProps> = ({
       type={type || "button"}
       className={cc([
         "flex flex-col items-center p-2 w-full font-semibold rounded-lg border focus:outline-none focus:ring-2 ring-purple-300",
-        !disabled && "text-white bg-purple-500",
+        !disabled && usage === "base" && "text-white bg-purple-500",
+        !disabled && usage === "reject" && "text-white bg-red-500",
         disabled && "bg-purple-100 text-purple-300 cursor-not-allowed",
         isLoading && "cursor-move ",
       ])}

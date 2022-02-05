@@ -39,7 +39,7 @@ const StoryCardComp: VFC<NexusGenFieldTypes["Story"]> = ({
           </div>
           {viewing_restriction && (
             <div>
-              <p className="py-1 px-2 font-bold bg-purple-400 rounded-full">
+              <p className="py-1 px-2 font-mono font-bold bg-purple-400 rounded-full">
                 {viewing_restriction}
               </p>
             </div>

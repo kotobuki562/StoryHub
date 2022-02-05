@@ -391,6 +391,7 @@ const CreateSeason: NextPage = () => {
 
           <div className="flex flex-col items-center w-full">
             <Button
+              usage="base"
               disabled={isLoadingUpdateSeason}
               isLoading={isLoadingUpdateSeason}
               type="submit"

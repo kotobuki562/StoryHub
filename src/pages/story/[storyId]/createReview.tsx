@@ -12,9 +12,11 @@ import { Input } from "src/components/atoms/Input"
 import { TextArea } from "src/components/atoms/TextArea"
 import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { supabase } from "src/lib/supabase"
+import type { Star } from "src/tools/options"
+import { reviewStars } from "src/tools/options"
 
 import { Face } from "./face"
-import { Star } from "./star"
+import { StarContent } from "./star"
 
 const CreateReview = gql`
   mutation Mutation(
@@ -52,9 +54,6 @@ const ReviewsQueryByStoryId = gql`
     }
   }
 `
-
-const reviewStars: [1, 2, 3, 4, 5] = [1, 2, 3, 4, 5]
-type Star = 1 | 2 | 3 | 4 | 5
 
 type FormProps = {
   userId: string
@@ -150,7 +149,7 @@ const CreateReviewFormComp: VFC<FormProps> = ({ isCreateReview, userId }) => {
                   }}
                   type="button"
                 >
-                  <Star isActive={star <= stars} />
+                  <StarContent isActive={star <= stars} />
                 </button>
               )
             })}
@@ -210,6 +209,7 @@ const CreateReviewFormComp: VFC<FormProps> = ({ isCreateReview, userId }) => {
 
         <div className="flex flex-col items-center w-full">
           <Button
+            usage="base"
             disabled={isLoading || isCreateReview}
             isLoading={isLoading}
             type="submit"

@@ -88,4 +88,4 @@ const StarComp: VFC<StarProps> = ({ isActive }) => {
   return <StarIcon className="w-12 h-12 text-gray-500 sm:w-20 sm:h-20" />
 }
 
-export const Star = memo(StarComp)
+export const StarContent = memo(StarComp)

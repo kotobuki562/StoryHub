@@ -247,7 +247,7 @@ const HeaderComp = () => {
             viewer={
               <div
                 className={cc([
-                  "flex items-center p-2 text-xl font-black group-hover:text-purple-400 group-hover:bg-slate-100 rounded-xl duration-200 sm:px-4",
+                  "flex items-center font-mono p-2 text-xl font-black group-hover:text-purple-400 group-hover:bg-slate-100 rounded-xl duration-200 sm:px-4",
                   !isHiddenMainManu && "bg-slate-100 text-purple-400",
                 ])}
               >

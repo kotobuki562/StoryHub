@@ -575,6 +575,7 @@ const EditStoryPage: NextPage = () => {
 
                   <div className="flex flex-col items-center w-full">
                     <Button
+                      usage="base"
                       disabled={isLoadingCreateStory}
                       isLoading={isLoadingCreateStory}
                       type="submit"
@@ -593,7 +594,7 @@ const EditStoryPage: NextPage = () => {
                       pathname: `/myPage/${userId}/story/${storyId}/season/create`,
                     }}
                   >
-                    <a className="flex items-center py-2 px-4 mb-4 text-lg font-bold text-purple-500 hover:text-white bg-purple-100 hover:bg-purple-500 rounded duration-200">
+                    <a className="flex items-center py-2 px-4 mb-4 text-lg font-bold text-yellow-400 hover:text-white bg-yellow-100 hover:bg-yellow-400 rounded duration-200">
                       <PlusIcon className="mr-2 w-6 h-6" />
                       シーズンの作成へ
                     </a>

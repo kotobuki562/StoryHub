@@ -41,10 +41,12 @@ const ReviewCardComp: VFC<NexusGenFieldTypes["Review"]> = ({
         </div>
       </div>
 
-      <div className="flex flex-col items-center">
-        <p className="font-bold text-yellow-400">{review[stars as Star]}</p>
+      <div className="flex flex-col items-center mb-2">
+        <p className="mb-2 font-mono text-2xl font-bold text-yellow-400">
+          {review[stars as Star]}
+        </p>
 
-        <img className="w-8 h-8" src={`/img/${stars}.svg`} alt="" />
+        <img className="w-12 h-12" src={`/img/${stars}.svg`} alt="" />
       </div>
       {stars && (
         <div className="flex gap-1 items-center mb-4">
@@ -53,7 +55,7 @@ const ReviewCardComp: VFC<NexusGenFieldTypes["Review"]> = ({
               <StarIcon
                 key={star}
                 className={cc([
-                  "w-8 h-8",
+                  "w-10 h-10",
                   {
                     "text-gray-500": star > stars,
                     "text-yellow-400": star <= stars,
