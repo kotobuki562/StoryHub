@@ -53,8 +53,8 @@ const deleteAllNotifications = (t: ObjectDefinitionBlock<"Mutation">) => {
     args: {
       accessToken: nonNull(stringArg()),
     },
-    resolve: async (_parent, args) => {
-      return await prisma.notification.deleteMany({
+    resolve: (_parent, args) => {
+      return prisma.notification.deleteMany({
         where: {
           receiver_id: decodeUserId(args.accessToken) as string,
         },

@@ -241,6 +241,7 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
               }
             >
               <CreateReviewForm
+                createrId={story.QueryStoryById.user_id as string}
                 isCreateReview={isCreateReview}
                 userId={user.id}
               />

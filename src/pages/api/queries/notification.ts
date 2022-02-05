@@ -13,7 +13,7 @@ const QueryNotificationsForUser = (t: ObjectDefinitionBlock<"Query">) => {
       return prisma.notification.findMany({
         orderBy: { created_at: "asc" },
         where: {
-          review_id: `${decodeUserId(args.accessToken)}`,
+          receiver_id: `${decodeUserId(args.accessToken)}`,
         },
       })
     },

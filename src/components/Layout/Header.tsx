@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { useQuery } from "@apollo/client"
+import { useMutation, useQuery } from "@apollo/client"
 import {
   BellIcon,
   BookmarkIcon,
@@ -27,6 +27,7 @@ import { Accordion } from "src/components/blocks/Accodion"
 import { Menu } from "src/components/blocks/Menu"
 import type { NexusGenObjects } from "src/generated/nexus-typegen"
 import { supabase } from "src/lib/supabase"
+import type { QueryNotificationsForUser } from "src/types/Notification/query"
 
 const Me = gql`
   query QueryMe($accessToken: String!) {
@@ -35,6 +36,47 @@ const Me = gql`
       user_name
       user_deal
       image
+    }
+  }
+`
+
+const NotificationsQuery = gql`
+  query Query($accessToken: String!) {
+    QueryNotificationsForUser(accessToken: $accessToken) {
+      id
+      user {
+        user_name
+        image
+        id
+      }
+      review {
+        id
+        review_title
+      }
+    }
+  }
+`
+
+const NotificationDelete = gql`
+  mutation Mutation(
+    $accessToken: String!
+    $notificationId: String!
+    $receiverId: String!
+  ) {
+    deleteNotification(
+      accessToken: $accessToken
+      notificationId: $notificationId
+      receiverId: $receiverId
+    ) {
+      id
+    }
+  }
+`
+
+const NotificationAllDelete = gql`
+  mutation DeleteAllNotifications($accessToken: String!) {
+    deleteAllNotifications(accessToken: $accessToken) {
+      id
     }
   }
 `
@@ -80,11 +122,60 @@ const HeaderComp = () => {
   const accessToken = useMemo(() => {
     return supabase.auth.session()?.access_token
   }, [])
+  const { data: notifications } = useQuery<QueryNotificationsForUser>(
+    NotificationsQuery,
+    {
+      variables: {
+        accessToken,
+      },
+    }
+  )
+
   const { data: user } = useQuery<QueryMe>(Me, {
     variables: {
       accessToken,
     },
   })
+
+  const [deleteNotification] = useMutation(NotificationDelete)
+  const [deleteAllNotifications] = useMutation(NotificationAllDelete)
+
+  const handleDeleteNotification = useCallback(
+    async (id: string) => {
+      await deleteNotification({
+        variables: {
+          accessToken,
+          notificationId: id,
+          receiverId: userInfo?.id,
+        },
+        refetchQueries: [
+          {
+            query: NotificationsQuery,
+            variables: {
+              accessToken,
+            },
+          },
+        ],
+      })
+    },
+    [accessToken, deleteNotification, userInfo?.id]
+  )
+
+  const handleDeleteAllNotifications = useCallback(async () => {
+    await deleteAllNotifications({
+      variables: {
+        accessToken,
+      },
+      refetchQueries: [
+        {
+          query: NotificationsQuery,
+          variables: {
+            accessToken,
+          },
+        },
+      ],
+    })
+  }, [accessToken, deleteAllNotifications])
 
   const userLinks = [
     {
@@ -305,7 +396,17 @@ const HeaderComp = () => {
           onToggle={onToggleNotification}
           onClose={handleCloseNotification}
           viewer={
-            <div className="mr-4 w-10">
+            <div className="relative mr-4 w-10">
+              <div
+                className={cc([
+                  "absolute -top-3 -right-3 w-7 h-7 rounded-full flex flex-col items-center justify-center",
+                  !isHiddenNotification
+                    ? "text-white bg-purple-500 border-2 border-white"
+                    : "text-purple-500 hover:bg-slate-100 ",
+                ])}
+              >
+                {notifications?.QueryNotificationsForUser.length}
+              </div>
               <BellIcon
                 className={cc([
                   "p-2 w-10 h-10 duration-200 rounded-full",
@@ -317,8 +418,44 @@ const HeaderComp = () => {
             </div>
           }
         >
-          <div>
-            <p className="text-slate-400">現在通知は届いていません</p>
+          <div className="overflow-scroll w-[200px] max-h-screen no-scrollbar">
+            {notifications?.QueryNotificationsForUser &&
+            notifications?.QueryNotificationsForUser.length > 0 ? (
+              <div className="grid grid-cols-1 gap-3">
+                <button onClick={handleDeleteAllNotifications}>
+                  全て既読にする
+                </button>
+                {notifications?.QueryNotificationsForUser.map(data => {
+                  return (
+                    <div key={data.id}>
+                      <div className="flex items-center">
+                        <div className="mr-2 min-w-[2rem]">
+                          <img
+                            className="w-8 h-8 rounded-full"
+                            src={data.user?.image || "/img/Vector.png"}
+                            alt="avatar"
+                          />
+                        </div>
+                        <p className="text-sm">
+                          {data.user?.user_name}さんからの通知
+                        </p>
+                      </div>
+                      <div>
+                        <button
+                          onClick={() => {
+                            return handleDeleteNotification(data.id as string)
+                          }}
+                        >
+                          既読にする
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <p className="text-slate-400">現在通知は届いていません</p>
+            )}
           </div>
         </Menu>
 
