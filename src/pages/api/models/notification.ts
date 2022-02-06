@@ -21,6 +21,16 @@ export const Notification = objectType({
         })
       },
     })
+    t.field("receiver", {
+      type: "User",
+      resolve: async parent => {
+        return await prisma.user.findUnique({
+          where: {
+            id: `${parent.receiver_id}`,
+          },
+        })
+      },
+    })
     t.field("review", {
       type: "Review",
       resolve: async parent => {

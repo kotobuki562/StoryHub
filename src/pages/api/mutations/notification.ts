@@ -53,6 +53,8 @@ const deleteAllNotifications = (t: ObjectDefinitionBlock<"Mutation">) => {
     args: {
       accessToken: nonNull(stringArg()),
     },
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     resolve: async (_parent, args) => {
       return await prisma.notification.deleteMany({
         where: {

@@ -274,6 +274,7 @@ export interface NexusGenFieldTypes {
     follow: NexusGenRootTypes['Follow'] | null; // Follow
     follow_id: string | null; // String
     id: string | null; // ID
+    receiver: NexusGenRootTypes['User'] | null; // User
     receiver_id: string | null; // String
     review: NexusGenRootTypes['Review'] | null; // Review
     review_id: string | null; // String
@@ -542,6 +543,7 @@ export interface NexusGenFieldTypeNames {
     follow: 'Follow'
     follow_id: 'String'
     id: 'ID'
+    receiver: 'User'
     receiver_id: 'String'
     review: 'Review'
     review_id: 'String'
