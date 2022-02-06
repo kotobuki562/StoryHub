@@ -38,7 +38,11 @@ export const Face: VFC<Props> = ({ star }) => {
         {reviewState[star]}
       </h3>
       <div className="flex flex-col items-center w-full" ref={faceRef}>
-        <img className="w-1/2 h-1/2" src={`/img/${star}.svg`} alt={`${star}`} />
+        <img
+          className="w-1/2 h-1/2 sm:w-[200px] sm:h-[200px]"
+          src={`/img/${star}.svg`}
+          alt={`${star}`}
+        />
       </div>
     </div>
   )

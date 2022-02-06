@@ -94,6 +94,7 @@ type Notification {
   follow: Follow
   follow_id: String
   id: ID
+  receiver: User
   receiver_id: String
   review: Review
   review_id: String

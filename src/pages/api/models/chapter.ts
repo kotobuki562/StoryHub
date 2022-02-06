@@ -21,7 +21,7 @@ const Chapter = objectType({
     t.list.field("pages", {
       type: "Page",
       args: pageArgs,
-      resolve: (parent, args) => {
+      resolve: async (parent, args) => {
         const { pageAccessToken, pageUserId } = args
 
         if (
@@ -29,14 +29,14 @@ const Chapter = objectType({
           pageUserId &&
           isSafe(pageAccessToken, pageUserId)
         ) {
-          return prisma.page.findMany({
+          return await prisma.page.findMany({
             orderBy: { created_at: "asc" },
             where: {
               chapter_id: `${parent.id}`,
             },
           })
         }
-        return parent.publish
+        return (await parent.publish)
           ? prisma.page.findMany({
               orderBy: { created_at: "asc" },
               where: {
@@ -48,9 +48,9 @@ const Chapter = objectType({
     })
     t.field("episode", {
       type: "Episode",
-      resolve: parent => {
+      resolve: async parent => {
         return parent.episode_id
-          ? prisma.episode.findUnique({
+          ? await prisma.episode.findUnique({
               where: {
                 id: parent.episode_id,
               },

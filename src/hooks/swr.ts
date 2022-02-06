@@ -15,8 +15,8 @@ export const useSwrQuery = <T>(
   variables: any
 ): UseSwrFetchApi<T> => {
   const { data, error, mutate } = useSWR<T>([node, variables], {
-    // revalidateOnFocus: false,
-    // revalidateOnReconnect: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
     refreshInterval: 0,
   })
   const isLoading = useMemo(() => {

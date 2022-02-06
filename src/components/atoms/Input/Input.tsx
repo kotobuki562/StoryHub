@@ -18,6 +18,10 @@ export type InputProps = {
   onBlur?: ChangeEventHandler<HTMLInputElement>
   onKeyPress?: KeyboardEventHandler<HTMLInputElement>
   onFocus?: FocusEventHandler<HTMLInputElement>
+  error?: {
+    isError: boolean
+    message: string
+  }
 }
 
 // InputのkeyPressイベントでhandleSubmitが呼ばれないようにする
@@ -50,6 +54,9 @@ const InputComp: React.ForwardRefExoticComponent<InputProps> = forwardRef(
           onKeyPress={props.onKeyPress || handleKeyPress}
           placeholder={props.placeholder}
         />
+        {props.error && props.error.isError && (
+          <p className="text-xs italic text-red-500">{props.error.message}</p>
+        )}
       </>
     )
   }

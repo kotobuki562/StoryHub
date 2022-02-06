@@ -39,9 +39,9 @@ const QueryMyChapters = (t: ObjectDefinitionBlock<"Query">) => {
       ...chapterArgs,
       ...authArgs,
     },
-    resolve: (_parent, args) => {
+    resolve: async (_parent, args) => {
       return isSafe(args.accessToken, args.userId)
-        ? prisma.chapter.findMany({
+        ? await prisma.chapter.findMany({
             orderBy: { created_at: "asc" },
             where: {
               ...(args.searchTitle && {
@@ -63,8 +63,8 @@ const QueryChapterById = (t: ObjectDefinitionBlock<"Query">) => {
     args: {
       id: nonNull(stringArg()),
     },
-    resolve: (_parent, args) => {
-      return prisma.character.findUnique({
+    resolve: async (_parent, args) => {
+      return await prisma.character.findUnique({
         where: {
           id: args.id,
         },
@@ -83,9 +83,9 @@ const QueryMyChapterById = (t: ObjectDefinitionBlock<"Query">) => {
       id: nonNull(stringArg()),
       ...authArgs,
     },
-    resolve: (_parent, args) => {
+    resolve: async (_parent, args) => {
       return isSafe(args.accessToken, args.userId)
-        ? prisma.chapter.findUnique({
+        ? await prisma.chapter.findUnique({
             where: {
               id: args.id,
             },
@@ -98,8 +98,8 @@ const QueryMyChapterById = (t: ObjectDefinitionBlock<"Query">) => {
 const QueryChaptersCountByPublish = (t: ObjectDefinitionBlock<"Query">) => {
   return t.field("QueryChaptersCountByPublish", {
     type: "Int",
-    resolve: (_parent, _args) => {
-      return prisma.chapter.count({
+    resolve: async (_parent, _args) => {
+      return await prisma.chapter.count({
         where: {
           publish: true,
         },
@@ -111,8 +111,8 @@ const QueryChaptersCountByPublish = (t: ObjectDefinitionBlock<"Query">) => {
 const QueryChaptersCountByUnPublish = (t: ObjectDefinitionBlock<"Query">) => {
   return t.field("QueryChaptersCountByUnPublish", {
     type: "Int",
-    resolve: (_parent, _args) => {
-      return prisma.chapter.count({
+    resolve: async (_parent, _args) => {
+      return await prisma.chapter.count({
         where: {
           publish: false,
         },

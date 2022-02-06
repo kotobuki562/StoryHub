@@ -197,15 +197,20 @@ model Page {
 }
 
 model Notification {
-  id          String    @id @unique @default(uuid())
+  id          String   @id @unique @default(uuid())
   user_id     String
   receiver_id String
   review_id   String?
   favorite_id String?
   follow_id   String?
-  created_at  DateTime  @default(now())
-  user        User?     @relation(fields: [user_id], references: [id])
-  review      Review?   @relation(fields: [review_id], references: [id])
-  favorite    Favorite? @relation(fields: [favorite_id], references: [id])
-  follow      Follow?   @relation(fields: [follow_id], references: [id])
+  created_at  DateTime @default(now())
+  user        User?    @relation(fields: [user_id], references: [id])
+
+  review   Review?   @relation(fields: [review_id], references: [id])
+  favorite Favorite? @relation(fields: [favorite_id], references: [id])
+  follow   Follow?   @relation(fields: [follow_id], references: [id])
+
+  @@unique([receiver_id, review_id])
+  @@unique([receiver_id, favorite_id])
+  @@unique([receiver_id, follow_id])
 }

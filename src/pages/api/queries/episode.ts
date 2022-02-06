@@ -40,9 +40,9 @@ const QueryMyEpisodes = (t: ObjectDefinitionBlock<"Query">) => {
       ...episodeArgs,
       ...authArgs,
     },
-    resolve: (_parent, args) => {
+    resolve: async (_parent, args) => {
       return isSafe(args.accessToken, args.userId)
-        ? prisma.episode.findMany({
+        ? await prisma.episode.findMany({
             orderBy: { created_at: "desc" },
             where: {
               ...(args.searchTitle && {
@@ -64,8 +64,8 @@ const QueryEpisodeById = (t: ObjectDefinitionBlock<"Query">) => {
     args: {
       id: nonNull(stringArg()),
     },
-    resolve: (_parent, args) => {
-      return prisma.episode.findUnique({
+    resolve: async (_parent, args) => {
+      return await prisma.episode.findUnique({
         where: {
           id: args.id,
         },
@@ -81,9 +81,9 @@ const QueryMyEpisodeById = (t: ObjectDefinitionBlock<"Query">) => {
       id: nonNull(stringArg()),
       ...authArgs,
     },
-    resolve: (_parent, args) => {
+    resolve: async (_parent, args) => {
       return isSafe(args.accessToken, args.userId)
-        ? prisma.episode.findUnique({
+        ? await prisma.episode.findUnique({
             where: {
               id: args.id,
             },
@@ -96,8 +96,8 @@ const QueryMyEpisodeById = (t: ObjectDefinitionBlock<"Query">) => {
 const QueryEpisodesCountByPublish = (t: ObjectDefinitionBlock<"Query">) => {
   return t.field("QueryEpisodesCountByPublish", {
     type: "Int",
-    resolve: (_parent, _args) => {
-      return prisma.episode.count({
+    resolve: async (_parent, _args) => {
+      return await prisma.episode.count({
         where: {
           publish: true,
         },
@@ -109,8 +109,8 @@ const QueryEpisodesCountByPublish = (t: ObjectDefinitionBlock<"Query">) => {
 const QueryEpisodesCountByUnPublish = (t: ObjectDefinitionBlock<"Query">) => {
   return t.field("QueryEpisodesCountByUnPublish", {
     type: "Int",
-    resolve: (_parent, _args) => {
-      return prisma.episode.count({
+    resolve: async (_parent, _args) => {
+      return await prisma.episode.count({
         where: {
           publish: false,
         },

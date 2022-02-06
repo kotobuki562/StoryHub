@@ -38,9 +38,9 @@ const QueryMySeasons = (t: ObjectDefinitionBlock<"Query">) => {
       ...seasonArgs,
       ...authArgs,
     },
-    resolve: (_parent, args) => {
+    resolve: async (_parent, args) => {
       return isSafe(args.accessToken, args.userId)
-        ? prisma.season.findMany({
+        ? await prisma.season.findMany({
             orderBy: { created_at: "desc" },
             where: {
               ...(args.searchTitle && {
@@ -60,8 +60,8 @@ const QuerySeasonById = (t: ObjectDefinitionBlock<"Query">) => {
     args: {
       id: nonNull(stringArg()),
     },
-    resolve: (_parent, args) => {
-      return prisma.season.findUnique({
+    resolve: async (_parent, args) => {
+      return await prisma.season.findUnique({
         where: {
           id: args.id,
         },
@@ -77,9 +77,9 @@ const QueryMySeasonById = (t: ObjectDefinitionBlock<"Query">) => {
       id: nonNull(stringArg()),
       ...authArgs,
     },
-    resolve: (_parent, args) => {
+    resolve: async (_parent, args) => {
       return isSafe(args.accessToken, args.userId)
-        ? prisma.season.findUnique({
+        ? await prisma.season.findUnique({
             where: {
               id: args.id,
             },
@@ -92,8 +92,8 @@ const QueryMySeasonById = (t: ObjectDefinitionBlock<"Query">) => {
 const QuerySeasonsCountByPublish = (t: ObjectDefinitionBlock<"Query">) => {
   return t.field("QuerySeasonsCountByPublish", {
     type: "Int",
-    resolve: (_parent, _args) => {
-      return prisma.season.count({
+    resolve: async (_parent, _args) => {
+      return await prisma.season.count({
         where: {
           publish: true,
         },
@@ -105,8 +105,8 @@ const QuerySeasonsCountByPublish = (t: ObjectDefinitionBlock<"Query">) => {
 const QuerySeasonsCountByUnPublish = (t: ObjectDefinitionBlock<"Query">) => {
   return t.field("QuerySeasonsCountByUnPublish", {
     type: "Int",
-    resolve: (_parent, _args) => {
-      return prisma.season.count({
+    resolve: async (_parent, _args) => {
+      return await prisma.season.count({
         where: {
           publish: false,
         },

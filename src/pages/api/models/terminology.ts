@@ -1,18 +1,6 @@
 import { objectType } from "nexus"
 import prisma from "src/lib/prisma"
 
-// model Terminology {
-//   id                  String          @id @default(uuid())
-//   setting_material_id String
-//   terminology_name    String
-//   terminology_deal    String
-//   isSpoiler           Boolean         @default(false) @db.Boolean
-//   publish             Boolean         @default(false) @db.Boolean
-//   created_at          DateTime        @default(now())
-//   updated_at          DateTime?
-//   settingMaterial     SettingMaterial @relation(fields: [setting_material_id], references: [id])
-// }
-
 export const Terminology = objectType({
   name: "Terminology",
   definition(t) {
@@ -27,8 +15,8 @@ export const Terminology = objectType({
     t.nullable.date("updated_at")
     t.field("settingMaterial", {
       type: "SettingMaterial",
-      resolve: parent => {
-        return prisma.settingMaterial.findUnique({
+      resolve: async parent => {
+        return await prisma.settingMaterial.findUnique({
           where: {
             id: `${parent.setting_material_id}`,
           },
@@ -37,8 +25,8 @@ export const Terminology = objectType({
     })
     t.field("season", {
       type: "Season",
-      resolve: parent => {
-        return prisma.season.findUnique({
+      resolve: async parent => {
+        return await prisma.season.findUnique({
           where: {
             id: `${parent.season_id}`,
           },

@@ -48,9 +48,9 @@ const QueryMyStories = (t: ObjectDefinitionBlock<"Query">) => {
       ...storyArgs,
       ...authArgs,
     },
-    resolve: (_parent, args) => {
+    resolve: async (_parent, args) => {
       return isSafe(args.accessToken, args.userId)
-        ? prisma.story.findMany({
+        ? await prisma.story.findMany({
             orderBy: { created_at: "desc" },
             where: {
               ...(args.searchTitle && {
@@ -76,8 +76,8 @@ const QueryStoryById = (t: ObjectDefinitionBlock<"Query">) => {
     args: {
       id: nonNull(stringArg()),
     },
-    resolve: (_parent, args) => {
-      return prisma.story.findUnique({
+    resolve: async (_parent, args) => {
+      return await prisma.story.findUnique({
         where: { id: args.id },
       })
     },
@@ -92,9 +92,9 @@ const QueryMyStoryById = (t: ObjectDefinitionBlock<"Query">) => {
       userId: nonNull(stringArg()),
       accessToken: nonNull(stringArg()),
     },
-    resolve: (_parent, args) => {
+    resolve: async (_parent, args) => {
       return isSafe(args.accessToken, args.userId)
-        ? prisma.story.findUnique({
+        ? await prisma.story.findUnique({
             where: { id: args.id },
           })
         : null
@@ -105,8 +105,8 @@ const QueryMyStoryById = (t: ObjectDefinitionBlock<"Query">) => {
 const QueryStoriesCountByPublish = (t: ObjectDefinitionBlock<"Query">) => {
   return t.field("QueryStoriesCountByPublish", {
     type: "Int",
-    resolve: (_parent, _args) => {
-      return prisma.story.count({
+    resolve: async (_parent, _args) => {
+      return await prisma.story.count({
         where: {
           publish: true,
         },
@@ -118,8 +118,8 @@ const QueryStoriesCountByPublish = (t: ObjectDefinitionBlock<"Query">) => {
 const QueryStoriesCountByUnPublish = (t: ObjectDefinitionBlock<"Query">) => {
   return t.field("QueryStoriesCountByUnPublish", {
     type: "Int",
-    resolve: (_parent, _args) => {
-      return prisma.story.count({
+    resolve: async (_parent, _args) => {
+      return await prisma.story.count({
         where: {
           publish: false,
         },

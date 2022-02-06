@@ -108,49 +108,49 @@ const CreateReviewFormComp: VFC<FormProps> = ({
   const { reviewBody, reviewTitle } = watch()
 
   const handleSubmitData = useCallback(async () => {
-    !userId
-      ? toast.custom(t => {
-          return (
-            <Alert
-              t={t}
-              title="認証のエラー"
-              usage="error"
-              message="ログインしてからレビューを作成してください"
-            />
-          )
-        })
-      : await createStory({
-          variables: {
-            storyId: storyId as string,
-            reviewTitle: getValues("reviewTitle"),
-            reviewBody: getValues("reviewBody"),
-            stars: stars,
-            acessToken: accessToken,
-          },
-          refetchQueries: [
-            {
-              query: ReviewsQueryByStoryId,
-              variables: { storyId: storyId },
-            },
-          ],
-        }).then(async res => {
-          const { id } = res.data.createReview
-          await createNotification({
-            variables: {
-              accessToken: accessToken,
-              receiverId: createrId,
-              reviewId: id,
-            },
-          })
-          toast.custom(t => {
-            return (
-              <Alert t={t} title="ストーリーを作成しました" usage="success" />
-            )
-          })
-          router.push(`/review/${id}`)
-        })
+    const result = await createStory({
+      variables: {
+        storyId: storyId as string,
+        reviewTitle: getValues("reviewTitle"),
+        reviewBody: getValues("reviewBody"),
+        stars: stars,
+        acessToken: accessToken,
+      },
+      refetchQueries: [
+        {
+          query: ReviewsQueryByStoryId,
+          variables: { storyId: storyId },
+        },
+      ],
+    })
+    const { id } = result.data.createReview
+    await createNotification({
+      variables: {
+        accessToken: accessToken,
+        receiverId: createrId,
+        reviewId: id,
+      },
+    }).catch(() => {
+      return 
+    })
+    if (id) {
+      toast.custom(t => {
+        return <Alert t={t} title="レビューを作成しました" usage="success" />
+      })
+      router.push(`/review/${id}`)
+    } else {
+      toast.custom(t => {
+        return (
+          <Alert
+            t={t}
+            title="レビューの作成に失敗しました"
+            message={JSON.stringify(result.errors, null, 2)}
+            usage="error"
+          />
+        )
+      })
+    }
   }, [
-    userId,
     createStory,
     storyId,
     getValues,
@@ -253,7 +253,7 @@ const CreateReviewFormComp: VFC<FormProps> = ({
         <div className="flex flex-col items-center w-full">
           <Button
             usage="base"
-            disabled={isLoading || isCreateReview}
+            disabled={isLoading || isCreateReview || !userId}
             isLoading={isLoading}
             type="submit"
             text={isCreateReview ? "既にレビュー済み" : "レビュー作成"}

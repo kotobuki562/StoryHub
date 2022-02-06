@@ -32,8 +32,8 @@ const QueryPage = (t: ObjectDefinitionBlock<"Query">) => {
     args: {
       id: nonNull(stringArg()),
     },
-    resolve: (_parent, args) => {
-      return prisma.page.findUnique({
+    resolve: async (_parent, args) => {
+      return await prisma.page.findUnique({
         where: {
           id: args.id,
         },
@@ -48,8 +48,8 @@ const QueryPageCountByChapterId = (t: ObjectDefinitionBlock<"Query">) => {
     args: {
       chapterId: nonNull(stringArg()),
     },
-    resolve: (_parent, args) => {
-      return prisma.page.count({
+    resolve: async (_parent, args) => {
+      return await prisma.page.count({
         where: {
           chapter_id: args.chapterId,
         },

@@ -24,18 +24,18 @@ const Story = objectType({
     t.list.field("seasons", {
       type: "Season",
       args: seasonArgs,
-      resolve: (parent, args) => {
+      resolve: async (parent, args) => {
         const { seasonAccessToken, seasonUserId } = args
         return seasonAccessToken &&
           seasonUserId &&
           isSafe(seasonAccessToken, seasonUserId)
-          ? prisma.season.findMany({
+          ? await prisma.season.findMany({
               orderBy: { created_at: "asc" },
               where: {
                 story_id: `${parent.id}`,
               },
             })
-          : prisma.season.findMany({
+          : await prisma.season.findMany({
               orderBy: { created_at: "asc" },
               where: {
                 story_id: `${parent.id}`,
@@ -46,8 +46,8 @@ const Story = objectType({
     })
     t.list.field("reviews", {
       type: "Review",
-      resolve: parent => {
-        return prisma.review.findMany({
+      resolve: async parent => {
+        return await prisma.review.findMany({
           orderBy: { created_at: "desc" },
           where: {
             story_id: `${parent.id}`,
@@ -57,9 +57,9 @@ const Story = objectType({
     })
     t.list.field("favorites", {
       type: "Favorite",
-      resolve: parent => {
+      resolve: async parent => {
         return parent.id
-          ? prisma.favorite.findMany({
+          ? await prisma.favorite.findMany({
               where: {
                 story_id: parent.id,
               },
@@ -69,8 +69,8 @@ const Story = objectType({
     })
     t.field("user", {
       type: "User",
-      resolve: parent => {
-        return prisma.user.findUnique({
+      resolve: async parent => {
+        return await prisma.user.findUnique({
           where: {
             id: `${parent.user_id}`,
           },

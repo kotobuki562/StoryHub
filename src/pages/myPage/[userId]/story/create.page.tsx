@@ -14,7 +14,6 @@ import { Switch } from "src/components/atoms/Switch"
 import { TextArea } from "src/components/atoms/TextArea"
 import { Menu } from "src/components/blocks/Menu"
 import { Layout } from "src/components/Layout"
-import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { useStoryImage } from "src/hooks/storage/useStoryImage"
 import { supabase } from "src/lib/supabase"
 import { ageCategories, categories } from "src/tools/options"
@@ -56,7 +55,7 @@ const CreateStoryPage: NextPage = () => {
   const [
     createStory,
     { error: errorCreateStory, loading: isLoadingCreateStory },
-  ] = useMutation<NexusGenArgTypes["Mutation"]["createStory"]>(CreateStory)
+  ] = useMutation(CreateStory)
   const [storyCategoryes, setStoryCategoryes] = useState<string[]>([])
 
   const handleTogglePublish = useCallback(() => {
@@ -137,37 +136,32 @@ const CreateStoryPage: NextPage = () => {
 
   const { synopsis, title } = watch()
 
-  const handleSubmitData = useCallback(async () => {
-    await createStory({
-      variables: {
-        storyTitle: getValues("title"),
-        storyCategories: storyCategoryes,
-        publish: isPublish,
-        acessToken: accessToken ? accessToken : null,
-        storySynopsis: getValues("synopsis"),
-        storyImage: isStorage ? storyImage : getValues("imageUrl"),
-        viewingRestriction:
-          getValues("viewingRestriction") === ""
-            ? null
-            : getValues("viewingRestriction"),
-      },
-    }).then(() => {
+  const handleSubmitData = handleSubmit(async data => {
+    try {
+      await createStory({
+        variables: {
+          storyTitle: data.title,
+          storyCategories: storyCategoryes,
+          publish: isPublish,
+          acessToken: accessToken ? accessToken : null,
+          storySynopsis: data.synopsis,
+          storyImage: isStorage ? storyImage : data.imageUrl,
+          viewingRestriction:
+            data.viewingRestriction === "" ? null : data.viewingRestriction,
+        },
+      })
       toast.custom(t => {
         return <Alert t={t} title="ストーリーを作成しました" usage="success" />
       })
       return router.push(`/myPage/${userId}/story`)
-    })
-  }, [
-    accessToken,
-    createStory,
-    getValues,
-    isPublish,
-    isStorage,
-    router,
-    storyCategoryes,
-    storyImage,
-    userId,
-  ])
+    } catch (error) {
+      return toast.custom(t => {
+        return (
+          <Alert t={t} title="ストーリーの作成に失敗しました" usage="error" />
+        )
+      })
+    }
+  })
 
   useEffect(() => {
     if (errorCreateStory) {
@@ -188,7 +182,7 @@ const CreateStoryPage: NextPage = () => {
     <Layout>
       <Toaster position="top-center" />
       <div className="p-8">
-        <form className="p-4" onSubmit={handleSubmit(handleSubmitData)}>
+        <form className="p-4" onSubmit={handleSubmitData}>
           <div className="flex flex-col mb-4 w-full">
             <label className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500">
               <p>{isPublish ? "公開する" : "公開しない"}</p>
@@ -418,7 +412,7 @@ const CreateStoryPage: NextPage = () => {
 
           <div className="flex flex-col items-center w-full">
             <Button
-            usage="base"
+              usage="base"
               disabled={isLoadingCreateStory}
               isLoading={isLoadingCreateStory}
               type="submit"

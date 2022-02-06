@@ -1,452 +1,160 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable import/no-default-export */
-import "react-image-crop/dist/ReactCrop.css"
-import "react-quill/dist/quill.snow.css"
 
-import dynamic from "next/dynamic"
 import Router from "next/router"
-import type { ChangeEvent } from "react"
-import { useCallback, useEffect, useRef, useState } from "react"
-import type { Crop } from "react-image-crop"
-import ReactCrop from "react-image-crop"
-import Resizer from "react-image-file-resizer"
+import { useCallback } from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "react-hot-toast"
+import { Alert } from "src/components/atoms/Alert"
+import { Button } from "src/components/atoms/Button"
+import { Input } from "src/components/atoms/Input"
 import { Layout } from "src/components/Layout"
 import { supabase } from "src/lib/supabase"
 
-const ReactQuill = dynamic(
-  () => {
-    return import("react-quill")
-  },
-  {
-    ssr: false,
-  }
-)
-
-const modules = {
-  toolbar: {
-    container: [
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [{ size: ["small", false, "large", "huge"] }, { color: [] }],
-      [
-        { list: "ordered" },
-        { list: "bullet" },
-        { indent: "-1" },
-        { indent: "+1" },
-        { align: [] },
-      ],
-      ["link", "image", "video"],
-      ["clean"],
-    ],
-    // handlers: { image: this.imageHandler },
-  },
-  clipboard: { matchVisual: false },
-}
-
-const formats = [
-  "header",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "blockquote",
-  "size",
-  "color",
-  "list",
-  "bullet",
-  "indent",
-  "link",
-  "image",
-  "video",
-  "align",
-]
-
-const resizeFile = (
-  file: Blob
-): Promise<string | Blob | File | ProgressEvent<FileReader>> => {
-  return new Promise(resolve => {
-    Resizer.imageFileResizer(
-      file,
-      400,
-      400,
-      "JPEG",
-      70,
-      0,
-      uri => {
-        resolve(uri)
-      },
-      "base64"
-    )
-  })
-}
-
 const Signin = () => {
-  const [password, setPassword] = useState("")
-  const [email, setEmail] = useState("")
-  const [text, setText] = useState("")
-  const [preview, setPreview] = useState<Blob | null>(null)
-  const [upImg, setUpImg] = useState<string>("")
-  const [imageUrl, setImageUrl] = useState<string>("")
-  const imgRef = useRef<HTMLImageElement>(null)
-  const previewCanvasRef = useRef<HTMLCanvasElement>(null)
-  const [crop, setCrop] = useState<Crop>({
-    // 正方形にするために、縦横比を維持して、縦横の最小値を設定する
-    aspect: 1,
-    width: 30,
-    height: 30,
-    x: 30,
-    y: 30,
-    unit: "%",
+  const {
+    formState: { errors },
+    handleSubmit,
+    register,
+  } = useForm()
 
-    // unit: "%",
-    // width: 30,
-    // aspect: 16 / 9,
-    // x: 0,
-    // y: 0,
-    // height: 30,
-  })
-  const [completedCrop, setCompletedCrop] = useState<Crop | null>(null)
-  const user = supabase.auth.user()
-
-  const onSelectFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const reader = new FileReader()
-      reader.addEventListener("load", () => {
-        return setUpImg(reader.result as string)
+  const handleSignin = useCallback(async ({ email, password }) => {
+    await supabase.auth
+      .signIn({
+        email,
+        password,
       })
-      reader.readAsDataURL(e.target.files[0])
-    }
-  }, [])
-
-  const onChangeImage = useCallback(() => {
-    setText(pre => {
-      return pre + `<img src="${imageUrl}">`
-    })
-  }, [imageUrl])
-
-  const onSaveTextByLocalStorage = useCallback(() => {
-    localStorage.setItem("text", text)
-  }, [text])
-
-  const onLoadTextByLocalStorage = useCallback(() => {
-    setText(localStorage.getItem("text") || "")
-  }, [])
-
-  const onResizeImage = useCallback(
-    async (e: ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files && e.target.files.length > 0) {
-        const file = e.target.files[0]
-        const resizedFile = await resizeFile(file)
-        // resizeFileはbase64なので、Fileに変換する
-        const bin = window.atob(`${resizedFile}`.replace(/^.*,/, ""))
-        const buffer = new Uint8Array(bin.length)
-        for (let i = 0; i < bin.length; i++) {
-          buffer[i] = bin.charCodeAt(i)
-        }
-        // Blobを作成
-        try {
-          const blobData = new Blob([buffer.buffer], {
-            type: "image/png",
+      .then(async res => {
+        if (res.session) {
+          Router.push("/")
+          toast.custom(t => {
+            return (
+              <Alert
+                t={t}
+                usage="success"
+                title="ログインしました！"
+                message="心ゆくまでお楽しみください"
+              />
+            )
           })
-          const reader = new FileReader()
-          reader.addEventListener("load", () => {
-            return setUpImg(reader.result as string)
+        } else {
+          toast.custom(t => {
+            return (
+              <Alert
+                t={t}
+                usage="warning"
+                title="未登録のユーザーです"
+                message={res.error?.message}
+              />
+            )
           })
-
-          reader.readAsDataURL(blobData)
-        } catch (e) {
-          return false
         }
-      }
-    },
-    []
-  )
-
-  const onLoad = useCallback((img: HTMLImageElement) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    imgRef.current = img
+      })
+      .catch(error => {
+        toast.custom(t => {
+          return (
+            <Alert
+              t={t}
+              usage="error"
+              title="ログインに失敗しました"
+              message={error.message}
+            />
+          )
+        })
+      })
   }, [])
 
-  const onChangeCrop = useCallback((crop: Crop) => {
-    setCrop(crop)
-  }, [])
-
-  const onCompleteCrop = useCallback(
-    (crop: Crop) => {
-      setCompletedCrop(crop)
-    },
-    [setCompletedCrop]
-  )
-
-  useEffect(() => {
-    if (!completedCrop || !previewCanvasRef.current || !imgRef.current) {
-      return
-    }
-
-    const image = imgRef.current
-    const canvas = previewCanvasRef.current
-    const crop: Crop = completedCrop
-    const scaleX = image.naturalWidth / image.width
-    const scaleY = image.naturalHeight / image.height
-    const ctx = canvas.getContext("2d")
-    const pixelRatio = window.devicePixelRatio
-
-    canvas.width = crop.width * pixelRatio * scaleX
-    canvas.height = crop.height * pixelRatio * scaleY
-
-    if (ctx) {
-      ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
-      ctx.imageSmoothingQuality = "high"
-
-      ctx.drawImage(
-        image,
-        crop.x * scaleX,
-        crop.y * scaleY,
-        crop.width * scaleX,
-        crop.height * scaleY,
-        0,
-        0,
-        crop.width * scaleX,
-        crop.height * scaleY
-      )
-    }
-  }, [completedCrop])
-
-  const uploadPreview = useCallback(
-    async (canvas: HTMLCanvasElement, userId: string, crop: Crop) => {
-      if (!userId || !canvas || !crop) {
-        return
-      }
-      canvas.toBlob(
-        async blob => {
-          if (blob) {
-            // blobをsupabaseにアップロードする
-            return await supabase.storage
-              .from("management")
-              .upload(`${userId}/avatar`, blob, {
-                cacheControl: "3600",
-                upsert: false,
-              })
-              .then(async () => {
-                await supabase.storage
-                  .from("management")
-                  .download(`${userId}/avatar`)
-                  .then(res => {
-                    setPreview(res.data)
-                  })
-              })
-              .then(async () => {
-                const { error, publicURL } = supabase.storage
-                  .from("management")
-                  .getPublicUrl(`${userId}/avatar`)
-                // eslint-disable-next-line no-console
-                console.log(publicURL, error)
-              })
-          }
-        },
-        "image/png",
-        1
-      )
-    },
-    []
-  )
-
-  const getImages = async () => {
-    await supabase.storage
-      .from("avatars")
-      .list("public", {
-        limit: 100,
-        offset: 0,
-        sortBy: { column: "name", order: "asc" },
+  const handleSigninWithGoogle = useCallback(async () => {
+    await supabase.auth
+      .signIn({
+        provider: "google",
       })
       .then(res => {
-        // eslint-disable-next-line no-console
-        console.log(res)
+        if (res.session) {
+          Router.push("/")
+          toast.custom(t => {
+            return (
+              <Alert
+                t={t}
+                usage="success"
+                title="ログインしました！"
+                message="心ゆくまでお楽しみください"
+              />
+            )
+          })
+        }
       })
-  }
-
-  const logout = async () => {
-    await supabase.auth.signOut()
-    Router.push("/")
-  }
+      .catch(error => {
+        toast.custom(t => {
+          return (
+            <Alert
+              t={t}
+              usage="error"
+              title="ログインに失敗しました"
+              message={error.message}
+            />
+          )
+        })
+      })
+  }, [])
 
   return (
-    <Layout>
-      <section className="overflow-hidden relative h-full">
-        <h3
-          className="absolute -z-10 text-[200px] font-black text-purple-500/50"
-          style={{
-            transform: "translate(0px, 200px) rotate(45deg)",
-          }}
+    <Layout
+      meta={{
+        pageName: `StoryHub | ログイン`,
+        description: `メールアドレスとパスワードで簡単ログイン`,
+        cardImage: `/img/StoryHubLogo.png`,
+      }}
+    >
+      <div className="flex flex-col justify-center items-center w-full">
+        <img
+          className="w-[300px] xs:w-[500px]"
+          src="/img/StoryHubLogo.png"
+          alt="Logo"
+        />
+        <Button
+          type="button"
+          usage="base"
+          text="Google"
+          onClick={handleSigninWithGoogle}
+        />
+        <form
+          className="grid grid-cols-1 gap-5 w-[300px] xs:w-[500px]"
+          onSubmit={handleSubmit(handleSignin)}
         >
-          StoryHub
-        </h3>
-        <h3
-          className="absolute -z-10 text-[200px] font-black text-purple-500/50"
-          style={{
-            transform: "translate(0px, 400px) rotate(45deg)",
-          }}
-        >
-          StoryHub
-        </h3>
-
-        <div>
-          <img src="/img/StoryHubLogo.png" alt="Logo" />
-          <ReactQuill
-            theme="snow"
-            modules={modules}
-            formats={formats}
-            value={text}
-            onChange={e => {
-              return setText(e)
-            }}
-          />
-          <input
-            type="text"
-            onChange={e => {
-              return setImageUrl(e.target.value)
-            }}
-          />
-          <div className="flex justify-around">
-            <button onClick={onChangeImage}>Image</button>
-            <button onClick={onSaveTextByLocalStorage}>SAVE</button>
-            <button onClick={onLoadTextByLocalStorage}>LOAD</button>
-          </div>
-          <div>
-            CropImage
-            <input type="file" accept="image/*" onChange={onSelectFile} />
-          </div>
-          <div>
-            ResizeImage
-            <input type="file" accept="image/*" onChange={onResizeImage} />
-          </div>
-
-          <ReactCrop
-            src={upImg}
-            onImageLoaded={onLoad}
-            crop={crop}
-            onChange={onChangeCrop}
-            onComplete={onCompleteCrop}
-          />
-          <div>
-            <canvas
-              ref={previewCanvasRef}
-              // Rounding is important so the canvas width and height matches/is a multiple for sharpness.
-              style={{
-                width: Math.round(completedCrop?.width ?? 0),
-                height: Math.round(completedCrop?.height ?? 0),
+          <div className="w-full">
+            <Input
+              label="Email"
+              type="email"
+              placeholder="Email"
+              {...register("email", {
+                required: "メールアドレスは必須です",
+              })}
+              error={{
+                isError: errors.email,
+                message: errors.email?.message,
               }}
             />
           </div>
-          <p>
-            {`Note that the download below won't work in this sandbox due to the
-          iframe missing 'allow-downloads'. It's just for your reference.`}
-          </p>
-          {previewCanvasRef.current && (
-            <button
-              type="button"
-              onClick={async () => {
-                return await uploadPreview(
-                  previewCanvasRef.current as HTMLCanvasElement,
-                  `${user?.id}`,
-                  crop
-                )
-              }}
-            >
-              Download cropped image
-            </button>
-          )}
 
-          <button
-            onClick={() => {
-              getImages()
-            }}
-          >
-            Get
-          </button>
-          <button
-            onClick={() => {
-              logout()
-            }}
-          >
-            signout
-          </button>
-          <img
-            src={
-              preview
-                ? URL.createObjectURL(preview)
-                : "https://via.placeholder.com/150"
-            }
-            alt="data"
-          />
-
-          <form
-            onSubmit={async e => {
-              e.preventDefault()
-              await supabase.auth
-                .signIn({
-                  email,
-                  password,
-                })
-                .then(res => {
-                  // eslint-disable-next-line no-console
-                  console.log(res)
-                })
-              Router.push("/")
-            }}
-          >
-            <h1>Signup user</h1>
-            <input
-              autoFocus
-              onChange={e => {
-                return setPassword(e.target.value)
-              }}
-              placeholder="Password"
+          <div className="w-full">
+            <Input
+              label="Password"
               type="password"
-              value={password}
-            />
-            <input
-              onChange={e => {
-                return setEmail(e.target.value)
-              }}
-              placeholder="Email address)"
-              type="text"
-              value={email}
-            />
-            <input
-              disabled={!password || !email}
-              type="submit"
-              value="Signin"
-            />
-          </form>
-          <form
-            onSubmit={async e => {
-              e.preventDefault()
-              await supabase.auth.api
-                .updateUser(`${supabase.auth.session()?.access_token}`, {
-                  password: password,
-                })
-                .then(res => {
-                  // eslint-disable-next-line no-console
-                  console.log(res)
-                  Router.push("/")
-                })
-            }}
-          >
-            <h1>Reset Password</h1>
-            <input
-              autoFocus
-              onChange={e => {
-                return setPassword(e.target.value)
-              }}
               placeholder="Password"
-              type="password"
-              value={password}
+              {...register("password", {
+                required: "パスワードは必須です",
+              })}
+              error={{
+                isError: errors.password,
+                message: errors.password?.message,
+              }}
             />
-            <input disabled={!password} type="submit" value="Reset" />
-          </form>
-        </div>
-      </section>
+          </div>
+
+          <Button type="submit" usage="base" text="ログイン" />
+        </form>
+      </div>
     </Layout>
   )
 }
