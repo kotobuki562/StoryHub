@@ -394,14 +394,7 @@ const HeaderComp = () => {
           viewer={
             <div className="relative mr-4 w-10">
               {notificationLength !== 0 && (
-                <div
-                  className={cc([
-                    "absolute -top-3 -right-3 w-7 h-7 rounded-full flex flex-col items-center justify-center",
-                    !isHiddenNotification
-                      ? "text-white bg-purple-500 border-2 border-white"
-                      : "text-purple-500 hover:bg-slate-100 ",
-                  ])}
-                >
+                <div className="flex absolute -top-3 -right-3 flex-col justify-center items-center w-7 h-7 text-white bg-purple-500 rounded-full border-2 border-white">
                   {notificationLength >= 9 ? "9+" : notificationLength}
                 </div>
               )}
@@ -529,7 +522,7 @@ const HeaderComp = () => {
               </div>
             }
           >
-            <div className="flex flex-col w-[230px]">
+            <div className="flex overflow-y-scroll flex-col w-[230px] max-h-screen">
               {userInfo && (
                 <>
                   <div className="py-2 px-4 mb-4 border-b border-slate-200">
