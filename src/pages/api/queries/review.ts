@@ -45,8 +45,8 @@ const QueryMyReviews = (t: ObjectDefinitionBlock<"Query">) => {
       accessToken: nonNull(stringArg()),
       ...reviewArgs,
     },
-    resolve: (_parent, args) => {
-      return prisma.review.findMany({
+    resolve: async (_parent, args) => {
+      return await prisma.review.findMany({
         orderBy: { created_at: "desc" },
         where: {
           ...(args.searchTitle && {

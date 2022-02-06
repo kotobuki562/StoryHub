@@ -84,7 +84,7 @@ const HomePage: NextPage<HomePageProps> = ({ reviews, stories }) => {
         cardImage: `/img/StoryHubLogo.png`,
       }}
     >
-      <div className="p-8 bg-purple-50">
+      <div className="p-8 min-h-screen bg-purple-50">
         <Tab
           color="purple"
           values={[

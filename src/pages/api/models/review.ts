@@ -14,9 +14,9 @@ const Review = objectType({
     t.nullable.date("updated_at")
     t.field("user", {
       type: "User",
-      resolve: parent => {
+      resolve: async parent => {
         return parent.user_id
-          ? prisma.user.findUnique({
+          ? await prisma.user.findUnique({
               where: { id: parent.user_id },
             })
           : null
@@ -24,9 +24,9 @@ const Review = objectType({
     })
     t.field("story", {
       type: "Story",
-      resolve: parent => {
+      resolve: async parent => {
         return parent.story_id
-          ? prisma.story.findUnique({
+          ? await prisma.story.findUnique({
               where: { id: parent.story_id },
             })
           : null
@@ -34,8 +34,8 @@ const Review = objectType({
     })
     t.list.field("notifications", {
       type: "Notification",
-      resolve: parent => {
-        return prisma.notification.findMany({
+      resolve: async parent => {
+        return await prisma.notification.findMany({
           where: {
             review_id: `${parent.id}`,
           },

@@ -9,8 +9,8 @@ const QueryFollowers = (t: ObjectDefinitionBlock<"Query">) => {
     args: {
       accessToken: nonNull(stringArg()),
     },
-    resolve: (_parent, args) => {
-      const followers = prisma.follow.findMany({
+    resolve: async (_parent, args) => {
+      const followers = await prisma.follow.findMany({
         orderBy: { created_at: "asc" },
         where: {
           follow_id: `${decodeUserId(args.accessToken)}`,
@@ -27,8 +27,8 @@ const QueryFollowing = (t: ObjectDefinitionBlock<"Query">) => {
     args: {
       accessToken: nonNull(stringArg()),
     },
-    resolve: (_parent, args) => {
-      const following = prisma.follow.findMany({
+    resolve: async (_parent, args) => {
+      const following = await prisma.follow.findMany({
         orderBy: { created_at: "asc" },
         where: {
           user_id: `${decodeUserId(args.accessToken)}`,

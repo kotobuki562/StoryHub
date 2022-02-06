@@ -287,7 +287,7 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
                       <p className="mb-4 text-slate-600 whitespace-pre-wrap">
                         {story.QueryStoryById.story_synopsis}
                       </p>
-                      <p className="text-right text-slate-400">
+                      <p className="font-mono text-right text-slate-400">
                         {story.QueryStoryById.created_at &&
                           format(
                             new Date(story.QueryStoryById.created_at),

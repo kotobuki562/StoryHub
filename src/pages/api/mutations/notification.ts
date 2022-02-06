@@ -13,8 +13,8 @@ const createNotification = (t: ObjectDefinitionBlock<"Mutation">) => {
       favoriteId: nullable(stringArg()),
       followId: nullable(stringArg()),
     },
-    resolve: (_parent, args) => {
-      return prisma.notification.create({
+    resolve: async (_parent, args) => {
+      return await prisma.notification.create({
         data: {
           user_id: decodeUserId(args.accessToken) as string,
           receiver_id: args.receiverId,
@@ -35,9 +35,9 @@ const deleteNotification = (t: ObjectDefinitionBlock<"Mutation">) => {
       notificationId: nonNull(stringArg()),
       receiverId: nonNull(stringArg()),
     },
-    resolve: (_parent, args) => {
+    resolve: async (_parent, args) => {
       return isSafe(args.accessToken, args.receiverId)
-        ? prisma.notification.delete({
+        ? await prisma.notification.delete({
             where: {
               id: args.notificationId,
             },
@@ -53,8 +53,8 @@ const deleteAllNotifications = (t: ObjectDefinitionBlock<"Mutation">) => {
     args: {
       accessToken: nonNull(stringArg()),
     },
-    resolve: (_parent, args) => {
-      return prisma.notification.deleteMany({
+    resolve: async (_parent, args) => {
+      return await prisma.notification.deleteMany({
         where: {
           receiver_id: decodeUserId(args.accessToken) as string,
         },

@@ -52,9 +52,9 @@ const updateReview = (t: ObjectDefinitionBlock<"Mutation">) => {
       acessToken: nonNull(stringArg()),
       userId: nonNull(stringArg()),
     },
-    resolve: (_, args) => {
+    resolve: async (_, args) => {
       return isSafe(args.acessToken, args.userId)
-        ? prisma.review.update({
+        ? await prisma.review.update({
             where: {
               id: `${args.reviewId}`,
             },

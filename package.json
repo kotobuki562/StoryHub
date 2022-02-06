@@ -21,7 +21,7 @@
     "seed": "npx prisma db seed",
     "prisma:format": "npx prisma format",
     "prisma:generate": "npx prisma generate",
-    "studio": "prisma studio --port 7777",
+    "studio": "npx prisma studio --port 5555",
     "migrate:init": "prisma migrate dev --name init",
     "migrate": "npx prisma migrate dev"
   },

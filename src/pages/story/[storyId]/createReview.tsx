@@ -130,10 +130,12 @@ const CreateReviewFormComp: VFC<FormProps> = ({
         receiverId: createrId,
         reviewId: id,
       },
+    }).catch(() => {
+      return 
     })
     if (id) {
       toast.custom(t => {
-        return <Alert t={t} title="ストーリーを作成しました" usage="success" />
+        return <Alert t={t} title="レビューを作成しました" usage="success" />
       })
       router.push(`/review/${id}`)
     } else {
@@ -141,7 +143,7 @@ const CreateReviewFormComp: VFC<FormProps> = ({
         return (
           <Alert
             t={t}
-            title="ストーリーの作成に失敗しました"
+            title="レビューの作成に失敗しました"
             message={JSON.stringify(result.errors, null, 2)}
             usage="error"
           />

@@ -12,10 +12,10 @@ const QueryUsers = (t: ObjectDefinitionBlock<"Query">) => {
       searchUserName: nullable(stringArg()),
       ...defaultArgs,
     },
-    resolve: (_, args) => {
+    resolve: async (_, args) => {
       const { page, pageSize } = args
       const skip = pageSize * (Number(page) - 1)
-      return prisma.user.findMany({
+      return await prisma.user.findMany({
         skip,
         take: pageSize,
         orderBy: { created_at: "desc" },
@@ -35,8 +35,8 @@ const QueryUserById = (t: ObjectDefinitionBlock<"Query">) => {
     args: {
       id: nonNull(stringArg()),
     },
-    resolve: (_, args) => {
-      return prisma.user.findUnique({
+    resolve: async (_, args) => {
+      return await prisma.user.findUnique({
         where: { id: args.id },
       })
     },

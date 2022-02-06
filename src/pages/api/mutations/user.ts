@@ -19,8 +19,8 @@ const signupUser = (t: ObjectDefinitionBlock<"Mutation">) => {
           email: args.email,
           password: args.password,
         })
-        .then(res => {
-          return prisma.user.create({
+        .then(async res => {
+          return await prisma.user.create({
             data: {
               id: `${res?.user?.id}`,
               user_name: `${args.userName}`,
@@ -43,8 +43,8 @@ const createUser = (t: ObjectDefinitionBlock<"Mutation">) => {
       image: nullable(stringArg()),
       accessToken: nonNull(stringArg()),
     },
-    resolve: (_, args, _ctx) => {
-      return prisma.user.create({
+    resolve: async (_, args, _ctx) => {
+      return await prisma.user.create({
         data: {
           id: `${decodeUserId(args.accessToken)}`,
           user_name: `${args.userName}`,
@@ -65,8 +65,8 @@ const updateUser = (t: ObjectDefinitionBlock<"Mutation">) => {
       image: nullable(stringArg()),
       accessToken: nonNull(stringArg()),
     },
-    resolve: (_, args, _ctx) => {
-      return prisma.user.update({
+    resolve: async (_, args, _ctx) => {
+      return await prisma.user.update({
         where: {
           id: `${decodeUserId(args.accessToken)}`,
         },
@@ -87,8 +87,8 @@ const deleteUser = (t: ObjectDefinitionBlock<"Mutation">) => {
     args: {
       accessToken: nonNull(stringArg()),
     },
-    resolve: (_, args, _ctx) => {
-      return prisma.user.delete({
+    resolve: async (_, args, _ctx) => {
+      return await prisma.user.delete({
         where: {
           id: `${decodeUserId(args.accessToken)}`,
         },

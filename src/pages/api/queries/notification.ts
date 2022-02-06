@@ -9,8 +9,8 @@ const QueryNotificationsForUser = (t: ObjectDefinitionBlock<"Query">) => {
     args: {
       accessToken: nonNull(stringArg()),
     },
-    resolve: (_parent, args) => {
-      return prisma.notification.findMany({
+    resolve: async (_parent, args) => {
+      return await prisma.notification.findMany({
         orderBy: { created_at: "asc" },
         where: {
           receiver_id: `${decodeUserId(args.accessToken)}`,

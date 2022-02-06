@@ -29,8 +29,8 @@ export const Object = objectType({
     t.nullable.date("updated_at")
     t.field("settingMaterial", {
       type: "SettingMaterial",
-      resolve: parent => {
-        return prisma.settingMaterial.findUnique({
+      resolve: async parent => {
+        return await prisma.settingMaterial.findUnique({
           where: {
             id: `${parent.setting_material_id}`,
           },
@@ -39,8 +39,8 @@ export const Object = objectType({
     })
     t.field("season", {
       type: "Season",
-      resolve: parent => {
-        return prisma.season.findUnique({
+      resolve: async parent => {
+        return await prisma.season.findUnique({
           where: {
             id: `${parent.season_id}`,
           },

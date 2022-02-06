@@ -27,11 +27,11 @@ const User = objectType({
     t.list.field("stories", {
       type: "Story",
       args: postArgs,
-      resolve: (parent, args) => {
+      resolve: async (parent, args) => {
         const { storyAccessToken, storyPage, storyPageSize } = args
         const skip = storyPageSize * (Number(storyPage) - 1)
         return storyAccessToken && isSafe(storyAccessToken, `${parent.id}`)
-          ? prisma.story.findMany({
+          ? await prisma.story.findMany({
               skip,
               take: storyPageSize,
               orderBy: { created_at: "desc" },
@@ -39,7 +39,7 @@ const User = objectType({
                 user_id: `${parent.id}`,
               },
             })
-          : prisma.story.findMany({
+          : await prisma.story.findMany({
               skip,
               take: storyPageSize,
               orderBy: { created_at: "desc" },
@@ -53,10 +53,10 @@ const User = objectType({
     t.list.field("reviews", {
       type: "Review",
       args: reviewArgs,
-      resolve: (parent, args) => {
+      resolve: async (parent, args) => {
         const { reviewPage, reviewPageSize } = args
         const skip = reviewPageSize * (Number(reviewPage) - 1)
-        return prisma.review.findMany({
+        return await prisma.review.findMany({
           skip,
           take: reviewPageSize,
           orderBy: { created_at: "desc" },
@@ -68,9 +68,9 @@ const User = objectType({
     })
     t.list.field("follows", {
       type: "Follow",
-      resolve: parent => {
+      resolve: async parent => {
         return parent.id
-          ? prisma.follow.findMany({
+          ? await prisma.follow.findMany({
               where: {
                 user_id: parent.id,
               },
@@ -80,9 +80,9 @@ const User = objectType({
     })
     t.list.field("favorites", {
       type: "Favorite",
-      resolve: parent => {
+      resolve: async parent => {
         return parent.id
-          ? prisma.favorite.findMany({
+          ? await prisma.favorite.findMany({
               where: {
                 user_id: parent.id,
               },
@@ -92,8 +92,8 @@ const User = objectType({
     })
     t.list.field("notifications", {
       type: "Notification",
-      resolve: parent => {
-        return prisma.notification.findMany({
+      resolve: async parent => {
+        return await prisma.notification.findMany({
           where: {
             receiver_id: `${parent.id}`,
           },
