@@ -205,7 +205,7 @@ const StoryPage: NextPage<StoryPageProps> = ({ season, seasonId, story }) => {
       }}
     >
       <div
-        className="flex relative flex-col w-full min-h-[100vh]"
+        className="flex relative flex-col w-full"
         style={{
           backgroundImage: `url(${
             season.QuerySeasonById.season_image || "/img/StoryHubLogo.png"
@@ -213,13 +213,14 @@ const StoryPage: NextPage<StoryPageProps> = ({ season, seasonId, story }) => {
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
+          height: "calc(100vh - 64px)",
         }}
       >
         <div
           className="grid overflow-scroll absolute inset-0 p-8 w-full h-[100vh] bg-black/60 backdrop-blur"
-          // style={{
-          //   height: "calc(100vh - 64px)",
-          // }}
+          style={{
+            height: "calc(100vh - 64px)",
+          }}
         >
           <Tab
             color="purple"

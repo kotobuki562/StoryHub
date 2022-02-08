@@ -32,6 +32,7 @@
     "@react-pdf/renderer": "^2.0.21",
     "@supabase/supabase-js": "1.29.4",
     "apollo-server-micro": "3.6.1",
+    "axios": "^0.25.0",
     "classcat": "^5.0.3",
     "date-fns": "^2.28.0",
     "express": "4.17.2",

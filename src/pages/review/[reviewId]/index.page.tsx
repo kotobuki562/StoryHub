@@ -28,6 +28,7 @@ const ReviewsQueryById = gql`
   query QueryReviewById($queryReviewByIdId: String!) {
     QueryReviewById(id: $queryReviewByIdId) {
       user_id
+      story_id
       review_title
       review_body
       stars
@@ -106,8 +107,15 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 }
 
 const ReviewPage: NextPage<StoryPageProps> = ({ review, story }) => {
-  const { created_at, review_body, review_title, stars, user, user_id } =
-    review.QueryReviewById
+  const {
+    created_at,
+    review_body,
+    review_title,
+    stars,
+    story_id,
+    user,
+    user_id,
+  } = review.QueryReviewById
   return (
     <Layout
       meta={{
@@ -209,9 +217,19 @@ const ReviewPage: NextPage<StoryPageProps> = ({ review, story }) => {
                           )
                         })}
                       </div>
-                      <h2 className="mb-4 text-2xl font-black">
-                        {story.story_title}
-                      </h2>
+                      <Link
+                        href={{
+                          pathname: "/story/[storyId]",
+                          query: {
+                            storyId: story_id,
+                          },
+                        }}
+                      >
+                        <a className="block mb-4 text-2xl font-black">
+                          {story.story_title}
+                        </a>
+                      </Link>
+
                       <p className="mb-4 text-slate-600 whitespace-pre-wrap">
                         {story.story_synopsis}
                       </p>
