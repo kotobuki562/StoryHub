@@ -24,19 +24,19 @@ const Story = objectType({
     t.list.field("seasons", {
       type: "Season",
       args: seasonArgs,
-      resolve: (parent, args) => {
+      resolve: async (parent, args) => {
         const { seasonAccessToken, seasonUserId } = args
         return seasonAccessToken &&
           seasonUserId &&
           isSafe(seasonAccessToken, seasonUserId)
-          ? prisma.season.findMany({
-              orderBy: { created_at: "desc" },
+          ? await prisma.season.findMany({
+              orderBy: { created_at: "asc" },
               where: {
                 story_id: `${parent.id}`,
               },
             })
-          : prisma.season.findMany({
-              orderBy: { created_at: "desc" },
+          : await prisma.season.findMany({
+              orderBy: { created_at: "asc" },
               where: {
                 story_id: `${parent.id}`,
                 publish: true,
@@ -46,33 +46,36 @@ const Story = objectType({
     })
     t.list.field("reviews", {
       type: "Review",
-      resolve: (parent) =>
-        prisma.review.findMany({
+      resolve: async parent => {
+        return await prisma.review.findMany({
           orderBy: { created_at: "desc" },
           where: {
             story_id: `${parent.id}`,
           },
-        }),
+        })
+      },
     })
     t.list.field("favorites", {
       type: "Favorite",
-      resolve: parent =>
-        parent.id
-          ? prisma.favorite.findMany({
+      resolve: async parent => {
+        return parent.id
+          ? await prisma.favorite.findMany({
               where: {
                 story_id: parent.id,
               },
             })
-          : [],
+          : []
+      },
     })
     t.field("user", {
       type: "User",
-      resolve: parent =>
-        prisma.user.findUnique({
+      resolve: async parent => {
+        return await prisma.user.findUnique({
           where: {
             id: `${parent.user_id}`,
           },
-        }),
+        })
+      },
     })
   },
 })

@@ -14,7 +14,6 @@ import { Switch } from "src/components/atoms/Switch"
 import { TextArea } from "src/components/atoms/TextArea"
 import { Menu } from "src/components/blocks/Menu"
 import { Layout } from "src/components/Layout"
-import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { useStoryImage } from "src/hooks/storage/useStoryImage"
 import { supabase } from "src/lib/supabase"
 import { ageCategories, categories } from "src/tools/options"
@@ -48,6 +47,7 @@ const CreateStoryPage: NextPage = () => {
   const { userId } = router.query
   const { storyImageUrls } = useStoryImage(userId as string)
   const [isPublish, setIsPublish] = useState<boolean>(false)
+  const [isStorage, setIsStorage] = useState<boolean>(true)
   const [storyImage, setStoryImage] = useState<string>("")
   const [isHiddenAgeCategoryMenu, setIsHiddenAgeCategoryMenu] =
     useState<boolean>(true)
@@ -55,15 +55,25 @@ const CreateStoryPage: NextPage = () => {
   const [
     createStory,
     { error: errorCreateStory, loading: isLoadingCreateStory },
-  ] = useMutation<NexusGenArgTypes["Mutation"]["createStory"]>(CreateStory)
+  ] = useMutation(CreateStory)
   const [storyCategoryes, setStoryCategoryes] = useState<string[]>([])
 
   const handleTogglePublish = useCallback(() => {
-    setIsPublish(pre => !pre)
+    setIsPublish(pre => {
+      return !pre
+    })
+  }, [])
+
+  const handleToggleStorage = useCallback(() => {
+    setIsStorage(pre => {
+      return !pre
+    })
   }, [])
 
   const handleToggleAgeCategoryMenu = useCallback(() => {
-    setIsHiddenAgeCategoryMenu(pre => !pre)
+    setIsHiddenAgeCategoryMenu(pre => {
+      return !pre
+    })
   }, [])
 
   const handleHiddenAgeCategoryMenu = useCallback(() => {
@@ -80,18 +90,24 @@ const CreateStoryPage: NextPage = () => {
   const handleChangeStoryCategory = useCallback(
     (category: string) => {
       if (storyCategoryes.includes(category)) {
-        setStoryCategoryes(pre => pre.filter(c => c !== category))
+        setStoryCategoryes(pre => {
+          return pre.filter(c => {
+            return c !== category
+          })
+        })
       } else {
         setStoryCategoryes(pre => {
           if (pre.length > 2) {
-            toast.custom(t => (
-              <Alert
-                t={t}
-                title="カテゴリーが多すぎます"
-                usage="warning"
-                message="カテゴリは最大3つまでです"
-              />
-            ))
+            toast.custom(t => {
+              return (
+                <Alert
+                  t={t}
+                  title="カテゴリーが多すぎます"
+                  usage="warning"
+                  message="カテゴリは最大3つまでです"
+                />
+              )
+            })
             return pre
           }
           return [...pre, category]
@@ -114,52 +130,51 @@ const CreateStoryPage: NextPage = () => {
       viewingRestriction: "",
       synopsis: "",
       title: "",
+      imageUrl: "",
     },
   })
 
   const { synopsis, title } = watch()
 
-  const handleSubmitData = useCallback(async () => {
-    await createStory({
-      variables: {
-        storyTitle: getValues("title"),
-        storyCategories: storyCategoryes,
-        publish: isPublish,
-        acessToken: accessToken ? accessToken : null,
-        storySynopsis: getValues("synopsis"),
-        storyImage: storyImage ? storyImage : null,
-        viewingRestriction:
-          getValues("viewingRestriction") === ""
-            ? null
-            : getValues("viewingRestriction"),
-      },
-    }).then(() => {
-      toast.custom(t => (
-        <Alert t={t} title="ストーリーを作成しました" usage="success" />
-      ))
+  const handleSubmitData = handleSubmit(async data => {
+    try {
+      await createStory({
+        variables: {
+          storyTitle: data.title,
+          storyCategories: storyCategoryes,
+          publish: isPublish,
+          acessToken: accessToken ? accessToken : null,
+          storySynopsis: data.synopsis,
+          storyImage: isStorage ? storyImage : data.imageUrl,
+          viewingRestriction:
+            data.viewingRestriction === "" ? null : data.viewingRestriction,
+        },
+      })
+      toast.custom(t => {
+        return <Alert t={t} title="ストーリーを作成しました" usage="success" />
+      })
       return router.push(`/myPage/${userId}/story`)
-    })
-  }, [
-    accessToken,
-    createStory,
-    getValues,
-    isPublish,
-    router,
-    storyCategoryes,
-    storyImage,
-    userId,
-  ])
+    } catch (error) {
+      return toast.custom(t => {
+        return (
+          <Alert t={t} title="ストーリーの作成に失敗しました" usage="error" />
+        )
+      })
+    }
+  })
 
   useEffect(() => {
     if (errorCreateStory) {
-      toast.custom(t => (
-        <Alert
-          t={t}
-          title="エラーが発生しました"
-          usage="error"
-          message={errorCreateStory?.message}
-        />
-      ))
+      toast.custom(t => {
+        return (
+          <Alert
+            t={t}
+            title="エラーが発生しました"
+            usage="error"
+            message={errorCreateStory?.message}
+          />
+        )
+      })
     }
   }, [errorCreateStory])
 
@@ -167,10 +182,10 @@ const CreateStoryPage: NextPage = () => {
     <Layout>
       <Toaster position="top-center" />
       <div className="p-8">
-        <form className="p-4" onSubmit={handleSubmit(handleSubmitData)}>
+        <form className="p-4" onSubmit={handleSubmitData}>
           <div className="flex flex-col mb-4 w-full">
             <label className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500">
-              <p>公開する</p>
+              <p>{isPublish ? "公開する" : "公開しない"}</p>
             </label>
             <Switch
               checked={isPublish}
@@ -183,34 +198,40 @@ const CreateStoryPage: NextPage = () => {
               <p>カテゴリー</p>
             </label>
             <div className="flex flex-wrap gap-2 mb-4 w-full">
-              {categories.map(data => (
-                <button
-                  className={cc([
-                    "py-1 px-2 rounded-full duration-200",
-                    storyCategoryes.includes(data.category_title)
-                      ? "text-white bg-purple-500"
-                      : "bg-purple-100 text-purple-300",
-                  ])}
-                  key={data.category_title}
-                  type="button"
-                  onClick={() => handleChangeStoryCategory(data.category_title)}
-                >
-                  {data.category_title}
-                </button>
-              ))}
+              {categories.map(data => {
+                return (
+                  <button
+                    className={cc([
+                      "py-1 px-2 rounded-full duration-200",
+                      storyCategoryes.includes(data.category_title)
+                        ? "text-white bg-purple-500"
+                        : "bg-purple-100 text-purple-300",
+                    ])}
+                    key={data.category_title}
+                    type="button"
+                    onClick={() => {
+                      return handleChangeStoryCategory(data.category_title)
+                    }}
+                  >
+                    {data.category_title}
+                  </button>
+                )
+              })}
             </div>
             <label className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500">
               <p>選択中</p>
             </label>
             <div className="flex flex-wrap gap-4 w-full">
-              {storyCategoryes.map(category => (
-                <div
-                  className="py-2 px-4 text-yellow-300 bg-purple-500 rounded-full"
-                  key={category}
-                >
-                  {category}
-                </div>
-              ))}
+              {storyCategoryes.map(category => {
+                return (
+                  <div
+                    className="py-2 px-4 text-yellow-300 bg-purple-500 rounded-full"
+                    key={category}
+                  >
+                    {category}
+                  </div>
+                )
+              })}
             </div>
           </div>
 
@@ -242,36 +263,70 @@ const CreateStoryPage: NextPage = () => {
               </p>
             )}
           </div>
-
-          {storyImageUrls.length > 0 && (
-            <div className="flex flex-col mb-4 w-full">
-              <label className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500">
-                <p>表紙</p>
-              </label>
-              <div className="flex overflow-x-scroll gap-5 items-center mb-4 w-full">
-                {storyImageUrls.map(url => (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleSelectStoryImage(url)
-                    }}
-                    className={cc([
-                      "min-w-[210px]",
-                      storyImage === url && "border-4 border-yellow-500",
-                    ])}
-                    key={url}
-                  >
-                    <img
-                      className="w-[210px] h-[297px]"
-                      src={url}
-                      alt="ストーリー画像"
-                    />
-                  </button>
-                ))}
-              </div>
+          <div className="flex flex-col mb-4 w-full">
+            <label className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500">
+              <p>
+                {isStorage ? "コンテンツから表紙を登録" : "URLから表紙を登録"}
+              </p>
+            </label>
+            <div className="mb-4">
+              <Switch
+                onToggle={handleToggleStorage}
+                checked={isStorage}
+                size="medium"
+              />
             </div>
-          )}
 
+            {storyImageUrls.length > 0 && isStorage ? (
+              <div className="flex overflow-x-scroll gap-5 items-center mb-4 w-full">
+                {storyImageUrls.map(url => {
+                  return (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleSelectStoryImage(url)
+                      }}
+                      className={cc([
+                        "min-w-[210px]",
+                        storyImage === url && "border-4 border-yellow-500",
+                      ])}
+                      key={url}
+                    >
+                      <img
+                        className="w-[210px] h-[297px]"
+                        src={url}
+                        alt="ストーリー画像"
+                      />
+                    </button>
+                  )
+                })}
+              </div>
+            ) : (
+              <div>
+                <div className="mb-4">
+                  <Input
+                    label="URL"
+                    placeholder="画像のURLを入力してください"
+                    type="text"
+                    {...register("imageUrl", {
+                      required: true,
+                      maxLength: {
+                        value: 1000,
+                        message: "URLは1000文字以下です",
+                      },
+                    })}
+                  />
+                </div>
+                <div>
+                  <img
+                    className="object-cover object-center w-[210px] h-[297px]"
+                    src={getValues("imageUrl")}
+                    alt="preview"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
           <div className="flex flex-col mb-4 w-full">
             <label
               htmlFor="title"
@@ -285,42 +340,46 @@ const CreateStoryPage: NextPage = () => {
                 viewer={<p className="text-purple-500">年齢制限詳細</p>}
               >
                 <div className="grid grid-cols-1 gap-2 w-[300px]">
-                  {ageCategories.map(category => (
-                    <div
-                      key={category.nameJa}
-                      className="flex text-sm font-bold text-left text-slate-500"
-                    >
-                      <p className="min-w-[70px] text-purple-500">
-                        {category.nameJa}...
-                      </p>
-                      <p>{category.description}</p>
-                    </div>
-                  ))}
+                  {ageCategories.map(category => {
+                    return (
+                      <div
+                        key={category.nameJa}
+                        className="flex text-sm font-bold text-left text-slate-500"
+                      >
+                        <p className="min-w-[70px] text-purple-500">
+                          {category.nameJa}...
+                        </p>
+                        <p>{category.description}</p>
+                      </div>
+                    )
+                  })}
                 </div>
               </Menu>
             </label>
             <Controller
               name="viewingRestriction"
               control={control}
-              render={({ field: { onChange, value } }) => (
-                <Select
-                  onChange={onChange}
-                  label="年齢制限"
-                  value={value}
-                  options={[
-                    {
-                      value: "",
-                      label: "---",
-                    },
-                    ...ageCategories.map(category => {
-                      return {
-                        value: category.nameJa,
-                        label: category.nameJa,
-                      }
-                    }),
-                  ]}
-                />
-              )}
+              render={({ field: { onChange, value } }) => {
+                return (
+                  <Select
+                    onChange={onChange}
+                    label="年齢制限"
+                    value={value}
+                    options={[
+                      {
+                        value: "",
+                        label: "---",
+                      },
+                      ...ageCategories.map(category => {
+                        return {
+                          value: category.nameJa,
+                          label: category.nameJa,
+                        }
+                      }),
+                    ]}
+                  />
+                )
+              }}
             />
             {errors && errors.viewingRestriction && (
               <p className="text-xs italic text-red-500">
@@ -353,6 +412,7 @@ const CreateStoryPage: NextPage = () => {
 
           <div className="flex flex-col items-center w-full">
             <Button
+              usage="base"
               disabled={isLoadingCreateStory}
               isLoading={isLoadingCreateStory}
               type="submit"

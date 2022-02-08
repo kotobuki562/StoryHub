@@ -52,14 +52,16 @@ const LayoutComp: VFC<LayoutProps> = props => {
         pathname !== "/story/[storyId]"
       ) {
         await push("/signin")
-        toast.custom(t => (
-          <Alert
-            t={t}
-            title="ログインしてください"
-            usage="error"
-            message="対象のページはログイン後のみ閲覧できます。"
-          />
-        ))
+        toast.custom(t => {
+          return (
+            <Alert
+              t={t}
+              title="ログインしてください"
+              usage="error"
+              message="対象のページはログイン後のみ閲覧できます。"
+            />
+          )
+        })
       }
       setIsLoading(false)
     })()

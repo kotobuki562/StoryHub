@@ -16,8 +16,11 @@ export const PaginationComp: VFC<PagenationInfo> = ({
 }) => {
   const router = useRouter()
 
-  const range = (start: number, end: number) =>
-    [...Array(end - start + 1)].map((_, i) => start + i)
+  const range = (start: number, end: number) => {
+    return [...Array(end - start + 1)].map((_, i) => {
+      return start + i
+    })
+  }
 
   const nowPage = () => {
     switch (usecase) {
@@ -36,22 +39,24 @@ export const PaginationComp: VFC<PagenationInfo> = ({
 
   return (
     <ul className="flex flex-wrap gap-2">
-      {pages.map((number, index) => (
-        <li className="flex flex-col items-center" key={index}>
-          <Link href={`/${usecase}/page/${number}`}>
-            <a
-              className={cc([
-                "flex flex-col items-center py-3 px-5 rounded-xl duration-200",
-                nowPage() === `${number}`
-                  ? "bg-purple-500 text-white"
-                  : "bg-purple-200 text-purple-500 hover:bg-purple-500 hover:text-white",
-              ])}
-            >
-              {number}
-            </a>
-          </Link>
-        </li>
-      ))}
+      {pages.map((number, index) => {
+        return (
+          <li className="flex flex-col items-center" key={index}>
+            <Link href={`/${usecase}/page/${number}`}>
+              <a
+                className={cc([
+                  "flex flex-col items-center py-3 px-5 rounded-xl duration-200",
+                  nowPage() === `${number}`
+                    ? "bg-purple-500 text-white"
+                    : "bg-purple-200 text-purple-500 hover:bg-purple-500 hover:text-white",
+                ])}
+              >
+                {number}
+              </a>
+            </Link>
+          </li>
+        )
+      })}
     </ul>
   )
 }

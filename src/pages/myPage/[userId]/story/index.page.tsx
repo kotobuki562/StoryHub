@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable import/no-default-export */
-import { useQuery } from "@apollo/client"
 import gql from "graphql-tag"
 import type { NextPage } from "next"
 import { useRouter } from "next/router"
@@ -10,6 +9,7 @@ import { Alert } from "src/components/atoms/Alert"
 import { MyStoryCard } from "src/components/blocks/Card"
 import { Layout } from "src/components/Layout"
 import { LoadingLogo } from "src/components/Loading"
+import { useSwrQuery } from "src/hooks/swr"
 import { supabase } from "src/lib/supabase"
 import type { QueryMyStories } from "src/types/Story/query"
 
@@ -34,27 +34,28 @@ const HomePage: NextPage = () => {
   const router = useRouter()
   const { userId } = router.query
   const accessToken = supabase.auth.session()?.access_token
+
   const {
     data,
     error: errorInfo,
-    loading: isLoading,
-  } = useQuery<QueryMyStories>(MyStoriesQuery, {
-    variables: {
-      userId: userId as string,
-      accessToken: `${accessToken}`,
-    },
+    isLoading,
+  } = useSwrQuery<QueryMyStories>(MyStoriesQuery, {
+    userId: userId as string,
+    accessToken: `${accessToken}`,
   })
 
   useEffect(() => {
     if (errorInfo) {
-      toast.custom(t => (
-        <Alert
-          t={t}
-          title="エラーが発生しました"
-          usage="error"
-          message={errorInfo?.message}
-        />
-      ))
+      toast.custom(t => {
+        return (
+          <Alert
+            t={t}
+            title="エラーが発生しました"
+            usage="error"
+            message={errorInfo?.message}
+          />
+        )
+      })
     }
   }, [errorInfo])
 
@@ -90,9 +91,9 @@ const HomePage: NextPage = () => {
         {data?.QueryMyStories && (
           <div className="flex flex-wrap gap-8 justify-center w-full">
             {data?.QueryMyStories.length > 0 ? (
-              data?.QueryMyStories.map(story => (
-                <MyStoryCard key={story.id} {...story} />
-              ))
+              data?.QueryMyStories.map(story => {
+                return <MyStoryCard key={story.id} {...story} />
+              })
             ) : (
               <div className="flex flex-col justify-center items-center w-full h-full">
                 <h1 className="text-xl font-bold text-center sm:text-3xl">

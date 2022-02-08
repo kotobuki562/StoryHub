@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import { gql, useMutation } from "@apollo/client"
-import { StarIcon } from "@heroicons/react/solid"
 import cc from "classcat"
 import { useRouter } from "next/router"
 import type { VFC } from "react"
@@ -13,6 +12,11 @@ import { Input } from "src/components/atoms/Input"
 import { TextArea } from "src/components/atoms/TextArea"
 import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { supabase } from "src/lib/supabase"
+import type { Star } from "src/tools/options"
+import { reviewStars } from "src/tools/options"
+
+import { Face } from "./face"
+import { StarContent } from "./star"
 
 const CreateReview = gql`
   mutation Mutation(
@@ -51,28 +55,45 @@ const ReviewsQueryByStoryId = gql`
   }
 `
 
-const reviewStars = [1, 2, 3, 4, 5]
+const NotificationCreate = gql`
+  mutation CreateNotification(
+    $accessToken: String!
+    $receiverId: String!
+    $reviewId: String
+  ) {
+    createNotification(
+      accessToken: $accessToken
+      receiverId: $receiverId
+      reviewId: $reviewId
+    ) {
+      id
+    }
+  }
+`
 
 type FormProps = {
   userId: string
+  isCreateReview: boolean
+  createrId: string
 }
 
-const CreateReviewFormComp: VFC<FormProps> = ({ userId }) => {
+const CreateReviewFormComp: VFC<FormProps> = ({
+  createrId,
+  isCreateReview,
+  userId,
+}) => {
   const router = useRouter()
   const { storyId } = router.query
   const accessToken = supabase.auth.session()?.access_token
   const [createStory, { error: errorCreateReview, loading: isLoading }] =
-    useMutation<NexusGenArgTypes["Mutation"]["createReview"]>(CreateReview, {
-      refetchQueries: [
-        {
-          query: ReviewsQueryByStoryId,
-          variables: { storyId: storyId },
-        },
-      ],
-    })
-  const [stars, setStars] = useState<number>(1)
+    useMutation(CreateReview)
+  const [createNotification] =
+    useMutation<NexusGenArgTypes["Mutation"]["createNotification"]>(
+      NotificationCreate
+    )
+  const [stars, setStars] = useState<Star>(1)
 
-  const handleChangeStars = useCallback((star: number) => {
+  const handleChangeStars = useCallback((star: Star) => {
     setStars(star)
   }, [])
 
@@ -87,40 +108,71 @@ const CreateReviewFormComp: VFC<FormProps> = ({ userId }) => {
   const { reviewBody, reviewTitle } = watch()
 
   const handleSubmitData = useCallback(async () => {
-    !userId
-      ? toast.custom(t => (
+    const result = await createStory({
+      variables: {
+        storyId: storyId as string,
+        reviewTitle: getValues("reviewTitle"),
+        reviewBody: getValues("reviewBody"),
+        stars: stars,
+        acessToken: accessToken,
+      },
+      refetchQueries: [
+        {
+          query: ReviewsQueryByStoryId,
+          variables: { storyId: storyId },
+        },
+      ],
+    })
+    const { id } = result.data.createReview
+    await createNotification({
+      variables: {
+        accessToken: accessToken,
+        receiverId: createrId,
+        reviewId: id,
+      },
+    }).catch(() => {
+      return 
+    })
+    if (id) {
+      toast.custom(t => {
+        return <Alert t={t} title="レビューを作成しました" usage="success" />
+      })
+      router.push(`/review/${id}`)
+    } else {
+      toast.custom(t => {
+        return (
           <Alert
             t={t}
-            title="認証のエラー"
+            title="レビューの作成に失敗しました"
+            message={JSON.stringify(result.errors, null, 2)}
             usage="error"
-            message="ログインしてからレビューを作成してください"
           />
-        ))
-      : await createStory({
-          variables: {
-            storyId: storyId as string,
-            reviewTitle: getValues("reviewTitle"),
-            reviewBody: getValues("reviewBody"),
-            stars: stars,
-            acessToken: accessToken,
-          },
-        }).then(() => {
-          toast.custom(t => (
-            <Alert t={t} title="ストーリーを作成しました" usage="success" />
-          ))
-        })
-  }, [accessToken, userId, createStory, getValues, stars, storyId])
+        )
+      })
+    }
+  }, [
+    createStory,
+    storyId,
+    getValues,
+    stars,
+    accessToken,
+    createNotification,
+    createrId,
+    router,
+  ])
 
   useEffect(() => {
     if (errorCreateReview) {
-      toast.custom(t => (
-        <Alert
-          t={t}
-          title="エラーが発生しました"
-          usage="error"
-          message={errorCreateReview?.message}
-        />
-      ))
+      toast.custom(t => {
+        return (
+          <Alert
+            t={t}
+            title="エラーが発生しました"
+            usage="error"
+            message={errorCreateReview?.message}
+          />
+        )
+      })
     }
   }, [errorCreateReview])
 
@@ -130,22 +182,22 @@ const CreateReviewFormComp: VFC<FormProps> = ({ userId }) => {
 
       <form className="p-4 sm:p-8" onSubmit={handleSubmit(handleSubmitData)}>
         <div className="flex flex-col justify-center items-center mb-4 w-full">
-          <div className="flex gap-2 items-center">
-            {reviewStars.map(star => (
-              <button key={star} type="button">
-                <StarIcon
-                  className={cc([
-                    "w-10 h-10 sm:w-20 sm:h-20",
-                    {
-                      "text-gray-500": star > stars,
-                      "text-yellow-400": star <= stars,
-                    },
-                  ])}
-                  onClick={() => handleChangeStars(star)}
-                />
-              </button>
-            ))}
+          <div className="flex gap-1 items-center mb-8">
+            {reviewStars.map(star => {
+              return (
+                <button
+                  key={star}
+                  onClick={() => {
+                    return handleChangeStars(star)
+                  }}
+                  type="button"
+                >
+                  <StarContent isActive={star <= stars} />
+                </button>
+              )
+            })}
           </div>
+          <Face star={stars} />
         </div>
 
         <div className="flex flex-col mb-4 w-full">
@@ -200,10 +252,11 @@ const CreateReviewFormComp: VFC<FormProps> = ({ userId }) => {
 
         <div className="flex flex-col items-center w-full">
           <Button
-            disabled={isLoading}
+            usage="base"
+            disabled={isLoading || isCreateReview || !userId}
             isLoading={isLoading}
             type="submit"
-            text="レビュー作成"
+            text={isCreateReview ? "既にレビュー済み" : "レビュー作成"}
           />
         </div>
       </form>

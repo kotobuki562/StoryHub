@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { useQuery } from "@apollo/client"
+import { useMutation } from "@apollo/client"
 import {
   BellIcon,
   BookmarkIcon,
@@ -19,6 +19,7 @@ import {
   UserGroupIcon,
 } from "@heroicons/react/solid"
 import cc from "classcat"
+import { format } from "date-fns"
 import gql from "graphql-tag"
 import Link from "next/link"
 import { useRouter } from "next/router"
@@ -26,7 +27,10 @@ import { memo, useCallback, useMemo, useState } from "react"
 import { Accordion } from "src/components/blocks/Accodion"
 import { Menu } from "src/components/blocks/Menu"
 import type { NexusGenObjects } from "src/generated/nexus-typegen"
+import { useSwrQuery } from "src/hooks/swr"
 import { supabase } from "src/lib/supabase"
+import type { QueryNotificationsForUser } from "src/types/Notification/query"
+import type { GoogleAccount } from "src/types/User/shcame"
 
 const Me = gql`
   query QueryMe($accessToken: String!) {
@@ -35,6 +39,49 @@ const Me = gql`
       user_name
       user_deal
       image
+    }
+  }
+`
+
+const NotificationsQuery = gql`
+  query Query($accessToken: String!) {
+    QueryNotificationsForUser(accessToken: $accessToken) {
+      id
+      created_at
+      user {
+        user_name
+        image
+        id
+      }
+      review {
+        id
+        review_title
+        stars
+      }
+    }
+  }
+`
+
+const NotificationDelete = gql`
+  mutation Mutation(
+    $accessToken: String!
+    $notificationId: String!
+    $receiverId: String!
+  ) {
+    deleteNotification(
+      accessToken: $accessToken
+      notificationId: $notificationId
+      receiverId: $receiverId
+    ) {
+      id
+    }
+  }
+`
+
+const NotificationAllDelete = gql`
+  mutation DeleteAllNotifications($accessToken: String!) {
+    deleteAllNotifications(accessToken: $accessToken) {
+      id
     }
   }
 `
@@ -77,31 +124,73 @@ const HeaderComp = () => {
   const [isHiddenNotification, setHiddenNotification] = useState<boolean>(true)
   const [isHiddenSearch, setHiddenSearch] = useState<boolean>(true)
   const userInfo = supabase.auth.user()
-  const accessToken = useMemo(() => supabase.auth.session()?.access_token, [])
-  const { data: user } = useQuery<QueryMe>(Me, {
-    variables: {
-      accessToken,
-    },
+  const accessToken = useMemo(() => {
+    return supabase.auth.session()?.access_token
+  }, [])
+
+  const googleAccountMetadata = useMemo(() => {
+    return userInfo?.user_metadata as GoogleAccount["user_metadata"]
+  }, [userInfo])
+
+  const { data: notifications, mutate } =
+    useSwrQuery<QueryNotificationsForUser>(NotificationsQuery, {
+      accessToken: accessToken ? accessToken : null,
+    })
+
+  const { data: user } = useSwrQuery<QueryMe>(Me, {
+    accessToken: accessToken ? accessToken : null,
   })
+
+  const [deleteNotification] = useMutation(NotificationDelete)
+  const [deleteAllNotifications] = useMutation(NotificationAllDelete)
+
+  const handleDeleteNotification = useCallback(
+    async (id: string) => {
+      await deleteNotification({
+        variables: {
+          accessToken,
+          notificationId: id,
+          receiverId: userInfo?.id,
+        },
+      })
+      await mutate()
+    },
+    [accessToken, deleteNotification, mutate, userInfo?.id]
+  )
+
+  const handleDeleteAllNotifications = useCallback(async () => {
+    await deleteAllNotifications({
+      variables: {
+        accessToken,
+      },
+    })
+    await mutate()
+  }, [accessToken, deleteAllNotifications, mutate])
+
+  const notificationLength = useMemo(() => {
+    return notifications?.QueryNotificationsForUser
+      ? notifications?.QueryNotificationsForUser.length
+      : 0
+  }, [notifications])
 
   const userLinks = [
     {
-      href: `/myPage/${user?.QueryMe.id}/review`,
+      href: `/myPage/${userInfo?.id}/review`,
       label: "レビュー",
       icon: <FireIcon className="w-6 h-6" />,
     },
     {
-      href: `/myPage/${user?.QueryMe.id}/follow`,
+      href: `/myPage/${userInfo?.id}/follow`,
       label: "フォロー",
       icon: <UserGroupIcon className="w-6 h-6" />,
     },
     {
-      href: `/myPage/${user?.QueryMe.id}/favorite`,
+      href: `/myPage/${userInfo?.id}/favorite`,
       label: "ブックマーク",
       icon: <BookmarkIcon className="w-6 h-6" />,
     },
     {
-      href: `/myPage/${user?.QueryMe.id}/contents`,
+      href: `/myPage/${userInfo?.id}/contents`,
       label: "コンテンツ",
       icon: <PhotographIcon className="w-6 h-6" />,
     },
@@ -109,12 +198,12 @@ const HeaderComp = () => {
 
   const userStoryLinks = [
     {
-      href: `/myPage/${user?.QueryMe.id}/story`,
+      href: `/myPage/${userInfo?.id}/story`,
       label: "一覧で見る",
       icon: <BookOpenIcon className="w-6 h-6" />,
     },
     {
-      href: `/myPage/${user?.QueryMe.id}/story/create`,
+      href: `/myPage/${userInfo?.id}/story/create`,
       label: "作成する",
       icon: <PencilIcon className="w-6 h-6" />,
     },
@@ -122,12 +211,12 @@ const HeaderComp = () => {
 
   const userSettingMaterialLinks = [
     {
-      href: `/myPage/${user?.QueryMe.id}/settingMaterial`,
+      href: `/myPage/${userInfo?.id}/settingMaterial`,
       label: "一覧で見る",
       icon: <PhotographIcon className="w-6 h-6" />,
     },
     {
-      href: `/myPage/${user?.QueryMe.id}/settingMaterial/create`,
+      href: `/myPage/${userInfo?.id}/settingMaterial/create`,
       label: "作成する",
       icon: <PencilIcon className="w-6 h-6" />,
     },
@@ -151,35 +240,51 @@ const HeaderComp = () => {
   }, [router.asPath])
 
   const onToggleUserAccodion = useCallback(() => {
-    setOpenUserAccodion(pre => !pre)
+    setOpenUserAccodion(pre => {
+      return !pre
+    })
   }, [])
 
   const onToggleUserActionAccodion = useCallback(() => {
-    setOpenUserActionAccodion(pre => !pre)
+    setOpenUserActionAccodion(pre => {
+      return !pre
+    })
   }, [])
 
   const onToggleUserStoryAccordion = useCallback(() => {
-    setOpenUserStoryAccordion(pre => !pre)
+    setOpenUserStoryAccordion(pre => {
+      return !pre
+    })
   }, [])
 
   const onToggleUserSettingMaterial = useCallback(() => {
-    setOpenUserSettingMaterial(pre => !pre)
+    setOpenUserSettingMaterial(pre => {
+      return !pre
+    })
   }, [])
 
   const onToggleMainManu = useCallback(() => {
-    setHiddenMainManu(pre => !pre)
+    setHiddenMainManu(pre => {
+      return !pre
+    })
   }, [])
 
   const onToggleUserManu = useCallback(() => {
-    setHiddenUserManu(pre => !pre)
+    setHiddenUserManu(pre => {
+      return !pre
+    })
   }, [])
 
   const onToggleNotification = useCallback(() => {
-    setHiddenNotification(pre => !pre)
+    setHiddenNotification(pre => {
+      return !pre
+    })
   }, [])
 
   const onToggleSearch = useCallback(() => {
-    setHiddenSearch(pre => !pre)
+    setHiddenSearch(pre => {
+      return !pre
+    })
   }, [])
 
   const handleCloseMainManu = useCallback(() => {
@@ -229,7 +334,7 @@ const HeaderComp = () => {
             viewer={
               <div
                 className={cc([
-                  "flex items-center p-2 text-xl font-black group-hover:text-purple-400 group-hover:bg-slate-100 rounded-xl duration-200 sm:px-4",
+                  "flex items-center font-mono p-2 text-xl font-black group-hover:text-purple-400 group-hover:bg-slate-100 rounded-xl duration-200 sm:px-4",
                   !isHiddenMainManu && "bg-slate-100 text-purple-400",
                 ])}
               >
@@ -239,20 +344,22 @@ const HeaderComp = () => {
             }
           >
             <div className="flex flex-col">
-              {mainLinks.map(({ href, icon, label }) => (
-                <Link key={label} href={href}>
-                  <a
-                    className={cc([
-                      "py-2 px-4 w-[200px] text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
-                      router.pathname === href &&
-                        "bg-slate-100 text-purple-400",
-                    ])}
-                  >
-                    <p>{label}</p>
-                    <div className="w-8">{icon}</div>
-                  </a>
-                </Link>
-              ))}
+              {mainLinks.map(({ href, icon, label }) => {
+                return (
+                  <Link key={label} href={href}>
+                    <a
+                      className={cc([
+                        "py-2 px-4 w-[200px] text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                        router.pathname === href &&
+                          "bg-slate-100 text-purple-400",
+                      ])}
+                    >
+                      <p>{label}</p>
+                      <div className="w-8">{icon}</div>
+                    </a>
+                  </Link>
+                )
+              })}
             </div>
           </Menu>
         </div>
@@ -285,7 +392,13 @@ const HeaderComp = () => {
           onToggle={onToggleNotification}
           onClose={handleCloseNotification}
           viewer={
-            <div className="mr-4 w-10">
+            <div className="relative mr-4 w-10">
+              {notificationLength !== 0 && (
+                <div className="flex absolute -top-3 -right-3 flex-col justify-center items-center w-7 h-7 text-white bg-purple-500 rounded-full border-2 border-white">
+                  {notificationLength >= 9 ? "9+" : notificationLength}
+                </div>
+              )}
+
               <BellIcon
                 className={cc([
                   "p-2 w-10 h-10 duration-200 rounded-full",
@@ -297,8 +410,86 @@ const HeaderComp = () => {
             </div>
           }
         >
-          <div>
-            <p className="text-slate-400">現在通知は届いていません</p>
+          <div className="overflow-scroll w-[210px] max-h-screen no-scrollbar">
+            {notificationLength > 0 ? (
+              <div className="grid grid-cols-1 gap-3">
+                <button
+                  className="py-2 w-full font-bold text-purple-500 bg-purple-100 rounded-md"
+                  onClick={handleDeleteAllNotifications}
+                >
+                  {notificationLength}
+                  件全て既読にする
+                </button>
+                {notifications?.QueryNotificationsForUser.map(data => {
+                  return (
+                    <div className="group" key={data.id}>
+                      <div className="flex items-center mb-2">
+                        <div className="mr-2 min-w-[2rem]">
+                          <img
+                            className="w-8 h-8 rounded-full"
+                            src={data.user?.image || "/img/Vector.png"}
+                            alt="avatar"
+                          />
+                        </div>
+                        <p className="text-sm">
+                          {data.user?.user_name}さんから
+                        </p>
+                      </div>
+                      {data.review && (
+                        <Link
+                          href={{
+                            pathname: "/review/[reviewId]",
+                            query: { reviewId: data.review.id },
+                          }}
+                        >
+                          <a className="flex items-center py-1 px-2 mb-2 text-purple-500 bg-purple-100 rounded-full duration-200">
+                            <div className="mr-2 min-w-[2rem]">
+                              <img
+                                className="w-8 h-8 rounded-full"
+                                src={`/img/${data.review.stars}.svg`}
+                                alt="avatar"
+                              />
+                            </div>
+                            <p className="text-sm">
+                              {data.review.review_title &&
+                              data.review.review_title?.length > 20 ? (
+                                <span>
+                                  {data.review.review_title.slice(0, 20)}
+                                  ...
+                                </span>
+                              ) : (
+                                data.review.review_title
+                              )}
+                            </p>
+                          </a>
+                        </Link>
+                      )}
+                      {data.created_at && (
+                        <p className="text-xs text-right text-slate-600">
+                          {format(
+                            new Date(data.created_at),
+                            "yyyy/MM/dd HH:mm"
+                          )}
+                        </p>
+                      )}
+
+                      <div>
+                        <button
+                          className="text-sm text-purple-500"
+                          onClick={() => {
+                            return handleDeleteNotification(data.id as string)
+                          }}
+                        >
+                          既読にする
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <p className="text-slate-400">現在通知は届いていません</p>
+            )}
           </div>
         </Menu>
 
@@ -318,7 +509,11 @@ const HeaderComp = () => {
                 <div className="mr-2">
                   <img
                     className="w-8 h-8 rounded-full"
-                    src={user?.QueryMe.image || "/img/Vector.png"}
+                    src={
+                      user?.QueryMe?.image ||
+                      googleAccountMetadata?.avatar_url ||
+                      "/img/Vector.png"
+                    }
                     alt="avatar"
                   />
                 </div>
@@ -327,8 +522,8 @@ const HeaderComp = () => {
               </div>
             }
           >
-            <div className="flex flex-col w-[230px]">
-              {user && (
+            <div className="flex overflow-y-scroll flex-col w-[230px] max-h-screen">
+              {userInfo && (
                 <>
                   <div className="py-2 px-4 mb-4 border-b border-slate-200">
                     <p className="mb-2 text-sm text-slate-400">
@@ -338,14 +533,25 @@ const HeaderComp = () => {
                       <div className="mr-2 min-w-[40px]">
                         <img
                           className="w-10 h-10 rounded-full"
-                          src={user.QueryMe.image || "/img/Vector.png"}
-                          alt={user.QueryMe.user_name || "avatar"}
+                          src={
+                            user?.QueryMe?.image ||
+                            googleAccountMetadata?.avatar_url ||
+                            "/img/Vector.png"
+                          }
+                          alt={
+                            user?.QueryMe?.user_name ||
+                            googleAccountMetadata?.full_name ||
+                            "avatar"
+                          }
                         />
                       </div>
                       <div className="overflow-scroll no-scrollbar">
-                        <p className="font-bold">{user.QueryMe.user_name}</p>
+                        <p className="font-bold">
+                          {user?.QueryMe?.user_name ||
+                            googleAccountMetadata?.full_name}
+                        </p>
                         <p className="text-sm text-slate-400">
-                          {userInfo?.email}
+                          {userInfo.email}
                         </p>
                       </div>
                     </div>
@@ -372,12 +578,12 @@ const HeaderComp = () => {
                         </div>
                       }
                     >
-                      <Link href={`/myPage/${user?.QueryMe.id}/profile`}>
+                      <Link href={`/myPage/${userInfo.id}/profile`}>
                         <a
                           className={cc([
                             "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
                             router.pathname ===
-                              `/myPage/${user?.QueryMe.id}/profile` &&
+                              `/myPage/${userInfo.id}/profile` &&
                               "bg-slate-100 text-purple-400",
                           ])}
                         >
@@ -388,20 +594,22 @@ const HeaderComp = () => {
                         </a>
                       </Link>
 
-                      {userLinks.map(({ href, icon, label }) => (
-                        <Link key={label} href={href}>
-                          <a
-                            className={cc([
-                              "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
-                              router.pathname === href &&
-                                "bg-slate-100 text-purple-400",
-                            ])}
-                          >
-                            <p>{label}</p>
-                            <div className="w-8">{icon}</div>
-                          </a>
-                        </Link>
-                      ))}
+                      {userLinks.map(({ href, icon, label }) => {
+                        return (
+                          <Link key={label} href={href}>
+                            <a
+                              className={cc([
+                                "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                                router.pathname === href &&
+                                  "bg-slate-100 text-purple-400",
+                              ])}
+                            >
+                              <p>{label}</p>
+                              <div className="w-8">{icon}</div>
+                            </a>
+                          </Link>
+                        )
+                      })}
                     </Accordion>
                   </div>
                   <div className="mb-4">
@@ -426,20 +634,22 @@ const HeaderComp = () => {
                         </div>
                       }
                     >
-                      {userStoryLinks.map(({ href, icon, label }) => (
-                        <Link key={label} href={href}>
-                          <a
-                            className={cc([
-                              "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
-                              router.pathname === href &&
-                                "bg-slate-100 text-purple-400",
-                            ])}
-                          >
-                            <p>{label}</p>
-                            <div className="w-8">{icon}</div>
-                          </a>
-                        </Link>
-                      ))}
+                      {userStoryLinks.map(({ href, icon, label }) => {
+                        return (
+                          <Link key={label} href={href}>
+                            <a
+                              className={cc([
+                                "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                                router.pathname === href &&
+                                  "bg-slate-100 text-purple-400",
+                              ])}
+                            >
+                              <p>{label}</p>
+                              <div className="w-8">{icon}</div>
+                            </a>
+                          </Link>
+                        )
+                      })}
                     </Accordion>
                   </div>
                   <div className="mb-4">
@@ -464,20 +674,22 @@ const HeaderComp = () => {
                         </div>
                       }
                     >
-                      {userSettingMaterialLinks.map(({ href, icon, label }) => (
-                        <Link key={label} href={href}>
-                          <a
-                            className={cc([
-                              "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
-                              router.pathname === href &&
-                                "bg-slate-100 text-purple-400",
-                            ])}
-                          >
-                            <p>{label}</p>
-                            <div className="w-8">{icon}</div>
-                          </a>
-                        </Link>
-                      ))}
+                      {userSettingMaterialLinks.map(({ href, icon, label }) => {
+                        return (
+                          <Link key={label} href={href}>
+                            <a
+                              className={cc([
+                                "py-2 px-4 w-full text-lg flex font-bold items-center text-slate-600 hover:bg-slate-100 hover:text-purple-400 justify-between rounded-xl duration-200",
+                                router.pathname === href &&
+                                  "bg-slate-100 text-purple-400",
+                              ])}
+                            >
+                              <p>{label}</p>
+                              <div className="w-8">{icon}</div>
+                            </a>
+                          </Link>
+                        )
+                      })}
                     </Accordion>
                   </div>
 
@@ -523,7 +735,7 @@ const HeaderComp = () => {
                   </Accordion>
                 </>
               )}
-              {!user && (
+              {!userInfo && (
                 <div>
                   <Link href="/signin">
                     <a className="flex justify-between items-center py-2 px-4 w-full text-lg font-bold hover:text-yellow-400 hover:bg-purple-500 rounded-xl duration-200">

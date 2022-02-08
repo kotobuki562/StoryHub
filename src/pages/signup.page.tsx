@@ -1,99 +1,171 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable import/no-default-export */
-import { useMutation } from "@apollo/client"
-import gql from "graphql-tag"
+
+import axios from "axios"
 import Router from "next/router"
-import { useState } from "react"
-import { Tab } from "src/components/blocks/Tab"
+import { useCallback } from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "react-hot-toast"
+import { Alert } from "src/components/atoms/Alert"
+import { Button } from "src/components/atoms/Button"
+import { Input } from "src/components/atoms/Input"
 import { Layout } from "src/components/Layout"
+import { supabase } from "src/lib/supabase"
 
-const SignupMutation = gql`
-  mutation Mutation($email: String!, $userName: String) {
-    signupUser(email: $email, user_name: $userName) {
-      id
-      user_name
-    }
-  }
-`
+const SignUp = () => {
+  const {
+    formState: { errors },
+    handleSubmit,
+    register,
+  } = useForm()
 
-const Signup = () => {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
+  const handleSignup = handleSubmit(async ({ email, password, userName }) => {
+    await axios
+      .post("/api/auth/signup", {
+        email,
+        password,
+        userName,
+      })
+      .then(() => {
+        Router.push("/signin")
+        toast.custom(t => {
+          return (
+            <Alert
+              t={t}
+              usage="success"
+              title="アカウント登録しました"
+              message="送信したメールの認証リンクに接続してからログインしてください"
+            />
+          )
+        })
+      })
+      .catch(error => {
+        toast.custom(t => {
+          return (
+            <Alert
+              t={t}
+              usage="error"
+              title="ログインに失敗しました"
+              message={error.response.data.message}
+            />
+          )
+        })
+      })
+  })
 
-  const [signup] = useMutation(SignupMutation)
+  const handleSigninWithGoogle = useCallback(async () => {
+    await supabase.auth
+      .signIn({
+        provider: "google",
+      })
+      .then(res => {
+        // eslint-disable-next-line no-console
+        console.log(res)
+
+        if (res.session) {
+          Router.push("/signin")
+          toast.custom(t => {
+            return (
+              <Alert
+                t={t}
+                usage="success"
+                title="アカウントの作成に成功しました"
+                message="登録したメールアドレス宛に認証のリンクを送信しました。認証後ログインしてください。"
+              />
+            )
+          })
+        }
+      })
+      .catch(error => {
+        // eslint-disable-next-line no-console
+        console.log(error)
+
+        toast.custom(t => {
+          return (
+            <Alert
+              t={t}
+              usage="error"
+              title="アカウントの作成に失敗しました"
+              message={error.message}
+            />
+          )
+        })
+      })
+  }, [])
 
   return (
-    <Layout>
-      <Tab
-        color="purple"
-        values={[
-          {
-            label: "Signup",
-            children: <div className="w-[100px] h-[100px] bg-slate-300"></div>,
-          },
-          {
-            label: "Login",
-            children: <div className="w-[100px] h-[100px] bg-purple-300"></div>,
-          },
-        ]}
-      />
-      <div>
+    <Layout
+      meta={{
+        pageName: `StoryHub | ログイン`,
+        description: `メールアドレスとパスワードで簡単ログイン`,
+        cardImage: `/img/StoryHubLogo.png`,
+      }}
+    >
+      <div className="flex flex-col justify-center items-center w-full">
+        <img
+          className="w-[300px] xs:w-[500px]"
+          src="/img/StoryHubLogo.png"
+          alt="Logo"
+        />
+        <Button
+          type="button"
+          usage="base"
+          text="Google"
+          onClick={handleSigninWithGoogle}
+        />
         <form
-          onSubmit={async e => {
-            e.preventDefault()
-            await signup({
-              variables: {
-                email,
-                user_name: name,
-              },
-            })
-            Router.push("/")
-          }}
+          className="grid grid-cols-1 gap-5 w-[300px] xs:w-[500px]"
+          onSubmit={handleSignup}
         >
-          <h1>Signup user</h1>
-          <input
-            autoFocus
-            onChange={e => setName(e.target.value)}
-            placeholder="Name"
-            type="text"
-            value={name}
-          />
-          <input
-            onChange={e => setEmail(e.target.value)}
-            placeholder="Email address)"
-            type="text"
-            value={email}
-          />
-          <input disabled={!name || !email} type="submit" value="Signup" />
+          <div className="w-full">
+            <Input
+              label="User Name"
+              type="text"
+              placeholder="User Name"
+              {...register("userName", {
+                required: "ユーザー名は必須です",
+              })}
+              error={{
+                isError: errors.userName,
+                message: errors.userName?.message,
+              }}
+            />
+          </div>
+          <div className="w-full">
+            <Input
+              label="Email"
+              type="email"
+              placeholder="Email"
+              {...register("email", {
+                required: "メールアドレスは必須です",
+              })}
+              error={{
+                isError: errors.email,
+                message: errors.email?.message,
+              }}
+            />
+          </div>
+
+          <div className="w-full">
+            <Input
+              label="Password"
+              type="password"
+              placeholder="Password"
+              {...register("password", {
+                required: "パスワードは必須です",
+              })}
+              error={{
+                isError: errors.password,
+                message: errors.password?.message,
+              }}
+            />
+          </div>
+
+          <Button type="submit" usage="base" text="新規登録" />
         </form>
       </div>
-      <style jsx>{`
-        .page {
-          background: white;
-          padding: 3rem;
-          display: flex;
-          justify-content: center;
-        }
-
-        input[type="text"] {
-          width: 100%;
-          padding: 0.5rem;
-          margin: 0.5rem 0;
-          border-radius: 0.25rem;
-          border: 0.125rem solid rgba(0, 0, 0, 0.2);
-        }
-
-        input[type="submit"] {
-          background: #ececec;
-          border: 0;
-          padding: 1rem 2rem;
-        }
-
-        .back {
-          margin-left: 1rem;
-        }
-      `}</style>
     </Layout>
   )
 }
 
-export default Signup
+export default SignUp

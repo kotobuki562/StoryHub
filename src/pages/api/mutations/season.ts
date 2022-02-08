@@ -15,8 +15,8 @@ const createSeason = (t: ObjectDefinitionBlock<"Mutation">) => {
       publish: nonNull(booleanArg()),
       acessToken: nonNull(stringArg()),
     },
-    resolve: (_, args, _ctx) =>
-      prisma.season.create({
+    resolve: async (_, args, _ctx) => {
+      return await prisma.season.create({
         data: {
           story_id: args.storyId,
           season_title: args.seasonTitle,
@@ -24,7 +24,8 @@ const createSeason = (t: ObjectDefinitionBlock<"Mutation">) => {
           season_image: args.seasonImage,
           publish: args.publish,
         },
-      }),
+      })
+    },
   })
 }
 
@@ -41,9 +42,9 @@ const updateSeason = (t: ObjectDefinitionBlock<"Mutation">) => {
       acessToken: nonNull(stringArg()),
       userId: nonNull(stringArg()),
     },
-    resolve: (_, args) =>
-      isSafe(args.acessToken, args.userId)
-        ? prisma.season.update({
+    resolve: async (_, args) => {
+      return isSafe(args.acessToken, args.userId)
+        ? await prisma.season.update({
             where: {
               id: `${args.seasonId}`,
             },
@@ -56,7 +57,8 @@ const updateSeason = (t: ObjectDefinitionBlock<"Mutation">) => {
               updated_at: new Date(),
             },
           })
-        : null,
+        : null
+    },
   })
 }
 
@@ -68,14 +70,15 @@ const deleteSeason = (t: ObjectDefinitionBlock<"Mutation">) => {
       acessToken: nonNull(stringArg()),
       userId: nonNull(stringArg()),
     },
-    resolve: (_, args) =>
-      isSafe(args.acessToken, args.userId)
-        ? prisma.season.delete({
+    resolve: async (_, args) => {
+      return isSafe(args.acessToken, args.userId)
+        ? await prisma.season.delete({
             where: {
               id: `${args.seasonId}`,
             },
           })
-        : null,
+        : null
+    },
   })
 }
 

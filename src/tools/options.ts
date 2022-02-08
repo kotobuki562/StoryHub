@@ -1,3 +1,15 @@
+export const reviewStars: [1, 2, 3, 4, 5] = [1, 2, 3, 4, 5]
+
+export type Star = 1 | 2 | 3 | 4 | 5
+
+export const reviewState = {
+  1: "BAD",
+  2: "SOSO",
+  3: "GOOD",
+  4: "EXCELLENT",
+  5: "WOW",
+}
+
 export const characterCategory: Array<{
   nameEn: string
   nameJa: string

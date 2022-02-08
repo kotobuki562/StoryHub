@@ -13,8 +13,8 @@ const resizeFile = (
   file: Blob,
   maxWidth: number,
   maxHeight: number
-): Promise<string | Blob | File | ProgressEvent<FileReader>> =>
-  new Promise(resolve => {
+): Promise<string | Blob | File | ProgressEvent<FileReader>> => {
+  return new Promise(resolve => {
     Resizer.imageFileResizer(
       file,
       maxWidth,
@@ -28,6 +28,7 @@ const resizeFile = (
       "base64"
     )
   })
+}
 
 const useResize = ({ aspect, maxHeight, maxWidth }: UseAvatar) => {
   const [upImgUrl, setUpImgUrl] = useState<string | null>(null)
@@ -68,9 +69,9 @@ const useResize = ({ aspect, maxHeight, maxWidth }: UseAvatar) => {
             type: "image/png",
           })
           const reader = new FileReader()
-          reader.addEventListener("load", () =>
-            setUpImgUrl(reader.result as string)
-          )
+          reader.addEventListener("load", () => {
+            return setUpImgUrl(reader.result as string)
+          })
 
           reader.readAsDataURL(blobData)
         } catch (e) {

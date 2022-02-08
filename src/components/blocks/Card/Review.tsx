@@ -1,27 +1,34 @@
 /* eslint-disable @next/next/no-img-element */
 import { StarIcon } from "@heroicons/react/solid"
+import { BookOpenIcon, ExternalLinkIcon } from "@heroicons/react/solid"
 import cc from "classcat"
-import { format } from "date-fns"
 import Link from "next/link"
 import type { VFC } from "react"
-import { memo, useState } from "react"
+import { memo } from "react"
 import type { NexusGenFieldTypes } from "src/generated/nexus-typegen"
 
 const reviewStars = [1, 2, 3, 4, 5]
 
+type Star = 1 | 2 | 3 | 4 | 5
+
+const review = {
+  1: "BAD",
+  2: "SOSO",
+  3: "GOOD",
+  4: "EXCELLENT",
+  5: "WOW",
+}
+
 const ReviewCardComp: VFC<NexusGenFieldTypes["Review"]> = ({
-  created_at,
   id,
-  review_body,
   review_title,
   stars,
   story_id,
   user,
 }) => {
-  const [isShowMore, setIsShowMore] = useState(false)
   return (
-    <article className="flex flex-col justify-between items-center p-4 w-[300px] h-full bg-white rounded-xl shadow-lg">
-      <div className="flex justify-start items-center mb-4 w-full text-sm sm:text-base">
+    <article className="flex flex-col justify-between items-center w-[300px] h-full bg-white rounded-xl shadow-lg">
+      <div className="flex justify-start items-center px-4 pt-4 mb-4 w-full text-sm sm:text-base">
         <div className="mr-2 min-w-[2rem] sm:min-w-[2.5rem]">
           <img
             className="object-cover object-center w-8 h-8 rounded-full sm:w-10 sm:h-10"
@@ -33,58 +40,54 @@ const ReviewCardComp: VFC<NexusGenFieldTypes["Review"]> = ({
           <p className="font-bold">{user?.user_name}</p>
         </div>
       </div>
+
+      <div className="flex flex-col items-center mb-2">
+        <p className="mb-2 font-mono text-2xl font-bold text-yellow-400">
+          {review[stars as Star]}
+        </p>
+
+        <img className="w-12 h-12" src={`/img/${stars}.svg`} alt="" />
+      </div>
       {stars && (
         <div className="flex gap-1 items-center mb-4">
-          {reviewStars.map(star => (
-            <StarIcon
-              key={star}
-              className={cc([
-                "w-8 h-8",
-                {
-                  "text-gray-500": star > stars,
-                  "text-yellow-400": star <= stars,
-                },
-              ])}
-            />
-          ))}
+          {reviewStars.map(star => {
+            return (
+              <StarIcon
+                key={star}
+                className={cc([
+                  "w-10 h-10",
+                  {
+                    "text-gray-500": star > stars,
+                    "text-yellow-400": star <= stars,
+                  },
+                ])}
+              />
+            )
+          })}
         </div>
       )}
-      <div className="flex flex-col justify-start mb-4 w-full">
-        <h3 className="mb-2 text-left">
-          <Link href="/review/[id]" as={`/review/${id}`}>
-            <a className="font-bold text-left text-purple-500 break-all">
-              {review_title}
-            </a>
-          </Link>
+      <div className="flex flex-col justify-start px-4 mb-4 w-full">
+        <h3 className="mb-2 font-bold text-left text-purple-500 break-all">
+          {review_title}
         </h3>
-        <p className="text-left text-slate-600 whitespace-pre-wrap">
-          {isShowMore ? review_body : review_body?.slice(0, 30)}
-        </p>
-        {review_body && review_body.length > 30 && (
-          <button
-            className="flex text-sm text-purple-300"
-            onClick={() => {
-              setIsShowMore(!isShowMore)
-            }}
-          >
-            {isShowMore ? "閉じる" : "全て見る"}
-          </button>
-        )}
       </div>
-      <Link
-        href={{
-          pathname: "/story/[storyId]",
-          query: { storyId: story_id },
-        }}
-      >
-        <a className="flex w-full text-purple-500 underline">
-          ストーリーを見る
-        </a>
-      </Link>
-      <div className="flex justify-end w-full">
-        <p className="text-right text-slate-500">
-          {created_at && format(new Date(created_at), "yyyy/MM/dd")}
-        </p>
+
+      <div className="flex items-center w-full">
+        <Link
+          href={{
+            pathname: "/story/[storyId]",
+            query: { storyId: story_id },
+          }}
+        >
+          <a className="flex flex-col justify-center items-center py-4 w-1/2 text-purple-500 hover:text-white bg-purple-100 hover:bg-purple-500 rounded-bl-xl duration-200">
+            <BookOpenIcon className="w-10 h-10" />
+          </a>
+        </Link>
+        <Link href="/review/[reviewId]" as={`/review/${id}`}>
+          <a className="flex flex-col justify-center items-center py-4 w-1/2 text-purple-500 hover:text-white bg-purple-100 hover:bg-purple-500 rounded-br-xl duration-200">
+            <ExternalLinkIcon className="w-10 h-10" />
+          </a>
+        </Link>
       </div>
     </article>
   )

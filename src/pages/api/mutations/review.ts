@@ -27,8 +27,8 @@ const createReview = (t: ObjectDefinitionBlock<"Mutation">) => {
       stars: nonNull(intArg()),
       acessToken: nonNull(stringArg()),
     },
-    resolve: (_, args, _ctx) =>
-      prisma.review.create({
+    resolve: async (_, args, _ctx) => {
+      return prisma.review.create({
         data: {
           user_id: `${decodeUserId(args.acessToken)}`,
           story_id: args.storyId,
@@ -36,7 +36,8 @@ const createReview = (t: ObjectDefinitionBlock<"Mutation">) => {
           review_body: args.reviewBody,
           stars: args.stars,
         },
-      }),
+      })
+    },
   })
 }
 
@@ -51,9 +52,9 @@ const updateReview = (t: ObjectDefinitionBlock<"Mutation">) => {
       acessToken: nonNull(stringArg()),
       userId: nonNull(stringArg()),
     },
-    resolve: (_, args) =>
-      isSafe(args.acessToken, args.userId)
-        ? prisma.review.update({
+    resolve: async (_, args) => {
+      return isSafe(args.acessToken, args.userId)
+        ? await prisma.review.update({
             where: {
               id: `${args.reviewId}`,
             },
@@ -65,7 +66,8 @@ const updateReview = (t: ObjectDefinitionBlock<"Mutation">) => {
               updated_at: new Date(),
             },
           })
-        : null,
+        : null
+    },
   })
 }
 
@@ -77,14 +79,15 @@ const deleteReview = (t: ObjectDefinitionBlock<"Mutation">) => {
       acessToken: nonNull(stringArg()),
       userId: nonNull(stringArg()),
     },
-    resolve: (_, args) =>
-      isSafe(args.acessToken, args.userId)
+    resolve: (_, args) => {
+      return isSafe(args.acessToken, args.userId)
         ? prisma.review.delete({
             where: {
               id: `${args.reviewId}`,
             },
           })
-        : null,
+        : null
+    },
   })
 }
 

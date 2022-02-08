@@ -9,8 +9,8 @@ const storyArgs = {
   searchCategory: nullable(stringArg()),
 }
 
-const QueryStories = (t: ObjectDefinitionBlock<"Query">) =>
-  t.list.field("QueryStories", {
+const QueryStories = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.list.field("QueryStories", {
     type: "Story",
     args: {
       ...storyArgs,
@@ -39,17 +39,18 @@ const QueryStories = (t: ObjectDefinitionBlock<"Query">) =>
       return stories
     },
   })
+}
 
-const QueryMyStories = (t: ObjectDefinitionBlock<"Query">) =>
-  t.list.field("QueryMyStories", {
+const QueryMyStories = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.list.field("QueryMyStories", {
     type: "Story",
     args: {
       ...storyArgs,
       ...authArgs,
     },
-    resolve: (_parent, args) =>
-      isSafe(args.accessToken, args.userId)
-        ? prisma.story.findMany({
+    resolve: async (_parent, args) => {
+      return isSafe(args.accessToken, args.userId)
+        ? await prisma.story.findMany({
             orderBy: { created_at: "desc" },
             where: {
               ...(args.searchTitle && {
@@ -64,58 +65,68 @@ const QueryMyStories = (t: ObjectDefinitionBlock<"Query">) =>
               user_id: args.userId,
             },
           })
-        : null,
+        : null
+    },
   })
+}
 
-const QueryStoryById = (t: ObjectDefinitionBlock<"Query">) =>
-  t.field("QueryStoryById", {
+const QueryStoryById = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryStoryById", {
     type: "Story",
     args: {
       id: nonNull(stringArg()),
     },
-    resolve: (_parent, args) =>
-      prisma.story.findUnique({
+    resolve: async (_parent, args) => {
+      return await prisma.story.findUnique({
         where: { id: args.id },
-      }),
+      })
+    },
   })
+}
 
-const QueryMyStoryById = (t: ObjectDefinitionBlock<"Query">) =>
-  t.field("QueryMyStoryById", {
+const QueryMyStoryById = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryMyStoryById", {
     type: "Story",
     args: {
       id: nonNull(stringArg()),
       userId: nonNull(stringArg()),
       accessToken: nonNull(stringArg()),
     },
-    resolve: (_parent, args) =>
-      isSafe(args.accessToken, args.userId)
-        ? prisma.story.findUnique({
+    resolve: async (_parent, args) => {
+      return isSafe(args.accessToken, args.userId)
+        ? await prisma.story.findUnique({
             where: { id: args.id },
           })
-        : null,
+        : null
+    },
   })
+}
 
-const QueryStoriesCountByPublish = (t: ObjectDefinitionBlock<"Query">) =>
-  t.field("QueryStoriesCountByPublish", {
+const QueryStoriesCountByPublish = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryStoriesCountByPublish", {
     type: "Int",
-    resolve: (_parent, _args) =>
-      prisma.story.count({
+    resolve: async (_parent, _args) => {
+      return await prisma.story.count({
         where: {
           publish: true,
         },
-      }),
+      })
+    },
   })
+}
 
-const QueryStoriesCountByUnPublish = (t: ObjectDefinitionBlock<"Query">) =>
-  t.field("QueryStoriesCountByUnPublish", {
+const QueryStoriesCountByUnPublish = (t: ObjectDefinitionBlock<"Query">) => {
+  return t.field("QueryStoriesCountByUnPublish", {
     type: "Int",
-    resolve: (_parent, _args) =>
-      prisma.story.count({
+    resolve: async (_parent, _args) => {
+      return await prisma.story.count({
         where: {
           publish: false,
         },
-      }),
+      })
+    },
   })
+}
 
 export {
   QueryMyStories,
