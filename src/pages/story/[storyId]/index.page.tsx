@@ -3,12 +3,11 @@
 /* eslint-disable import/no-default-export */
 import { useQuery } from "@apollo/client"
 import { PencilAltIcon, XCircleIcon } from "@heroicons/react/solid"
-import cc from "classcat"
 import { format } from "date-fns"
 import gql from "graphql-tag"
 import type { GetStaticPropsContext, NextPage } from "next"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { ReviewCard } from "src/components/blocks/Card/ReviewByStory"
+import { ReviewCardOrigin } from "src/components/blocks/Card"
 import { SeasonCard } from "src/components/blocks/Card/Season"
 import { Modal } from "src/components/blocks/Modal"
 import { Tab } from "src/components/blocks/Tab"
@@ -264,9 +263,6 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
           style={{
             height: "calc(100vh - 64px)",
           }}
-          // style={{
-          //   height: "calc(100vh - 64px)",
-          // }}
         >
           <Tab
             color="purple"
@@ -371,22 +367,17 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
                   <div className="flex flex-col items-center py-4 w-full">
                     {reviews && reviews.length > 0 ? (
                       <div className="justify-center items-center w-full">
-                        <div
-                          className={cc([
-                            "grid gap-1 justify-center items-center w-full bg-purple-100",
-                            // reviews.lengthが3の倍数だったら, grid-cols-3にする
-                            reviews.length % 3 === 0
-                              ? "grid-cols-1 lg:grid-cols-3"
-                              : "grid-cols-1",
-                            // reviews.lengthが2の倍数だったら, grid-cols-2にする
-                            reviews.length % 2 === 0
-                              ? "grid-cols-1 sm:grid-cols-2"
-                              : "grid-cols-1",
-                          ])}
-                        >
-                          {reviews?.map(review => {
-                            return <ReviewCard key={review?.id} {...review} />
-                          })}
+                        <div className="justify-center items-center w-full">
+                          <div className="flex flex-wrap gap-8 justify-center w-full">
+                            {reviews?.map(review => {
+                              return (
+                                <ReviewCardOrigin
+                                  key={review?.id}
+                                  {...review}
+                                />
+                              )
+                            })}
+                          </div>
                         </div>
                         {/* handleChangePageSizeのボタンをつける */}
                         {reviewCountData?.QueryReviewsCountByStoryId &&

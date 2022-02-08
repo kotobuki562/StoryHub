@@ -112,12 +112,7 @@ const Signin = () => {
           src="/img/StoryHubLogo.png"
           alt="Logo"
         />
-        <Button
-          type="button"
-          usage="base"
-          text="Google"
-          onClick={handleSigninWithGoogle}
-        />
+
         <form
           className="grid grid-cols-1 gap-5 w-[300px] xs:w-[500px]"
           onSubmit={handleSubmit(handleSignin)}
@@ -153,6 +148,12 @@ const Signin = () => {
           </div>
 
           <Button type="submit" usage="base" text="ログイン" />
+          <Button
+            type="button"
+            usage="base"
+            text="Google"
+            onClick={handleSigninWithGoogle}
+          />
         </form>
       </div>
     </Layout>

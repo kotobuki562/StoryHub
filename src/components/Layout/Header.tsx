@@ -17,6 +17,7 @@ import {
   UserAddIcon,
   UserCircleIcon,
   UserGroupIcon,
+  XCircleIcon,
 } from "@heroicons/react/solid"
 import cc from "classcat"
 import { format } from "date-fns"
@@ -412,7 +413,7 @@ const HeaderComp = () => {
         >
           <div className="overflow-scroll w-[210px] max-h-screen no-scrollbar">
             {notificationLength > 0 ? (
-              <div className="grid grid-cols-1 gap-3">
+              <div className="grid grid-cols-1 gap-5">
                 <button
                   className="py-2 w-full font-bold text-purple-500 bg-purple-100 rounded-md"
                   onClick={handleDeleteAllNotifications}
@@ -422,7 +423,7 @@ const HeaderComp = () => {
                 </button>
                 {notifications?.QueryNotificationsForUser.map(data => {
                   return (
-                    <div className="group" key={data.id}>
+                    <div className="group relative" key={data.id}>
                       <div className="flex items-center mb-2">
                         <div className="mr-2 min-w-[2rem]">
                           <img
@@ -473,14 +474,14 @@ const HeaderComp = () => {
                         </p>
                       )}
 
-                      <div>
+                      <div className="hidden group-hover:block absolute top-1 right-1">
                         <button
                           className="text-sm text-purple-500"
                           onClick={() => {
                             return handleDeleteNotification(data.id as string)
                           }}
                         >
-                          既読にする
+                          <XCircleIcon className="w-6 h-6" />
                         </button>
                       </div>
                     </div>
