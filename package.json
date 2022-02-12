@@ -18,6 +18,7 @@
     "fix": "run-s -l -c fix:lint fix:prettier",
     "fix:lint": "next lint --fix",
     "fix:prettier": "prettier --write .",
+    "debug:lint": "DEBUG=eslint:* eslint .",
     "seed": "npx prisma db seed",
     "prisma:format": "npx prisma format",
     "prisma:generate": "npx prisma generate",

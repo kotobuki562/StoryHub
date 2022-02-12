@@ -250,18 +250,21 @@ export interface NexusGenFieldTypes {
     user_id: string | null; // String
   }
   Mutation: { // field return type
+    createEpisode: NexusGenRootTypes['Episode'] | null; // Episode
     createNotification: NexusGenRootTypes['Notification'] | null; // Notification
     createReview: NexusGenRootTypes['Review'] | null; // Review
     createSeason: NexusGenRootTypes['Season'] | null; // Season
     createStory: NexusGenRootTypes['Story'] | null; // Story
     createUser: NexusGenRootTypes['User'] | null; // User
     deleteAllNotifications: NexusGenRootTypes['Notification'] | null; // Notification
+    deleteEpisode: NexusGenRootTypes['Episode'] | null; // Episode
     deleteNotification: NexusGenRootTypes['Notification'] | null; // Notification
     deleteReview: NexusGenRootTypes['Review'] | null; // Review
     deleteSeason: NexusGenRootTypes['Season'] | null; // Season
     deleteStory: NexusGenRootTypes['Story'] | null; // Story
     deleteUser: NexusGenRootTypes['User'] | null; // User
     signupUser: NexusGenRootTypes['User'] | null; // User
+    updateEpisode: NexusGenRootTypes['Episode'] | null; // Episode
     updateReview: NexusGenRootTypes['Review'] | null; // Review
     updateSeason: NexusGenRootTypes['Season'] | null; // Season
     updateStory: NexusGenRootTypes['Story'] | null; // Story
@@ -519,18 +522,21 @@ export interface NexusGenFieldTypeNames {
     user_id: 'String'
   }
   Mutation: { // field return type name
+    createEpisode: 'Episode'
     createNotification: 'Notification'
     createReview: 'Review'
     createSeason: 'Season'
     createStory: 'Story'
     createUser: 'User'
     deleteAllNotifications: 'Notification'
+    deleteEpisode: 'Episode'
     deleteNotification: 'Notification'
     deleteReview: 'Review'
     deleteSeason: 'Season'
     deleteStory: 'Story'
     deleteUser: 'User'
     signupUser: 'User'
+    updateEpisode: 'Episode'
     updateReview: 'Review'
     updateSeason: 'Season'
     updateStory: 'Story'
@@ -744,6 +750,14 @@ export interface NexusGenArgTypes {
     }
   }
   Mutation: {
+    createEpisode: { // args
+      acessToken: string; // String!
+      episodeImage?: string | null; // String
+      episodeSynopsis: string; // String!
+      episodeTitle: string; // String!
+      publish: boolean; // Boolean!
+      userId: string; // String!
+    }
     createNotification: { // args
       accessToken: string; // String!
       favoriteId?: string | null; // String
@@ -784,6 +798,11 @@ export interface NexusGenArgTypes {
     deleteAllNotifications: { // args
       accessToken: string; // String!
     }
+    deleteEpisode: { // args
+      acessToken: string; // String!
+      episodeId: string; // String!
+      userId: string; // String!
+    }
     deleteNotification: { // args
       accessToken: string; // String!
       notificationId: string; // String!
@@ -809,6 +828,15 @@ export interface NexusGenArgTypes {
       email: string; // String!
       password: string; // String!
       userName?: string | null; // String
+    }
+    updateEpisode: { // args
+      acessToken: string; // String!
+      episodeId: string; // String!
+      episodeImage?: string | null; // String
+      episodeSynopsis: string; // String!
+      episodeTitle: string; // String!
+      publish: boolean; // Boolean!
+      userId: string; // String!
     }
     updateReview: { // args
       acessToken: string; // String!

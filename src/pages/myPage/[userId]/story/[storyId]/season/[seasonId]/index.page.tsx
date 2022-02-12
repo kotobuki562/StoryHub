@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @next/next/no-img-element */
 import { gql, useMutation, useQuery } from "@apollo/client"
+import { PlusIcon } from "@heroicons/react/solid"
 import cc from "classcat"
 import type { NextPage } from "next"
+import Link from "next/link"
 import { useRouter } from "next/router"
 import { memo, useCallback, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
@@ -431,7 +433,18 @@ const CreateSeason: NextPage = () => {
             {
               label: "エピソード",
               children: (
-                <div className="flex flex-col justify-center items-center py-4 w-full"></div>
+                <div className="flex flex-col justify-center items-center py-4 w-full">
+                  <Link
+                    href={{
+                      pathname: `/myPage/${userId}/story/${storyId}/season/${seasonId}/episode/create`,
+                    }}
+                  >
+                    <a className="flex items-center py-2 px-4 mb-4 text-lg font-bold text-purple-500 bg-yellow-100 hover:bg-yellow-300 rounded duration-200">
+                      <PlusIcon className="mr-2 w-6 h-6" />
+                      エピソードの作成へ
+                    </a>
+                  </Link>
+                </div>
               ),
             },
           ]}

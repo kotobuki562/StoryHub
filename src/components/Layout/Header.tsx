@@ -318,7 +318,7 @@ const HeaderComp = () => {
             </div>
           }
         >
-          <div className="px-2 pb-2 w-[250px] max-h-[500px] xs:max-h-screen no-scrollbar">
+          <div className="p-2 w-[250px] max-h-[500px] xs:max-h-screen no-scrollbar">
             {notifications && notificationLength > 0 ? (
               <NotificationBar
                 notifications={notifications.QueryNotificationsForUser}
@@ -360,7 +360,7 @@ const HeaderComp = () => {
               </div>
             }
           >
-            <div className="flex overflow-y-scroll relative flex-col px-2 pb-2 w-[220px] max-h-[500px] xs:w-[230px] xs:max-h-screen">
+            <div className="flex overflow-y-scroll relative flex-col p-2 w-[220px] max-h-[500px] xs:w-[230px] xs:max-h-screen">
               {userInfo ? (
                 <UserBar user={user?.QueryMe} userInfo={userInfo} google={googleAccountMetadata} />
               ) : (

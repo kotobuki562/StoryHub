@@ -97,21 +97,15 @@ const SignUp = () => {
       }}
     >
       <div
-        className="flex relative flex-col w-full"
+        className="flex relative flex-col w-full h-[100vh]"
         style={{
           backgroundImage: `url("/img/Welcome.gif")`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
-          height: "calc(100vh - 64px)",
         }}
       >
-        <div
-          className="flex overflow-scroll absolute inset-0 flex-col items-center py-8 w-full bg-white/80 backdrop-blur"
-          style={{
-            height: "calc(100vh - 64px)",
-          }}
-        >
+        <div className="flex overflow-scroll absolute inset-0 flex-col items-center py-8 w-full h-[100vh] bg-white/80 backdrop-blur">
           <img
             className="w-[300px] xs:w-[500px]"
             src="/img/StoryHubLogo.png"
