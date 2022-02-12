@@ -12,6 +12,12 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true // <-- eslintでリント
   },
+    "files.watcherExclude": {
+    "**/__generated__/**": true,
+    "**/build/**": true,
+    "**/coverage/**": true,
+    "**/.next/**": true
+  },
   // デフォルトフォーマッタをprettierに
   "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

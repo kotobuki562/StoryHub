@@ -339,7 +339,7 @@ const CreateStoryPage: NextPage = () => {
                 onClose={handleHiddenAgeCategoryMenu}
                 viewer={<p className="text-purple-500">年齢制限詳細</p>}
               >
-                <div className="grid grid-cols-1 gap-2 w-[300px]">
+                <div className="grid grid-cols-1 gap-2 p-2 w-[300px]">
                   {ageCategories.map(category => {
                     return (
                       <div
