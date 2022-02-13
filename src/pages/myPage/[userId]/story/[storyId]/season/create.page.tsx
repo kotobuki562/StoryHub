@@ -12,6 +12,7 @@ import { Button } from "src/components/atoms/Button"
 import { Input } from "src/components/atoms/Input"
 import { Switch } from "src/components/atoms/Switch"
 import { TextArea } from "src/components/atoms/TextArea"
+import { BreadcrumbTrail } from "src/components/blocks/BreadcrumbTrail"
 import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout"
 import { LoadingLogo } from "src/components/Loading"
@@ -194,6 +195,25 @@ const CreateSeason: NextPage = () => {
   return (
     <Layout>
       <Toaster position="top-center" />
+      <div className="flex justify-start px-4">
+        <BreadcrumbTrail
+          separator=">"
+          breadcrumbs={[
+            {
+              href: `/myPage/${userId}/story`,
+              label: "ストーリー一覧",
+            },
+            {
+              label: "ストーリー詳細",
+              href: `/myPage/${userId}/story/${storyId}`,
+            },
+            {
+              label: "シーズン作成",
+              href: router.asPath,
+            },
+          ]}
+        />
+      </div>
       <div className="p-8">
         <Tab
           color="purple"

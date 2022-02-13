@@ -12,6 +12,7 @@ import { Input } from "src/components/atoms/Input"
 import { Select } from "src/components/atoms/Select"
 import { Switch } from "src/components/atoms/Switch"
 import { TextArea } from "src/components/atoms/TextArea"
+import { BreadcrumbTrail } from "src/components/blocks/BreadcrumbTrail"
 import { Menu } from "src/components/blocks/Menu"
 import { Layout } from "src/components/Layout"
 import { useStoryImage } from "src/hooks/storage/useStoryImage"
@@ -175,6 +176,21 @@ const CreateStoryPage: NextPage = () => {
   return (
     <Layout>
       <Toaster position="top-center" />
+      <div className="flex justify-start px-4">
+        <BreadcrumbTrail
+          separator=">"
+          breadcrumbs={[
+            {
+              href: `/myPage/${userId}/story`,
+              label: "ストーリー一覧",
+            },
+            {
+              label: "ストーリー作成",
+              href: router.asPath,
+            },
+          ]}
+        />
+      </div>
       <div className="p-8">
         <form onSubmit={handleSubmitData}>
           <div className="flex flex-col mb-4 w-full">
