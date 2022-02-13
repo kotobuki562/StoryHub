@@ -14,6 +14,7 @@ const createEpisode = (t: ObjectDefinitionBlock<"Mutation">) => {
       publish: nonNull(booleanArg()),
       acessToken: nonNull(stringArg()),
       userId: nonNull(stringArg()),
+      seasonId: nonNull(stringArg()),
     },
     resolve: async (_, args, _ctx) => {
       const story = isSafe(args.acessToken, args.userId)
@@ -23,6 +24,7 @@ const createEpisode = (t: ObjectDefinitionBlock<"Mutation">) => {
               episode_synopsis: args.episodeSynopsis,
               episode_image: args.episodeImage,
               publish: args.publish,
+              season_id: args.seasonId,
             },
           })
         : null

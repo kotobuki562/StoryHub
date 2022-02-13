@@ -3,7 +3,7 @@ import { gql, useMutation } from "@apollo/client"
 import cc from "classcat"
 import type { NextPage } from "next"
 import { useRouter } from "next/router"
-import { memo, useCallback, useEffect, useState } from "react"
+import { memo, useCallback, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast, { Toaster } from "react-hot-toast"
 import { Alert } from "src/components/atoms/Alert"
@@ -124,7 +124,6 @@ const CreateStoryPage: NextPage = () => {
     getValues,
     handleSubmit,
     register,
-    watch,
   } = useForm({
     defaultValues: {
       viewingRestriction: "",
@@ -133,9 +132,6 @@ const CreateStoryPage: NextPage = () => {
       imageUrl: "",
     },
   })
-
-  const { synopsis, title } = watch()
-
   const handleSubmitData = handleSubmit(async data => {
     try {
       await createStory({
@@ -163,26 +159,24 @@ const CreateStoryPage: NextPage = () => {
     }
   })
 
-  useEffect(() => {
-    if (errorCreateStory) {
-      toast.custom(t => {
-        return (
-          <Alert
-            t={t}
-            title="エラーが発生しました"
-            usage="error"
-            message={errorCreateStory?.message}
-          />
-        )
-      })
-    }
-  }, [errorCreateStory])
+  if (errorCreateStory) {
+    toast.custom(t => {
+      return (
+        <Alert
+          t={t}
+          title="エラーが発生しました"
+          usage="error"
+          message={errorCreateStory?.message}
+        />
+      )
+    })
+  }
 
   return (
     <Layout>
       <Toaster position="top-center" />
       <div className="p-8">
-        <form className="p-4" onSubmit={handleSubmitData}>
+        <form onSubmit={handleSubmitData}>
           <div className="flex flex-col mb-4 w-full">
             <label className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500">
               <p>{isPublish ? "公開する" : "公開しない"}</p>
@@ -197,12 +191,12 @@ const CreateStoryPage: NextPage = () => {
             <label className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500">
               <p>カテゴリー</p>
             </label>
-            <div className="flex flex-wrap gap-2 mb-4 w-full">
+            <div className="flex flex-wrap gap-2 mb-4 w-full text-sm xs:text-base">
               {categories.map(data => {
                 return (
                   <button
                     className={cc([
-                      "py-1 px-2 rounded-full duration-200",
+                      "py-1 px-2 font-semibold rounded-full duration-200",
                       storyCategoryes.includes(data.category_title)
                         ? "text-white bg-purple-500"
                         : "bg-purple-100 text-purple-300",
@@ -221,7 +215,7 @@ const CreateStoryPage: NextPage = () => {
             <label className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500">
               <p>選択中</p>
             </label>
-            <div className="flex flex-wrap gap-4 w-full">
+            <div className="flex flex-wrap gap-4 w-full text-sm font-semibold xs:text-base">
               {storyCategoryes.map(category => {
                 return (
                   <div
@@ -236,13 +230,10 @@ const CreateStoryPage: NextPage = () => {
           </div>
 
           <div className="flex flex-col mb-4 w-full">
-            <p className={cc([title?.length > 50 && "text-red-500"])}>
-              {title?.length}/50
-            </p>
             <Input
               label="タイトル"
               required={true}
-              placeholder="ストーリーのタイトルを入力してください"
+              placeholder="50文字以内でストーリーのタイトルを入力してください"
               type="text"
               {...register("title", {
                 required: true,
@@ -389,11 +380,9 @@ const CreateStoryPage: NextPage = () => {
           </div>
 
           <div className="flex flex-col mb-4 w-full">
-            <p className={cc([synopsis?.length > 1000 && "text-red-500"])}>
-              {synopsis?.length}/1000
-            </p>
             <TextArea
               label="あらすじ"
+              placeholder="1000文字以内でストーリーのあらすじを入力してください。"
               required={true}
               {...register("synopsis", {
                 required: true,

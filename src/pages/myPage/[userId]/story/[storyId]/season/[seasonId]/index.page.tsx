@@ -194,17 +194,17 @@ const CreateSeason: NextPage = () => {
       return router.push(`/myPage/${userId}/story/${storyId}`)
     })
   }, [
-    updateSeason,
-    seasonId,
-    storyId,
-    isPublish,
-    userId,
-    getValues,
-    isStorage,
-    seasonImage,
     accessToken,
-    router,
+    getValues,
+    isPublish,
+    isStorage,
     mySeason?.QueryMySeasonById.season_title,
+    router,
+    seasonId,
+    seasonImage,
+    storyId,
+    updateSeason,
+    userId,
   ])
 
   useEffect(() => {
