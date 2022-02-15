@@ -6,7 +6,7 @@ import cc from "classcat"
 import type { NextPage } from "next"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { memo, useCallback, useEffect, useState } from "react"
+import { memo, useCallback, useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import toast, { Toaster } from "react-hot-toast"
 import { Alert } from "src/components/atoms/Alert"
@@ -14,6 +14,8 @@ import { Button } from "src/components/atoms/Button"
 import { Input } from "src/components/atoms/Input"
 import { Switch } from "src/components/atoms/Switch"
 import { TextArea } from "src/components/atoms/TextArea"
+import { BreadcrumbTrail } from "src/components/blocks/BreadcrumbTrail"
+import { MyEpisodeCard } from "src/components/blocks/Card"
 import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout"
 import { LoadingLogo } from "src/components/Loading"
@@ -53,6 +55,8 @@ const MySeasonQuery = gql`
     $queryMySeasonByIdId: String!
     $userId: String!
     $accessToken: String!
+    $episodeUserId: String
+    $episodeAccessToken: String
   ) {
     QueryMySeasonById(
       id: $queryMySeasonByIdId
@@ -72,6 +76,16 @@ const MySeasonQuery = gql`
         story_title
         story_synopsis
         story_image
+      }
+      episodes(
+        episodeUserId: $episodeUserId
+        episodeAccessToken: $episodeAccessToken
+      ) {
+        id
+        episode_title
+        episode_image
+        episode_synopsis
+        publish
       }
     }
   }
@@ -94,11 +108,23 @@ const CreateSeason: NextPage = () => {
       queryMySeasonByIdId: seasonId as string,
       userId: userId as string,
       accessToken: accessToken ? accessToken : null,
+      episodeUserId: userId as string,
+      episodeAccessToken: accessToken ? accessToken : null,
     },
   })
 
-  const { publish, season_image, season_synopsis, season_title, story } =
-    mySeason?.QueryMySeasonById || {}
+  const {
+    episodes: myEpisodes,
+    publish,
+    season_image,
+    season_synopsis,
+    season_title,
+    story,
+  } = mySeason?.QueryMySeasonById || {}
+
+  const episodes = useMemo(() => {
+    return myEpisodes ? myEpisodes : []
+  }, [myEpisodes])
 
   const [
     updateSeason,
@@ -245,6 +271,25 @@ const CreateSeason: NextPage = () => {
   return (
     <Layout>
       <Toaster position="top-center" />
+      <div className="flex justify-start">
+        <BreadcrumbTrail
+          separator=">"
+          breadcrumbs={[
+            {
+              href: `/myPage/${userId}/story`,
+              label: "ストーリー一覧",
+            },
+            {
+              label: "ストーリー詳細",
+              href: `/myPage/${userId}/story/${storyId}`,
+            },
+            {
+              label: "シーズン詳細",
+              href: router.asPath,
+            },
+          ]}
+        />
+      </div>
       <div className="p-8">
         <h2 className="mb-8 text-xl font-bold text-center text-purple-500 sm:text-4xl">
           {mySeason?.QueryMySeasonById.season_title}の詳細
@@ -405,6 +450,47 @@ const CreateSeason: NextPage = () => {
               ),
             },
             {
+              label: `${mySeason?.QueryMySeasonById.episodes?.length}個のエピソード`,
+              children: (
+                <div className="flex flex-col justify-center items-center py-4 w-full">
+                  <Link
+                    href={{
+                      pathname: `/myPage/${userId}/story/${storyId}/season/${seasonId}/episode/create`,
+                    }}
+                  >
+                    <a className="flex items-center py-2 px-4 mb-4 text-lg font-bold text-purple-500 bg-yellow-100 hover:bg-yellow-300 rounded duration-200">
+                      <PlusIcon className="mr-2 w-6 h-6" />
+                      エピソードの作成へ
+                    </a>
+                  </Link>
+                  {episodes.length > 0 && (
+                    <div className="flex flex-wrap gap-5 justify-center items-center w-full">
+                      {episodes.map((episode, index) => {
+                        return (
+                          <MyEpisodeCard
+                            key={episode?.id}
+                            chapters={null}
+                            created_at={undefined}
+                            episode_image={null}
+                            episode_synopsis={null}
+                            episode_title={null}
+                            id={null}
+                            publish={null}
+                            season={null}
+                            season_id={null}
+                            updated_at={undefined}
+                            {...episode}
+                            episodeNumber={index + 1}
+                            href={`/myPage/${userId}/story/${storyId}/season/${seasonId}/episode/${episode?.id}`}
+                          />
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              ),
+            },
+            {
               label: "ストーリー",
               children: (
                 <div className="flex flex-col justify-center items-center py-4 w-full">
@@ -427,23 +513,6 @@ const CreateSeason: NextPage = () => {
                       </p>
                     </div>
                   </div>
-                </div>
-              ),
-            },
-            {
-              label: "エピソード",
-              children: (
-                <div className="flex flex-col justify-center items-center py-4 w-full">
-                  <Link
-                    href={{
-                      pathname: `/myPage/${userId}/story/${storyId}/season/${seasonId}/episode/create`,
-                    }}
-                  >
-                    <a className="flex items-center py-2 px-4 mb-4 text-lg font-bold text-purple-500 bg-yellow-100 hover:bg-yellow-300 rounded duration-200">
-                      <PlusIcon className="mr-2 w-6 h-6" />
-                      エピソードの作成へ
-                    </a>
-                  </Link>
                 </div>
               ),
             },

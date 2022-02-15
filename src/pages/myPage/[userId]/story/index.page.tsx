@@ -45,9 +45,6 @@ const HomePage: NextPage = () => {
     accessToken: accessToken as string,
   })
 
-  // eslint-disable-next-line no-console
-  console.log(JSON.stringify(errorInfo, null, 2))
-
   useEffect(() => {
     if (errorInfo) {
       toast.custom(t => {
@@ -91,7 +88,7 @@ const HomePage: NextPage = () => {
         cardImage: `/img/StoryHubLogo.png`,
       }}
     >
-      <div className="flex justify-start px-4">
+      <div className="flex justify-start">
         <BreadcrumbTrail
           separator=">"
           breadcrumbs={[

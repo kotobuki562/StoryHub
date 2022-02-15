@@ -12,6 +12,7 @@ import { Button } from "src/components/atoms/Button"
 import { Input } from "src/components/atoms/Input"
 import { Switch } from "src/components/atoms/Switch"
 import { TextArea } from "src/components/atoms/TextArea"
+import { BreadcrumbTrail } from "src/components/blocks/BreadcrumbTrail"
 import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout"
 import { LoadingLogo } from "src/components/Loading"
@@ -179,6 +180,29 @@ const CreateEpisode: NextPage = () => {
   return (
     <Layout>
       <Toaster position="top-center" />
+      <div className="flex justify-start">
+        <BreadcrumbTrail
+          separator=">"
+          breadcrumbs={[
+            {
+              href: `/myPage/${userId}/story`,
+              label: "ストーリー一覧",
+            },
+            {
+              label: "ストーリー詳細",
+              href: `/myPage/${userId}/story/${storyId}`,
+            },
+            {
+              label: "シーズン詳細",
+              href: `/myPage/${userId}/story/${storyId}/season/${seasonId}`,
+            },
+            {
+              label: "エピソード作成",
+              href: router.asPath,
+            },
+          ]}
+        />
+      </div>
       <div className="p-8">
         <Tab
           color="purple"
@@ -350,6 +374,12 @@ const CreateEpisode: NextPage = () => {
                     </div>
                   </div>
                 </div>
+              ),
+            },
+            {
+              label: "チャプター",
+              children: (
+                <div className="flex flex-col justify-center items-center py-4 w-full"></div>
               ),
             },
           ]}

@@ -195,7 +195,7 @@ const CreateSeason: NextPage = () => {
   return (
     <Layout>
       <Toaster position="top-center" />
-      <div className="flex justify-start px-4">
+      <div className="flex justify-start">
         <BreadcrumbTrail
           separator=">"
           breadcrumbs={[

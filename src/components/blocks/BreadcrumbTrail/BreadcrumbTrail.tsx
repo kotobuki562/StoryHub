@@ -37,7 +37,7 @@ export const BreadcrumbTrail: VFC<Props> = ({ breadcrumbs, separator }) => {
   return (
     <div
       className={cc([
-        "flex flex-wrap items-center w-full",
+        "flex font-mono flex-wrap items-center w-full bg-purple-50 px-4 shadow-lg",
         isHover && "text-purple-500",
       ])}
       ref={ref}
@@ -49,7 +49,7 @@ export const BreadcrumbTrail: VFC<Props> = ({ breadcrumbs, separator }) => {
           <Link key={index} href={breadcrumb.href} prefetch={false}>
             <a
               className={cc([
-                "flex items-center justify-center mr-2 py-2 md:text-xl text-base font-semibold duration-200",
+                "flex items-center justify-center mr-2 py-2 text-base font-semibold duration-200 hover:underline",
                 isActive(breadcrumb.href)
                   ? "text-purple-500"
                   : "text-slate-500",
