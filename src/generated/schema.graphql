@@ -69,7 +69,7 @@ type Follow {
 }
 
 type Mutation {
-  createEpisode(acessToken: String!, episodeImage: String, episodeSynopsis: String!, episodeTitle: String!, publish: Boolean!, userId: String!): Episode
+  createEpisode(acessToken: String!, episodeImage: String, episodeSynopsis: String!, episodeTitle: String!, publish: Boolean!, seasonId: String!, userId: String!): Episode
   createNotification(accessToken: String!, favoriteId: String, followId: String, receiverId: String!, reviewId: String): Notification
   createReview(acessToken: String!, reviewBody: String!, reviewTitle: String!, stars: Int!, storyId: String!): Review
   createSeason(acessToken: String!, publish: Boolean!, seasonImage: String, seasonSynopsis: String!, seasonTitle: String!, storyId: String!): Season

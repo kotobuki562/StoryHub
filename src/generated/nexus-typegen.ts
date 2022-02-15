@@ -756,6 +756,7 @@ export interface NexusGenArgTypes {
       episodeSynopsis: string; // String!
       episodeTitle: string; // String!
       publish: boolean; // Boolean!
+      seasonId: string; // String!
       userId: string; // String!
     }
     createNotification: { // args
