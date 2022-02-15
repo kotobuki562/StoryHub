@@ -15,6 +15,7 @@ import { Input } from "src/components/atoms/Input"
 import { Select } from "src/components/atoms/Select"
 import { Switch } from "src/components/atoms/Switch"
 import { TextArea } from "src/components/atoms/TextArea"
+import { BreadcrumbTrail } from "src/components/blocks/BreadcrumbTrail"
 import { ReviewCard } from "src/components/blocks/Card"
 import { MySeasonCard } from "src/components/blocks/Card/MySeason"
 import { Menu } from "src/components/blocks/Menu"
@@ -131,8 +132,8 @@ const EditStoryPage: NextPage = () => {
   } = useSwrQuery<QueryMyStoryById>(MyStoryQuery, {
     queryMyStoryByIdId: storyId as string,
     userId: userId as string,
-    accessToken: `${accessToken}`,
-    seasonAccessToken: `${accessToken}`,
+    accessToken: accessToken as string,
+    seasonAccessToken: accessToken as string,
     seasonUserId: userId as string,
   })
 
@@ -323,6 +324,21 @@ const EditStoryPage: NextPage = () => {
   return (
     <Layout>
       <Toaster position="top-center" />
+      <div className="flex justify-start">
+        <BreadcrumbTrail
+          separator=">"
+          breadcrumbs={[
+            {
+              href: `/myPage/${userId}/story`,
+              label: "ストーリー一覧",
+            },
+            {
+              label: "ストーリー詳細",
+              href: router.asPath,
+            },
+          ]}
+        />
+      </div>
       <div className="p-8">
         <h2 className="mb-8 text-xl font-bold text-center text-purple-500 sm:text-4xl">
           {myStoryData?.QueryMyStoryById.story_title}の詳細

@@ -27,6 +27,11 @@ import { Story } from "src/pages/api/models/story"
 import { Terminology } from "src/pages/api/models/terminology"
 import { User } from "src/pages/api/models/user"
 import {
+  createEpisode,
+  deleteEpisode,
+  updateEpisode,
+} from "src/pages/api/mutations/episode"
+import {
   createNotification,
   deleteAllNotifications,
   deleteNotification,
@@ -303,6 +308,11 @@ const Mutation = objectType({
     createNotification(t)
     deleteAllNotifications(t)
     deleteNotification(t)
+
+    // エピソードのミューテーション
+    createEpisode(t)
+    updateEpisode(t)
+    deleteEpisode(t)
   },
 })
 

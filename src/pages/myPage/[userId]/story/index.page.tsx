@@ -6,6 +6,7 @@ import { useRouter } from "next/router"
 import { useEffect } from "react"
 import toast from "react-hot-toast"
 import { Alert } from "src/components/atoms/Alert"
+import { BreadcrumbTrail } from "src/components/blocks/BreadcrumbTrail"
 import { MyStoryCard } from "src/components/blocks/Card"
 import { Layout } from "src/components/Layout"
 import { LoadingLogo } from "src/components/Loading"
@@ -41,7 +42,7 @@ const HomePage: NextPage = () => {
     isLoading,
   } = useSwrQuery<QueryMyStories>(MyStoriesQuery, {
     userId: userId as string,
-    accessToken: `${accessToken}`,
+    accessToken: accessToken as string,
   })
 
   useEffect(() => {
@@ -87,6 +88,18 @@ const HomePage: NextPage = () => {
         cardImage: `/img/StoryHubLogo.png`,
       }}
     >
+      <div className="flex justify-start">
+        <BreadcrumbTrail
+          separator=">"
+          breadcrumbs={[
+            {
+              href: router.asPath,
+              label: "ストーリー一覧",
+            },
+          ]}
+        />
+      </div>
+
       <div className="p-8">
         {data?.QueryMyStories && (
           <div className="flex flex-wrap gap-8 justify-center w-full">

@@ -1,10 +1,11 @@
+/* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable import/no-default-export */
 import { format } from "date-fns"
 import gql from "graphql-tag"
 import type { GetStaticPropsContext, NextPage } from "next"
-import { SeasonCard } from "src/components/blocks/Card/Season"
+import Link from "next/link"
 import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout"
 import { client } from "src/lib/apollo"
@@ -22,32 +23,6 @@ const StoriesQuery = gql`
     }
   }
 `
-const StoryQueryById = gql`
-  query QueryStoryById($queryStoryByIdId: String!) {
-    QueryStoryById(id: $queryStoryByIdId) {
-      id
-      user_id
-      story_title
-      story_synopsis
-      story_categories
-      story_image
-      publish
-      viewing_restriction
-      created_at
-      updated_at
-      seasons {
-        id
-        story_id
-        season_title
-        season_image
-        created_at
-      }
-      favorites {
-        id
-      }
-    }
-  }
-`
 
 const SeasonQueryById = gql`
   query Query($querySeasonByIdId: String!) {
@@ -60,6 +35,12 @@ const SeasonQueryById = gql`
       publish
       created_at
       updated_at
+      story {
+        id
+        story_image
+        story_title
+        publish
+      }
       episodes {
         id
         episode_title
@@ -75,9 +56,8 @@ const SeasonQueryById = gql`
 `
 
 type StoryPageProps = {
-  story: QueryStoryById
-  season: QuerySeasonById
-  seasonId: string
+  story: QueryStoryById["QueryStoryById"]
+  season: QuerySeasonById["QuerySeasonById"]
 }
 
 export const getStaticPaths = async () => {
@@ -109,12 +89,6 @@ export const getStaticPaths = async () => {
 export const getStaticProps = async (context: GetStaticPropsContext) => {
   const { params } = context
 
-  const { data } = await client.query<QueryStoryById>({
-    query: StoryQueryById,
-    variables: {
-      queryStoryByIdId: params?.storyId,
-    },
-  })
   const { data: seasonData } = await client.query<QuerySeasonById>({
     query: SeasonQueryById,
     variables: {
@@ -122,93 +96,32 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
     },
   })
 
-  if (data.QueryStoryById.publish === false) {
+  if (seasonData?.QuerySeasonById?.story?.publish === true) {
     return {
       props: {
-        story: {
-          QueryStoryById: {
-            id: null,
-            story_title: "非公開のストーリー",
-            story_synopsis: "非公開のストーリー",
-            story_categories: [],
-            story_image: "",
-            viewing_restriction: "",
-            publish: false,
-            created_at: "",
-            updated_at: "",
-            user: null,
-            seasons: [],
-            reviews: [],
-            favorites: [],
-          },
-        },
-        season: {
-          QuerySeasonById: {
-            id: null,
-            season_title: "非公開のシーズン",
-            season_image: "",
-            season_synopsis: "非公開のシーズン",
-            publish: false,
-            created_at: "",
-            updated_at: "",
-            episodes: [],
-          },
-        },
+        story: seasonData.QuerySeasonById.story,
+        season: seasonData.QuerySeasonById,
+        seasonId: params?.seasonId,
       },
+      revalidate: 60,
     }
-  }
-
-  if (seasonData.QuerySeasonById.publish === false) {
-    return {
-      props: {
-        story: data,
-        season: {
-          QuerySeasonById: {
-            id: null,
-            season_title: "非公開のシーズン",
-            season_image: "",
-            season_synopsis: "非公開のシーズン",
-            publish: false,
-            created_at: "",
-            updated_at: "",
-            episodes: [],
-          },
-        },
-      },
-    }
-  }
-
-  return {
-    props: {
-      story: data,
-      season: seasonData,
-      seasonId: params?.seasonId,
-    },
-    revalidate: 60,
   }
 }
 
-const StoryPage: NextPage<StoryPageProps> = ({ season, seasonId, story }) => {
-  const currentOtherSeasons = story.QueryStoryById.seasons
-    ? story.QueryStoryById.seasons.map(data => {
-        return data
-      })
-    : []
+const StoryPage: NextPage<StoryPageProps> = ({ season, story }) => {
   return (
     <Layout
       meta={{
-        pageName: `StoryHub | ${story.QueryStoryById.story_title}のシーズン 「${season.QuerySeasonById.season_title}」`,
-        description: `${season.QuerySeasonById.season_synopsis}`,
-        cardImage: `${
-          season.QuerySeasonById.season_image || "/img/StoryHubLogo.png"
-        }`,
+        pageName: `StoryHub | ${story.story_title}のシーズン 「${season.season_title}」`,
+        description: `${season.season_synopsis}`,
+        cardImage: `${season.season_image || "/img/StoryHubLogo.png"}`,
       }}
     >
       <div
         className="flex relative flex-col w-full"
         style={{
           backgroundImage: `url(${
-            season.QuerySeasonById.season_image || "/img/StoryHubLogo.png"
+            season.season_image || "/img/StoryHubLogo.png"
           })`,
           backgroundSize: "cover",
           backgroundPosition: "center",
@@ -217,16 +130,32 @@ const StoryPage: NextPage<StoryPageProps> = ({ season, seasonId, story }) => {
         }}
       >
         <div
-          className="grid overflow-scroll absolute inset-0 p-8 w-full h-[100vh] bg-black/60 backdrop-blur"
+          className="overflow-scroll absolute inset-0 p-8 w-full bg-black/60 backdrop-blur"
           style={{
             height: "calc(100vh - 64px)",
           }}
         >
+          <div className="flex mb-8 w-full">
+            <Link href={`/story/${story.id}`}>
+              <a className="flex flex-col items-center text-sm text-white">
+                <img
+                  className="object-cover w-[50.96px] h-[72px] rounded-md"
+                  src={story?.story_image || "/img/StoryHubLogo.png"}
+                />
+                <p>
+                  {story.story_title && story.story_title.length > 10
+                    ? `${story.story_title?.slice(0, 10)}...`
+                    : story.story_title}
+                </p>
+              </a>
+            </Link>
+          </div>
+
           <Tab
             color="purple"
             values={[
               {
-                label: `${season.QuerySeasonById.season_title}`,
+                label: `${season.season_title}`,
                 children: (
                   <div className="flex flex-col justify-center items-center py-4 w-full">
                     <div className="flex flex-col items-center w-[300px] sm:w-[400px] xl:w-[600px]">
@@ -234,122 +163,24 @@ const StoryPage: NextPage<StoryPageProps> = ({ season, seasonId, story }) => {
                         className="overflow-hidden mb-8 w-[297px] h-[210px] bg-center bg-cover rounded-lg sm:w-[425px] sm:h-[300.38px] xl:w-[530.57px] xl:h-[375px]"
                         style={{
                           backgroundImage: `url(${
-                            season.QuerySeasonById.season_image ||
+                            season.season_image ||
                             "https://user-images.githubusercontent.com/67810971/149643400-9821f826-5f9c-45a2-a726-9ac1ea78fbe5.png"
                           })`,
                         }}
                       />
                       <div className="flex flex-col w-full">
                         <h2 className="mb-4 text-2xl font-bold text-white">
-                          {season.QuerySeasonById.season_title}
+                          {season.season_title}
                         </h2>
                         <p className="mb-4 text-slate-200 whitespace-pre-wrap">
-                          {season.QuerySeasonById.season_synopsis}
+                          {season.season_synopsis}
                         </p>
-                        <p className="text-right text-slate-400">
-                          {season.QuerySeasonById.created_at &&
-                            format(
-                              new Date(season.QuerySeasonById.created_at),
-                              "yyyy/MM/dd"
-                            )}
+                        <p className="font-mono text-right text-slate-400">
+                          {season.created_at &&
+                            format(new Date(season.created_at), "yyyy/MM/dd")}
                         </p>
                       </div>
                     </div>
-                  </div>
-                ),
-              },
-              {
-                label: "ストーリー",
-                children: (
-                  <div className="flex flex-col justify-center items-center py-4 w-full">
-                    <div className="flex flex-col items-center w-[300px] sm:w-[400px] xl:w-[600px]">
-                      <div
-                        className="overflow-hidden mb-8 w-[210px] h-[297px] bg-center bg-cover rounded-lg sm:w-[300.38px] sm:h-[425px] xl:w-[375px] xl:h-[530.57px]"
-                        style={{
-                          backgroundImage: `url(${
-                            story.QueryStoryById.story_image ||
-                            "https://user-images.githubusercontent.com/67810971/149643400-9821f826-5f9c-45a2-a726-9ac1ea78fbe5.png"
-                          })`,
-                        }}
-                      />
-                      <div className="flex flex-col">
-                        <div className="flex flex-wrap gap-3 mb-4">
-                          {story.QueryStoryById.story_categories?.map(
-                            category => {
-                              return (
-                                <span
-                                  key={category}
-                                  className="py-1 px-2 text-sm font-bold text-purple-500 bg-yellow-300 rounded-r-full rounded-bl-full"
-                                >
-                                  {category}
-                                </span>
-                              )
-                            }
-                          )}
-                        </div>
-                        <h2 className="mb-4 text-2xl font-bold text-white">
-                          {story.QueryStoryById.story_title}
-                        </h2>
-                        <p className="mb-4 text-slate-200 whitespace-pre-wrap">
-                          {story.QueryStoryById.story_synopsis}
-                        </p>
-                        <p className="text-right text-slate-400">
-                          {story.QueryStoryById.created_at &&
-                            format(
-                              new Date(story.QueryStoryById.created_at),
-                              "yyyy/MM/dd"
-                            )}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ),
-              },
-              {
-                label: `${currentOtherSeasons.length}個のシーズン`,
-                children: (
-                  <div className="flex flex-col items-center py-4 w-full">
-                    {currentOtherSeasons && currentOtherSeasons.length > 0 ? (
-                      <div className="flex flex-wrap gap-5 justify-center items-center w-full">
-                        {currentOtherSeasons.map((season, index) => {
-                          // eslint-disable-next-line no-console
-                          console.log(season?.id, seasonId)
-                          return (
-                            <SeasonCard
-                              characters={null}
-                              created_at={undefined}
-                              episodes={null}
-                              id={null}
-                              objects={null}
-                              publish={null}
-                              season_image={null}
-                              season_synopsis={null}
-                              season_title={null}
-                              story={null}
-                              story_id={null}
-                              terminologies={null}
-                              updated_at={undefined}
-                              key={season?.id}
-                              {...season}
-                              seasonNumber={index + 1}
-                              isCurrentSeason={season?.id === seasonId}
-                            />
-                          )
-                        })}
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center">
-                        <h3 className="text-xl font-bold text-purple-500">
-                          シーズンが存在しません
-                        </h3>
-                        <div
-                          className="overflow-hidden mb-8 w-[210px] h-[297px] bg-center bg-cover rounded-lg sm:w-[300.38px] sm:h-[425px] xl:w-[375px] xl:h-[530.57px]"
-                          style={{
-                            backgroundImage: `url("https://user-images.githubusercontent.com/67810971/149643400-9821f826-5f9c-45a2-a726-9ac1ea78fbe5.png")`,
-                          }}
-                        />
-                      </div>
-                    )}
                   </div>
                 ),
               },

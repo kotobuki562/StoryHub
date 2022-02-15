@@ -18,6 +18,7 @@
     "fix": "run-s -l -c fix:lint fix:prettier",
     "fix:lint": "next lint --fix",
     "fix:prettier": "prettier --write .",
+    "debug:lint": "DEBUG=eslint:* eslint .",
     "seed": "npx prisma db seed",
     "prisma:format": "npx prisma format",
     "prisma:generate": "npx prisma generate",
@@ -26,12 +27,12 @@
     "migrate": "npx prisma migrate dev"
   },
   "dependencies": {
-    "@apollo/client": "3.5.6",
+    "@apollo/client": "3.5.8",
     "@heroicons/react": "^1.0.5",
     "@prisma/client": "3.9.1",
     "@react-pdf/renderer": "^2.0.21",
     "@supabase/supabase-js": "1.29.4",
-    "apollo-server-micro": "3.6.1",
+    "apollo-server-micro": "3.6.3",
     "axios": "^0.25.0",
     "classcat": "^5.0.3",
     "date-fns": "^2.28.0",
@@ -85,7 +86,7 @@
     "prisma": "3.9.1",
     "tailwindcss": "^3.0.8",
     "ts-node": "10.4.0",
-    "typescript": "4.5.4"
+    "typescript": "4.5.5"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

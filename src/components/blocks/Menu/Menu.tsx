@@ -54,14 +54,15 @@ export const Menu: VFC<Props> = memo(
 
     return (
       <div className="relative cursor-pointer">
-        <div
+        <button
           onClick={onToggle}
+          type="button"
           // onMouseEnter={onHover}
           // onMouseLeave={onLeave}
           className="flex flex-col items-center"
         >
           {viewer}
-        </div>
+        </button>
         {!isHidden && (
           <div onClick={onClose} className="fixed inset-0 z-10 opacity-0" />
         )}
@@ -74,17 +75,16 @@ export const Menu: VFC<Props> = memo(
           <div
             className="overflow-y-scroll absolute z-10 bg-white rounded-lg shadow-lg"
             style={{
-              top: "100%",
+              top: "130%",
               left: "50%",
               transform: `${
                 position ? `translateX(${position}%)` : "translateX(-50%)"
               }`,
               width: "max-content",
               height: "max-content",
-              padding: "10px",
             }}
           >
-            <div className="w-full">{children}</div>
+            <div className="overscroll-contain w-full">{children}</div>
           </div>
         </div>
       </div>
