@@ -31,23 +31,25 @@ const User = objectType({
         const { storyAccessToken, storyPage, storyPageSize } = args
         const skip = storyPageSize * (Number(storyPage) - 1)
         return storyAccessToken && isSafe(storyAccessToken, `${parent.id}`)
-          ? await prisma.story.findMany({
-              skip,
-              take: storyPageSize,
-              orderBy: { created_at: "desc" },
-              where: {
-                user_id: `${parent.id}`,
-              },
-            })
-          : await prisma.story.findMany({
-              skip,
-              take: storyPageSize,
-              orderBy: { created_at: "desc" },
-              where: {
-                user_id: `${parent.id}`,
-                publish: true,
-              },
-            })
+          ? await prisma.user
+              .findUnique({
+                where: { id: parent.id || undefined },
+              })
+              .stories({
+                orderBy: { created_at: "desc" },
+                skip,
+                take: storyPageSize,
+              })
+          : await prisma.user
+              .findUnique({
+                where: { id: parent.id || undefined },
+              })
+              .stories({
+                orderBy: { created_at: "desc" },
+                skip,
+                take: storyPageSize,
+                where: { publish: true },
+              })
       },
     })
     t.list.field("reviews", {
@@ -56,48 +58,51 @@ const User = objectType({
       resolve: async (parent, args) => {
         const { reviewPage, reviewPageSize } = args
         const skip = reviewPageSize * (Number(reviewPage) - 1)
-        return await prisma.review.findMany({
-          skip,
-          take: reviewPageSize,
-          orderBy: { created_at: "desc" },
-          where: {
-            user_id: `${parent.id}`,
-          },
-        })
+        return await prisma.user
+          .findUnique({
+            where: { id: parent.id || undefined },
+          })
+          .reviews({
+            orderBy: { created_at: "desc" },
+            skip,
+            take: reviewPageSize,
+          })
       },
     })
     t.list.field("follows", {
       type: "Follow",
-      resolve: async parent => {
-        return parent.id
-          ? await prisma.follow.findMany({
-              where: {
-                user_id: parent.id,
-              },
-            })
-          : []
+      resolve: async (parent, _) => {
+        return await prisma.user
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .follows()
       },
     })
     t.list.field("favorites", {
       type: "Favorite",
-      resolve: async parent => {
-        return parent.id
-          ? await prisma.favorite.findMany({
-              where: {
-                user_id: parent.id,
-              },
-            })
-          : []
+      resolve: async (parent, _) => {
+        return await prisma.user
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .favorites()
       },
     })
     t.list.field("notifications", {
       type: "Notification",
-      resolve: async parent => {
-        return await prisma.notification.findMany({
-          where: {
-            receiver_id: `${parent.id}`,
-          },
-        })
+      resolve: async (parent, _) => {
+        return await prisma.user
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .Notification()
       },
     })
   },

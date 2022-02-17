@@ -14,51 +14,61 @@ export const Notification = objectType({
     t.field("user", {
       type: "User",
       resolve: async parent => {
-        return await prisma.user.findUnique({
-          where: {
-            id: `${parent.user_id}`,
-          },
-        })
+        return await prisma.notification
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .user()
       },
     })
     t.field("receiver", {
       type: "User",
       resolve: async parent => {
-        return await prisma.user.findUnique({
-          where: {
-            id: `${parent.receiver_id}`,
-          },
-        })
+        return await prisma.notification
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .user()
       },
     })
     t.field("review", {
       type: "Review",
       resolve: async parent => {
-        return await prisma.review.findUnique({
-          where: {
-            id: `${parent.review_id}`,
-          },
-        })
+        return await prisma.notification
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .review()
       },
     })
     t.field("favorite", {
       type: "Favorite",
       resolve: async parent => {
-        return await prisma.favorite.findUnique({
-          where: {
-            id: `${parent.favorite_id}`,
-          },
-        })
+        return await prisma.notification
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .favorite()
       },
     })
     t.field("follow", {
       type: "Follow",
       resolve: async parent => {
-        return await prisma.follow.findUnique({
-          where: {
-            id: `${parent.follow_id}`,
-          },
-        })
+        return await prisma.notification
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .follow()
       },
     })
   },

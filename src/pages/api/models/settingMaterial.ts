@@ -30,22 +30,26 @@ export const SettingMaterial = objectType({
     t.field("user", {
       type: "User",
       resolve: async parent => {
-        return await prisma.user.findUnique({
-          where: {
-            id: `${parent.user_id}`,
-          },
-        })
+        return await prisma.settingMaterial
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .user()
       },
     })
     t.field("story", {
       type: "Story",
       args: characterArgs,
       resolve: async parent => {
-        return await prisma.story.findUnique({
-          where: {
-            id: `${parent.story_id}`,
-          },
-        })
+        return await prisma.settingMaterial
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .story()
       },
     })
     t.list.field("character", {
@@ -54,19 +58,27 @@ export const SettingMaterial = objectType({
       resolve: async (parent, args) => {
         const { storyAccessToken } = args
         return storyAccessToken && isSafe(storyAccessToken, `${parent.user_id}`)
-          ? await prisma.character.findMany({
-              orderBy: { created_at: "desc" },
-              where: {
-                setting_material_id: `${parent.id}`,
-              },
-            })
-          : await prisma.character.findMany({
-              orderBy: { created_at: "desc" },
-              where: {
-                setting_material_id: `${parent.id}`,
-                publish: true,
-              },
-            })
+          ? await prisma.settingMaterial
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .characters({
+                orderBy: { created_at: "desc" },
+              })
+          : await prisma.settingMaterial
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .characters({
+                orderBy: { created_at: "desc" },
+                where: {
+                  publish: true,
+                },
+              })
       },
     })
     t.list.field("object", {
@@ -76,19 +88,27 @@ export const SettingMaterial = objectType({
         const { reviewAccessToken } = args
         return reviewAccessToken &&
           isSafe(reviewAccessToken, `${parent.user_id}`)
-          ? await prisma.object.findMany({
-              orderBy: { created_at: "desc" },
-              where: {
-                setting_material_id: `${parent.id}`,
-              },
-            })
-          : await prisma.object.findMany({
-              orderBy: { created_at: "desc" },
-              where: {
-                setting_material_id: `${parent.id}`,
-                publish: true,
-              },
-            })
+          ? await prisma.settingMaterial
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .objects({
+                orderBy: { created_at: "desc" },
+              })
+          : await prisma.settingMaterial
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .objects({
+                orderBy: { created_at: "desc" },
+                where: {
+                  publish: true,
+                },
+              })
       },
     })
     t.list.field("terminology", {
@@ -98,19 +118,27 @@ export const SettingMaterial = objectType({
         const { terminologyAccessToken } = args
         return terminologyAccessToken &&
           isSafe(terminologyAccessToken, `${parent.user_id}`)
-          ? await prisma.terminology.findMany({
-              orderBy: { created_at: "desc" },
-              where: {
-                setting_material_id: `${parent.id}`,
-              },
-            })
-          : await prisma.terminology.findMany({
-              orderBy: { created_at: "desc" },
-              where: {
-                setting_material_id: `${parent.id}`,
-                publish: true,
-              },
-            })
+          ? await prisma.settingMaterial
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .terminologies({
+                orderBy: { created_at: "desc" },
+              })
+          : await prisma.settingMaterial
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .terminologies({
+                orderBy: { created_at: "desc" },
+                where: {
+                  publish: true,
+                },
+              })
       },
     })
   },

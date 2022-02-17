@@ -1,15 +1,6 @@
 import { objectType } from "nexus"
 import prisma from "src/lib/prisma"
 
-// model Page {
-//   id         String    @id @unique @default(uuid())
-//   chapter_id String?
-//   page_body  String?
-//   created_at DateTime  @default(now())
-//   updated_at DateTime?
-//   chapter    Chapter?  @relation(fields: [chapter_id], references: [id])
-// }
-
 const Page = objectType({
   name: "Page",
   definition(t) {
@@ -21,13 +12,13 @@ const Page = objectType({
     t.field("chapter", {
       type: "Chapter",
       resolve: async parent => {
-        return parent.chapter_id
-          ? await prisma.chapter.findUnique({
-              where: {
-                id: parent.chapter_id,
-              },
-            })
-          : null
+        return await prisma.page
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .chapter()
       },
     })
   },

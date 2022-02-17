@@ -30,21 +30,25 @@ export const Object = objectType({
     t.field("settingMaterial", {
       type: "SettingMaterial",
       resolve: async parent => {
-        return await prisma.settingMaterial.findUnique({
-          where: {
-            id: `${parent.setting_material_id}`,
-          },
-        })
+        return await prisma.object
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .settingMaterial()
       },
     })
     t.field("season", {
       type: "Season",
       resolve: async parent => {
-        return await prisma.season.findUnique({
-          where: {
-            id: `${parent.season_id}`,
-          },
-        })
+        return await prisma.object
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .season()
       },
     })
   },

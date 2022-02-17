@@ -29,52 +29,65 @@ const Story = objectType({
         return seasonAccessToken &&
           seasonUserId &&
           isSafe(seasonAccessToken, seasonUserId)
-          ? await prisma.season.findMany({
-              orderBy: { created_at: "asc" },
-              where: {
-                story_id: `${parent.id}`,
-              },
-            })
-          : await prisma.season.findMany({
-              orderBy: { created_at: "asc" },
-              where: {
-                story_id: `${parent.id}`,
-                publish: true,
-              },
-            })
+          ? await prisma.story
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .seasons({
+                orderBy: { created_at: "asc" },
+              })
+          : await prisma.story
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .seasons({
+                orderBy: { created_at: "asc" },
+                where: { publish: true },
+              })
       },
     })
     t.list.field("reviews", {
       type: "Review",
-      resolve: async parent => {
-        return await prisma.review.findMany({
-          orderBy: { created_at: "desc" },
-          where: {
-            story_id: `${parent.id}`,
-          },
-        })
+      resolve: async (parent, _) => {
+        return await prisma.story
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .reviews({
+            orderBy: { created_at: "desc" },
+          })
       },
     })
     t.list.field("favorites", {
       type: "Favorite",
-      resolve: async parent => {
-        return parent.id
-          ? await prisma.favorite.findMany({
-              where: {
-                story_id: parent.id,
-              },
-            })
-          : []
+      resolve: async (parent, _) => {
+        return await prisma.story
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .favorites({
+            orderBy: { created_at: "desc" },
+          })
       },
     })
     t.field("user", {
       type: "User",
-      resolve: async parent => {
-        return await prisma.user.findUnique({
-          where: {
-            id: `${parent.user_id}`,
-          },
-        })
+      resolve: async (parent, _) => {
+        return await prisma.story
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .user()
       },
     })
   },

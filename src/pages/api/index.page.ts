@@ -145,7 +145,7 @@ import {
 } from "src/pages/api/queries/terminology"
 import { QueryMe, QueryUserById, QueryUsers } from "src/pages/api/queries/user"
 
-import { context } from "./context"
+import { createContext } from "./context"
 
 export const GQLDate = asNexusMethod(DateTimeResolver, "date")
 
@@ -340,6 +340,14 @@ export const schema = makeSchema({
     typegen: path.join(process.cwd(), "src/generated/nexus-typegen.ts"),
     schema: path.join(process.cwd(), "src/generated/schema.graphql"),
   },
+  contextType: {
+    export: "Context",
+    module: path.join(
+      process.cwd(),
+      "src/generated/schema.graphql",
+      "src/pages/api/context.ts"
+    ),
+  },
   // contextType: {
   //   module: require.resolve("./context"),
   //   export: "Context",
@@ -360,7 +368,7 @@ export const config = {
   },
 }
 
-const apolloServer = new ApolloServer({ schema, context: context })
+const apolloServer = new ApolloServer({ schema, context: createContext })
 
 let apolloServerHandler: NextApiHandler
 

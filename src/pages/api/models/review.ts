@@ -15,31 +15,31 @@ const Review = objectType({
     t.field("user", {
       type: "User",
       resolve: async parent => {
-        return parent.user_id
-          ? await prisma.user.findUnique({
-              where: { id: parent.user_id },
-            })
-          : null
+        return await prisma.review
+          .findUnique({
+            where: { id: parent.id || undefined },
+          })
+          .user()
       },
     })
     t.field("story", {
       type: "Story",
       resolve: async parent => {
-        return parent.story_id
-          ? await prisma.story.findUnique({
-              where: { id: parent.story_id },
-            })
-          : null
+        return await prisma.review.findUnique({
+          where: { id: parent.id || undefined },
+        })
       },
     })
     t.list.field("notifications", {
       type: "Notification",
       resolve: async parent => {
-        return await prisma.notification.findMany({
-          where: {
-            review_id: `${parent.id}`,
-          },
-        })
+        return await prisma.review
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .Notification()
       },
     })
   },

@@ -27,31 +27,37 @@ const Episode = objectType({
         return chapterAccessToken &&
           chapterUserId &&
           isSafe(chapterAccessToken, chapterUserId)
-          ? await prisma.chapter.findMany({
-              orderBy: { created_at: "desc" },
-              where: {
-                episode_id: `${parent.id}`,
-              },
-            })
-          : await prisma.chapter.findMany({
-              orderBy: { created_at: "desc" },
-              where: {
-                episode_id: `${parent.id}`,
-                publish: true,
-              },
-            })
+          ? await prisma.episode
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .chapters({
+                orderBy: { created_at: "asc" },
+              })
+          : await prisma.episode
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .chapters({
+                orderBy: { created_at: "asc" },
+                where: { publish: true },
+              })
       },
     })
     t.field("season", {
       type: "Season",
       resolve: async parent => {
-        return parent.season_id
-          ? await prisma.season.findUnique({
-              where: {
-                id: parent.season_id,
-              },
-            })
-          : null
+        return await prisma.episode
+          .findUnique({
+            where: {
+              id: parent.season_id || undefined,
+            },
+          })
+          .season()
       },
     })
   },
