@@ -1,5 +1,6 @@
 import type { ObjectDefinitionBlock } from "nexus/dist/core"
 import { nonNull, nullable, stringArg } from "nexus/dist/core"
+import prisma from "src/lib/prisma"
 import { authArgs, defaultArgs, isSafe } from "src/pages/api/index.page"
 
 const storyArgs = {
@@ -15,10 +16,14 @@ const QueryStories = (t: ObjectDefinitionBlock<"Query">) => {
       ...storyArgs,
       ...defaultArgs,
     },
-    resolve: async (_parent, args, context) => {
+    resolve: async (_parent, args) => {
       const { page, pageSize } = args
       const skip = pageSize * (Number(page) - 1)
-      const stories = await context.prisma.story.findMany({
+      const users = await prisma.user.findMany()
+      const userIds = users.map(user => {
+        return user.id
+      })
+      return await prisma.story.findMany({
         skip,
         take: pageSize,
         orderBy: { created_at: "desc" },
@@ -33,9 +38,11 @@ const QueryStories = (t: ObjectDefinitionBlock<"Query">) => {
             },
           }),
           publish: true,
+          user_id: {
+            in: userIds,
+          },
         },
       })
-      return stories
     },
   })
 }
@@ -47,23 +54,26 @@ const QueryMyStories = (t: ObjectDefinitionBlock<"Query">) => {
       ...storyArgs,
       ...authArgs,
     },
-    resolve: async (_parent, args, context) => {
+    resolve: async (_parent, args) => {
       return isSafe(args.accessToken, args.userId)
-        ? await context.prisma.story.findMany({
-            orderBy: { created_at: "desc" },
-            where: {
-              ...(args.searchTitle && {
-                story_title: { search: args.searchTitle },
-              }),
-              ...(args.searchUserId && { user_id: args.searchUserId }),
-              ...(args.searchCategory && {
-                story_categories: {
-                  has: args.searchCategory,
-                },
-              }),
-              user_id: args.userId,
-            },
-          })
+        ? await prisma.user
+            .findUnique({
+              where: { id: args.userId },
+            })
+            .stories({
+              orderBy: { created_at: "desc" },
+              where: {
+                ...(args.searchTitle && {
+                  story_title: { search: args.searchTitle },
+                }),
+                ...(args.searchUserId && { user_id: args.searchUserId }),
+                ...(args.searchCategory && {
+                  story_categories: {
+                    has: args.searchCategory,
+                  },
+                }),
+              },
+            })
         : null
     },
   })

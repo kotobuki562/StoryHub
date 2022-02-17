@@ -27,7 +27,7 @@ const Follow = objectType({
               id: parent.id || undefined,
             },
           })
-          .Notification()
+          .notifications()
       },
     })
   },
