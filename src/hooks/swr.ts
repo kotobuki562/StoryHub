@@ -3,9 +3,11 @@ import { useMemo } from "react"
 import type { KeyedMutator } from "swr"
 import useSWR from "swr"
 
+import type { SwrHookResponseError } from "./types"
+
 type UseSwrFetchApi<T> = {
   data?: T
-  error?: Error | null
+  error: SwrHookResponseError | null | undefined
   isLoading: boolean
   mutate: KeyedMutator<T>
 }
@@ -25,7 +27,7 @@ export const useSwrQuery = <T>(
 
   return {
     data,
-    error,
+    error: error as SwrHookResponseError | null | undefined,
     isLoading,
     mutate,
   }

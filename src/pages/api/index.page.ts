@@ -33,8 +33,10 @@ import {
 } from "src/pages/api/mutations/episode"
 import {
   createNotification,
-  deleteAllNotifications,
+  deleteManyNotifications,
   deleteNotification,
+  updateManyNotifications,
+  updateNotification,
 } from "src/pages/api/mutations/notification"
 import {
   createReview,
@@ -304,8 +306,10 @@ const Mutation = objectType({
 
     // 通知のミューテーション
     createNotification(t)
-    deleteAllNotifications(t)
+    deleteManyNotifications(t)
     deleteNotification(t)
+    updateManyNotifications(t)
+    updateNotification(t)
 
     // エピソードのミューテーション
     createEpisode(t)
