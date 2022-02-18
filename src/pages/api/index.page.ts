@@ -145,8 +145,6 @@ import {
 } from "src/pages/api/queries/terminology"
 import { QueryMe, QueryUserById, QueryUsers } from "src/pages/api/queries/user"
 
-import { context } from "./context"
-
 export const GQLDate = asNexusMethod(DateTimeResolver, "date")
 
 export const isSafe = (acess_token: string, userId: string) => {
@@ -341,6 +339,14 @@ export const schema = makeSchema({
     schema: path.join(process.cwd(), "src/generated/schema.graphql"),
   },
   // contextType: {
+  //   export: "Context",
+  //   module: path.join(
+  //     process.cwd(),
+  //     "src/generated/schema.graphql",
+  //     "src/pages/api/context.ts"
+  //   ),
+  // },
+  // contextType: {
   //   module: require.resolve("./context"),
   //   export: "Context",
   // },
@@ -360,7 +366,7 @@ export const config = {
   },
 }
 
-const apolloServer = new ApolloServer({ schema, context: context })
+const apolloServer = new ApolloServer({ schema })
 
 let apolloServerHandler: NextApiHandler
 

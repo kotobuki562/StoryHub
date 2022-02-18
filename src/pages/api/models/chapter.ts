@@ -24,38 +24,39 @@ const Chapter = objectType({
       resolve: async (parent, args) => {
         const { pageAccessToken, pageUserId } = args
 
-        if (
-          pageAccessToken &&
+        return pageAccessToken &&
           pageUserId &&
           isSafe(pageAccessToken, pageUserId)
-        ) {
-          return await prisma.page.findMany({
-            orderBy: { created_at: "asc" },
-            where: {
-              chapter_id: `${parent.id}`,
-            },
-          })
-        }
-        return (await parent.publish)
-          ? prisma.page.findMany({
-              orderBy: { created_at: "asc" },
-              where: {
-                chapter_id: `${parent.id}`,
-              },
-            })
-          : []
+          ? await prisma.chapter
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .pages({
+                orderBy: { created_at: "asc" },
+              })
+          : await prisma.chapter
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .pages({
+                orderBy: { created_at: "asc" },
+              })
       },
     })
     t.field("episode", {
       type: "Episode",
       resolve: async parent => {
-        return parent.episode_id
-          ? await prisma.episode.findUnique({
-              where: {
-                id: parent.episode_id,
-              },
-            })
-          : null
+        return await prisma.chapter
+          .findUnique({
+            where: {
+              id: parent.episode_id || undefined,
+            },
+          })
+          .episode()
       },
     })
   },

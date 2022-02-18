@@ -11,27 +11,33 @@ const Favorite = objectType({
     t.field("user", {
       type: "User",
       resolve: async parent => {
-        return await prisma.user.findUnique({
-          where: { id: `${parent.user_id}` },
-        })
+        return await prisma.favorite
+          .findUnique({
+            where: { id: parent.id || undefined },
+          })
+          .user()
       },
     })
     t.field("story", {
       type: "Story",
       resolve: async parent => {
-        return await prisma.story.findUnique({
-          where: { id: `${parent.story_id}` },
-        })
+        return await prisma.favorite
+          .findUnique({
+            where: { id: parent.id || undefined },
+          })
+          .story()
       },
     })
     t.list.field("notifications", {
       type: "Notification",
       resolve: async parent => {
-        return await prisma.notification.findMany({
-          where: {
-            favorite_id: `${parent.id}`,
-          },
-        })
+        return await prisma.favorite
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .notifications()
       },
     })
   },

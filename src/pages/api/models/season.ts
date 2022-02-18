@@ -42,19 +42,25 @@ const Season = objectType({
         return episodeAccessToken &&
           episodeUserId &&
           isSafe(episodeAccessToken, episodeUserId)
-          ? await prisma.episode.findMany({
-              orderBy: { created_at: "desc" },
-              where: {
-                season_id: `${parent.id}`,
-              },
-            })
-          : await prisma.episode.findMany({
-              orderBy: { created_at: "desc" },
-              where: {
-                season_id: `${parent.id}`,
-                publish: true,
-              },
-            })
+          ? await prisma.season
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .episodes({
+                orderBy: { created_at: "asc" },
+              })
+          : await prisma.season
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .episodes({
+                orderBy: { created_at: "asc" },
+                where: { publish: true },
+              })
       },
     })
     t.list.field("characters", {
@@ -65,19 +71,27 @@ const Season = objectType({
         return characterAccessToken &&
           characterUserId &&
           isSafe(characterAccessToken, characterUserId)
-          ? await prisma.character.findMany({
-              orderBy: { created_at: "desc" },
-              where: {
-                season_id: `${parent.id}`,
-              },
-            })
-          : await prisma.character.findMany({
-              orderBy: { created_at: "desc" },
-              where: {
-                season_id: `${parent.id}`,
-                publish: true,
-              },
-            })
+          ? await prisma.season
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .characters({
+                orderBy: { created_at: "desc" },
+              })
+          : await prisma.season
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .characters({
+                orderBy: { created_at: "desc" },
+                where: {
+                  publish: true,
+                },
+              })
       },
     })
     t.list.field("objects", {
@@ -88,19 +102,27 @@ const Season = objectType({
         return objectAccessToken &&
           objectUserId &&
           isSafe(objectAccessToken, objectUserId)
-          ? await prisma.object.findMany({
-              orderBy: { created_at: "desc" },
-              where: {
-                season_id: `${parent.id}`,
-              },
-            })
-          : await prisma.object.findMany({
-              orderBy: { created_at: "desc" },
-              where: {
-                season_id: `${parent.id}`,
-                publish: true,
-              },
-            })
+          ? await prisma.season
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .objects({
+                orderBy: { created_at: "desc" },
+              })
+          : await prisma.season
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .objects({
+                orderBy: { created_at: "desc" },
+                where: {
+                  publish: true,
+                },
+              })
       },
     })
     t.list.field("terminologies", {
@@ -111,29 +133,39 @@ const Season = objectType({
         return terminologyAccessToken &&
           terminologyUserId &&
           isSafe(terminologyAccessToken, terminologyUserId)
-          ? await prisma.terminology.findMany({
-              orderBy: { created_at: "desc" },
-              where: {
-                season_id: `${parent.id}`,
-              },
-            })
-          : await prisma.terminology.findMany({
-              orderBy: { created_at: "desc" },
-              where: {
-                season_id: `${parent.id}`,
-                publish: true,
-              },
-            })
+          ? await prisma.season
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .terminologies({
+                orderBy: { created_at: "desc" },
+              })
+          : await prisma.season
+              .findUnique({
+                where: {
+                  id: parent.id || undefined,
+                },
+              })
+              .terminologies({
+                orderBy: { created_at: "desc" },
+                where: {
+                  publish: true,
+                },
+              })
       },
     })
     t.field("story", {
       type: "Story",
       resolve: async parent => {
-        return await prisma.story.findUnique({
-          where: {
-            id: `${parent.story_id}`,
-          },
-        })
+        return await prisma.season
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .story()
       },
     })
   },

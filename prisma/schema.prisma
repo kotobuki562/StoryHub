@@ -21,7 +21,7 @@ model User {
   follows          Follow[]
   favorites        Favorite[]
   settingMaterials SettingMaterial[]
-  Notification     Notification[]
+  notifications    Notification[]
 }
 
 model Review {
@@ -36,7 +36,7 @@ model Review {
   user         User?     @relation(fields: [user_id], references: [id])
   story        Story?    @relation(fields: [story_id], references: [id])
 
-  Notification Notification[]
+  notifications Notification[]
   @@unique([user_id, story_id])
 }
 
@@ -48,7 +48,7 @@ model Favorite {
   user       User?    @relation(fields: [user_id], references: [id])
   story      Story?   @relation(fields: [story_id], references: [id])
 
-  Notification Notification[]
+  notifications Notification[]
   @@unique([user_id, story_id])
 }
 
@@ -59,7 +59,7 @@ model Follow {
   created_at DateTime @default(now())
   user       User?    @relation(fields: [user_id], references: [id])
 
-  Notification Notification[]
+  notifications Notification[]
   @@unique([user_id, follow_id])
 }
 
@@ -204,7 +204,7 @@ model Notification {
   favorite_id String?
   follow_id   String?
   created_at  DateTime @default(now())
-  user        User?    @relation(fields: [user_id], references: [id])
+  user        User?    @relation(fields: [receiver_id], references: [id])
 
   review   Review?   @relation(fields: [review_id], references: [id])
   favorite Favorite? @relation(fields: [favorite_id], references: [id])

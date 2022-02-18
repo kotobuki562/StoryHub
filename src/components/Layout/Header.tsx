@@ -362,7 +362,11 @@ const HeaderComp = () => {
           >
             <div className="flex overflow-y-scroll relative flex-col p-2 w-[220px] max-h-[500px] xs:w-[230px] xs:max-h-screen">
               {userInfo ? (
-                <UserBar user={user?.QueryMe} userInfo={userInfo} google={googleAccountMetadata} />
+                <UserBar
+                  user={user?.QueryMe}
+                  userInfo={userInfo}
+                  google={googleAccountMetadata}
+                />
               ) : (
                 <div>
                   <Link href="/signin">
