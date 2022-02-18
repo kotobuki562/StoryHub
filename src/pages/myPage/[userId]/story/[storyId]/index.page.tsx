@@ -60,22 +60,22 @@ const UpdateStory = gql`
 
 const MyStoryQuery = gql`
   query QueryMyStoryById(
-    $queryMyStoryByIdId: String!
     $userId: String!
     $accessToken: String!
+    $queryMyStoryByIdId: String!
     $seasonAccessToken: String
     $seasonUserId: String
   ) {
     QueryMyStoryById(
-      id: $queryMyStoryByIdId
       userId: $userId
       accessToken: $accessToken
+      id: $queryMyStoryByIdId
     ) {
       id
       user_id
       story_title
-      story_synopsis
       story_categories
+      story_synopsis
       story_image
       publish
       viewing_restriction
@@ -86,9 +86,9 @@ const MyStoryQuery = gql`
         seasonUserId: $seasonUserId
       ) {
         id
-        publish
         season_title
         season_image
+        publish
         created_at
       }
     }
@@ -130,9 +130,9 @@ const EditStoryPage: NextPage = () => {
     isLoading: isMyStoryLoading,
     mutate,
   } = useSwrQuery<QueryMyStoryById>(MyStoryQuery, {
-    queryMyStoryByIdId: storyId as string,
     userId: userId as string,
     accessToken: accessToken as string,
+    queryMyStoryByIdId: storyId as string,
     seasonAccessToken: accessToken as string,
     seasonUserId: userId as string,
   })
@@ -267,19 +267,37 @@ const EditStoryPage: NextPage = () => {
   ])
 
   useEffect(() => {
-    if (errorCreateStory || myStoryError) {
+    if (errorCreateStory) {
       toast.custom(t => {
         return (
           <Alert
             t={t}
             title="エラーが発生しました"
             usage="error"
-            message={errorCreateStory?.message || myStoryError?.message}
+            message={errorCreateStory?.message}
           />
         )
       })
     }
-  }, [errorCreateStory, myStoryError])
+  }, [errorCreateStory])
+
+  useEffect(() => {
+    if (myStoryError) {
+      myStoryError.response.errors.forEach((e, i) => {
+        return toast.custom(t => {
+          return (
+            <Alert
+              key={i}
+              t={t}
+              title="エラーが発生しました"
+              usage="error"
+              message={e.message}
+            />
+          )
+        })
+      })
+    }
+  }, [myStoryError])
 
   useEffect(() => {
     if (myStoryData?.QueryMyStoryById) {
@@ -311,7 +329,7 @@ const EditStoryPage: NextPage = () => {
     )
   }
 
-  if (!isMyStoryLoading && myStoryError) {
+  if (myStoryError) {
     return (
       <Layout>
         <div className="flex flex-col justify-center items-center p-8 w-full h-screen">

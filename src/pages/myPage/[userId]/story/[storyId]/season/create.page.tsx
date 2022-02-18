@@ -158,19 +158,34 @@ const CreateSeason: NextPage = () => {
   ])
 
   useEffect(() => {
-    if (errorCreateSeason || myStoryError) {
+    if (errorCreateSeason) {
       toast.custom(t => {
         return (
           <Alert
             t={t}
             title="エラーが発生しました"
             usage="error"
-            message={errorCreateSeason?.message || myStoryError?.message}
+            message={errorCreateSeason?.message}
           />
         )
       })
     }
-  }, [errorCreateSeason, myStoryError])
+  }, [errorCreateSeason])
+
+  useEffect(() => {
+    if (myStoryError) {
+      toast.custom(t => {
+        return (
+          <Alert
+            t={t}
+            title="エラーが発生しました"
+            usage="error"
+            message={myStoryError?.message}
+          />
+        )
+      })
+    }
+  }, [myStoryError])
 
   if (isMyStoryLoading || !userId || isLoadingCreateSeason) {
     return (
