@@ -11,19 +11,23 @@ const Follow = objectType({
     t.field("user", {
       type: "User",
       resolve: async parent => {
-        return await prisma.user.findUnique({
-          where: { id: `${parent.user_id}` },
-        })
+        return await prisma.follow
+          .findUnique({
+            where: { id: parent.id || undefined },
+          })
+          .user()
       },
     })
     t.list.field("notifications", {
       type: "Notification",
       resolve: async parent => {
-        return await prisma.notification.findMany({
-          where: {
-            follow_id: `${parent.id}`,
-          },
-        })
+        return await prisma.follow
+          .findUnique({
+            where: {
+              id: parent.id || undefined,
+            },
+          })
+          .notifications()
       },
     })
   },

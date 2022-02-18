@@ -51,7 +51,7 @@ const QueryMe = (t: ObjectDefinitionBlock<"Query">) => {
     },
     resolve: (_, args) => {
       return prisma.user.findUnique({
-        where: { id: `${decodeUserId(args.accessToken)}` },
+        where: { id: decodeUserId(args.accessToken)?.toString() || undefined },
       })
     },
   })

@@ -10,12 +10,16 @@ const QueryNotificationsForUser = (t: ObjectDefinitionBlock<"Query">) => {
       accessToken: nonNull(stringArg()),
     },
     resolve: async (_parent, args) => {
-      return await prisma.notification.findMany({
-        orderBy: { created_at: "asc" },
-        where: {
-          receiver_id: `${decodeUserId(args.accessToken)}`,
-        },
-      })
+      const notifications = await prisma.user
+        .findUnique({
+          where: {
+            id: decodeUserId(args.accessToken)?.toString() || undefined,
+          },
+        })
+        .notifications({
+          orderBy: { created_at: "asc" },
+        })
+      return notifications
     },
   })
 }
