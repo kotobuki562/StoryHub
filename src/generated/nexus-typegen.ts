@@ -351,6 +351,7 @@ export interface NexusGenFieldTypes {
     QueryMyTerminologies: Array<NexusGenRootTypes['Terminology'] | null> | null; // [Terminology]
     QueryMyTerminologyById: NexusGenRootTypes['Terminology'] | null; // Terminology
     QueryNotificationsForUser: Array<NexusGenRootTypes['Notification'] | null> | null; // [Notification]
+    QueryNotificationsForUserByIsRead: Array<NexusGenRootTypes['Notification'] | null> | null; // [Notification]
     QueryObjectById: NexusGenRootTypes['Object'] | null; // Object
     QueryObjects: Array<NexusGenRootTypes['Object'] | null> | null; // [Object]
     QueryObjectsCountByPublish: number | null; // Int
@@ -627,6 +628,7 @@ export interface NexusGenFieldTypeNames {
     QueryMyTerminologies: 'Terminology'
     QueryMyTerminologyById: 'Terminology'
     QueryNotificationsForUser: 'Notification'
+    QueryNotificationsForUserByIsRead: 'Notification'
     QueryObjectById: 'Object'
     QueryObjects: 'Object'
     QueryObjectsCountByPublish: 'Int'
@@ -1052,6 +1054,9 @@ export interface NexusGenArgTypes {
       userId: string; // String!
     }
     QueryNotificationsForUser: { // args
+      accessToken: string; // String!
+    }
+    QueryNotificationsForUserByIsRead: { // args
       accessToken: string; // String!
     }
     QueryObjectById: { // args

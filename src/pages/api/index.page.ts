@@ -90,7 +90,10 @@ import {
   QueryMyFavoritesByUser,
 } from "src/pages/api/queries/favorite"
 import { QueryFollowers, QueryFollowing } from "src/pages/api/queries/follow"
-import { QueryNotificationsForUser } from "src/pages/api/queries/notification"
+import {
+  QueryNotificationsForUser,
+  QueryNotificationsForUserByIsRead,
+} from "src/pages/api/queries/notification"
 import {
   QueryMyObjectById,
   QueryMyObjects,
@@ -277,6 +280,7 @@ const Query = objectType({
 
     // 通知のクエリ
     QueryNotificationsForUser(t)
+    QueryNotificationsForUserByIsRead(t)
   },
 })
 

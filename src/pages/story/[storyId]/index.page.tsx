@@ -12,6 +12,7 @@ import { SeasonCard } from "src/components/blocks/Card/Season"
 import { Modal } from "src/components/blocks/Modal"
 import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout"
+import { useUser } from "src/hooks/user/useUser"
 import { client } from "src/lib/apollo"
 import { supabase } from "src/lib/supabase"
 import { REVIEW_PAGE_SIZE_BY_STORY, STORY_PAGE_SIZE } from "src/tools/page"
@@ -40,6 +41,11 @@ const StoryQueryById = gql`
       viewing_restriction
       created_at
       updated_at
+      user {
+        id
+        user_name
+        image
+      }
       seasons {
         id
         story_id
@@ -144,6 +150,8 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 }
 
 const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
+  const { data: currentUser, isLoading } = useUser()
+
   const [reviews, setReviews] = useState<
     QueryReviewsByStoryId["QueryReviewsByStoryId"]
   >([])
@@ -194,58 +202,62 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
   return (
     <Layout
       meta={{
-        pageName: `SうにtoryHub | ${story.QueryStoryById?.user?.user_name}さんの作品。「${story.QueryStoryById.story_title}」`,
+        pageName: `StoryHub | ${story.QueryStoryById?.user?.user_name}さんの作品。「${story.QueryStoryById.story_title}」`,
         description: `${story.QueryStoryById.story_synopsis}`,
         cardImage: `${
           story.QueryStoryById.story_image || "/img/StoryHubLogo.png"
         }`,
       }}
     >
-      {story.QueryStoryById.story_title !== "非公開のストーリー" && user?.id && (
-        <>
-          <div className="fixed right-5 bottom-5 z-10">
-            <button
-              onClick={handleOpenModal}
-              className="flex flex-col justify-center items-center p-2 w-16 h-16 text-yellow-300 bg-purple-500 rounded-full focus:ring-2 ring-purple-300 duration-200 sm:p-4 sm:w-20 sm:h-20"
-            >
-              <PencilAltIcon className="w-16 h-16 sm:w-20 sm:h-20" />
-            </button>
-          </div>
-          <Modal
-            isOpen={isOpenModal}
-            onClose={handleCloseModal}
-            header={
-              <div className="flex justify-between items-center h-full">
-                <div className="p-4 font-bold text-white bg-purple-500">
-                  <PencilAltIcon className="w-8 h-8" />
+      {story.QueryStoryById.story_title !== "非公開のストーリー" &&
+        currentUser?.id &&
+        !isCreateReview &&
+        !isLoading && (
+          <>
+            <div className="fixed right-5 bottom-5 z-10">
+              <button
+                onClick={handleOpenModal}
+                className="flex flex-col justify-center items-center p-2 w-16 h-16 text-yellow-300 bg-purple-500 rounded-full focus:ring-2 ring-purple-300 duration-200 sm:p-4 sm:w-20 sm:h-20"
+              >
+                <PencilAltIcon className="w-16 h-16 sm:w-20 sm:h-20" />
+              </button>
+            </div>
+            <Modal
+              isOpen={isOpenModal}
+              onClose={handleCloseModal}
+              header={
+                <div className="flex justify-between items-center h-full">
+                  <div className="p-4 font-bold text-white bg-purple-500">
+                    <PencilAltIcon className="w-8 h-8" />
+                  </div>
+                  <p className="overflow-y-scroll px-4 max-h-[64px] text-base font-bold text-purple-500 sm:text-2xl no-scrollbar">
+                    {story.QueryStoryById.story_title}のレビューを作成
+                  </p>
                 </div>
-                <p className="overflow-y-scroll px-4 max-h-[64px] text-base font-bold text-purple-500 sm:text-2xl no-scrollbar">
-                  {story.QueryStoryById.story_title}のレビューを作成
-                </p>
-              </div>
-            }
-            footer={
-              <div className="flex justify-between items-center h-full">
-                <p className="overflow-y-scroll px-4 max-h-[64px] text-base font-bold text-purple-500 sm:text-2xl no-scrollbar">
-                  {story.QueryStoryById.story_title}のレビューを作成
-                </p>
-                <button
-                  onClick={handleCloseModal}
-                  className="p-4 font-bold text-white bg-purple-500 no-scrollbar"
-                >
-                  <XCircleIcon className="w-8 h-8" />
-                </button>
-              </div>
-            }
-          >
-            <CreateReviewForm
-              createrId={story.QueryStoryById.user_id as string}
-              isCreateReview={isCreateReview}
-              userId={user.id}
-            />
-          </Modal>
-        </>
-      )}
+              }
+              footer={
+                <div className="flex justify-between items-center h-full">
+                  <p className="overflow-y-scroll px-4 max-h-[64px] text-base font-bold text-purple-500 sm:text-2xl no-scrollbar">
+                    {story.QueryStoryById.story_title}のレビューを作成
+                  </p>
+                  <button
+                    onClick={handleCloseModal}
+                    className="p-4 font-bold text-white bg-purple-500 no-scrollbar"
+                  >
+                    <XCircleIcon className="w-8 h-8" />
+                  </button>
+                </div>
+              }
+            >
+              <CreateReviewForm
+                story={story.QueryStoryById}
+                creater={story.QueryStoryById.user}
+                isCreateReview={isCreateReview}
+                reviewer={currentUser}
+              />
+            </Modal>
+          </>
+        )}
       <div
         className="flex relative flex-col w-full"
         style={{

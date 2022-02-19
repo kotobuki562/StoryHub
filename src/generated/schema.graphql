@@ -172,6 +172,7 @@ type Query {
   QueryMyTerminologies(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchSettingMaterialId: String, userId: String!): [Terminology]
   QueryMyTerminologyById(accessToken: String!, terminologyId: String!, userId: String!): Terminology
   QueryNotificationsForUser(accessToken: String!): [Notification]
+  QueryNotificationsForUserByIsRead(accessToken: String!): [Notification]
   QueryObjectById(objectId: String!): Object
   QueryObjects(searchTitle: String, serchSettingMaterialId: String): [Object]
   QueryObjectsCountByPublish: Int

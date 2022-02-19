@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { useMutation } from "@apollo/client"
+
 import {
   BellIcon,
   BookOpenIcon,
@@ -20,7 +20,7 @@ import { Menu } from "src/components/blocks/Menu"
 import type { NexusGenObjects } from "src/generated/nexus-typegen"
 import { useSwrQuery } from "src/hooks/swr"
 import { supabase } from "src/lib/supabase"
-import type { QueryNotificationsForUser } from "src/types/Notification/query"
+import type { QueryNotificationsForUserByIsRead } from "src/types/Notification/query"
 import type { GoogleAccount } from "src/types/User/shcame"
 
 import { NotificationBar } from "./Notificate"
@@ -38,43 +38,8 @@ const Me = gql`
 `
 
 const NotificationsQuery = gql`
-  query Query($accessToken: String!) {
-    QueryNotificationsForUser(accessToken: $accessToken) {
-      id
-      created_at
-      user {
-        user_name
-        image
-        id
-      }
-      review {
-        id
-        review_title
-        stars
-      }
-    }
-  }
-`
-
-const NotificationDelete = gql`
-  mutation Mutation(
-    $accessToken: String!
-    $notificationId: String!
-    $receiverId: String!
-  ) {
-    deleteNotification(
-      accessToken: $accessToken
-      notificationId: $notificationId
-      receiverId: $receiverId
-    ) {
-      id
-    }
-  }
-`
-
-const NotificationAllDelete = gql`
-  mutation DeleteAllNotifications($accessToken: String!) {
-    deleteAllNotifications(accessToken: $accessToken) {
+  query QueryNotificationsForUserByIsRead($accessToken: String!) {
+    QueryNotificationsForUserByIsRead(accessToken: $accessToken) {
       id
     }
   }
@@ -111,19 +76,19 @@ const mainLinks = [
 const HeaderComp = () => {
   const [isHiddenMainManu, setHiddenMainManu] = useState<boolean>(true)
   const [isHiddenUserManu, setHiddenUserManu] = useState<boolean>(true)
-  const [isHiddenNotification, setHiddenNotification] = useState<boolean>(true)
+
   const [isHiddenSearch, setHiddenSearch] = useState<boolean>(true)
   const userInfo = supabase.auth.user()
   const accessToken = useMemo(() => {
     return supabase.auth.session()?.access_token
   }, [])
-
+  NotificationBar
   const googleAccountMetadata = useMemo(() => {
     return userInfo?.user_metadata as GoogleAccount["user_metadata"]
   }, [userInfo])
 
-  const { data: notifications, mutate } =
-    useSwrQuery<QueryNotificationsForUser>(NotificationsQuery, {
+  const { data: notifications } =
+    useSwrQuery<QueryNotificationsForUserByIsRead>(NotificationsQuery, {
       accessToken: accessToken ? accessToken : null,
     })
 
@@ -131,35 +96,9 @@ const HeaderComp = () => {
     accessToken: accessToken ? accessToken : null,
   })
 
-  const [deleteNotification] = useMutation(NotificationDelete)
-  const [deleteAllNotifications] = useMutation(NotificationAllDelete)
-
-  const handleDeleteNotification = useCallback(
-    async (id: string) => {
-      await deleteNotification({
-        variables: {
-          accessToken,
-          notificationId: id,
-          receiverId: userInfo?.id,
-        },
-      })
-      await mutate()
-    },
-    [accessToken, deleteNotification, mutate, userInfo?.id]
-  )
-
-  const handleDeleteAllNotifications = useCallback(async () => {
-    await deleteAllNotifications({
-      variables: {
-        accessToken,
-      },
-    })
-    await mutate()
-  }, [accessToken, deleteAllNotifications, mutate])
-
   const notificationLength = useMemo(() => {
-    return notifications?.QueryNotificationsForUser
-      ? notifications?.QueryNotificationsForUser.length
+    return notifications?.QueryNotificationsForUserByIsRead
+      ? notifications?.QueryNotificationsForUserByIsRead.length
       : 0
   }, [notifications])
 
@@ -192,12 +131,6 @@ const HeaderComp = () => {
     })
   }, [])
 
-  const onToggleNotification = useCallback(() => {
-    setHiddenNotification(pre => {
-      return !pre
-    })
-  }, [])
-
   const onToggleSearch = useCallback(() => {
     setHiddenSearch(pre => {
       return !pre
@@ -210,10 +143,6 @@ const HeaderComp = () => {
 
   const handleCloseUserManu = useCallback(() => {
     setHiddenUserManu(true)
-  }, [])
-
-  const handleCloseNotification = useCallback(() => {
-    setHiddenNotification(true)
   }, [])
 
   const handleCloseSearch = useCallback(() => {
@@ -294,42 +223,19 @@ const HeaderComp = () => {
           </div>
         </Menu>
 
-        <Menu
-          isHidden={isHiddenNotification}
-          onToggle={onToggleNotification}
-          onClose={handleCloseNotification}
-          position={-90}
-          viewer={
-            <div className="relative mr-4 w-8 xs:w-10">
-              {notificationLength !== 0 && (
-                <div className="flex absolute -top-3 -right-3 flex-col justify-center items-center w-6 h-6 text-sm text-white bg-purple-500 rounded-full border-2 border-white xs:w-7 xs:h-7 xs:text-base">
-                  {notificationLength >= 9 ? "9+" : notificationLength}
-                </div>
-              )}
-
-              <BellIcon
-                className={cc([
-                  "p-1 xs:p-2 w-8 h-8 xs:w-10 xs:h-10 duration-200 rounded-full",
-                  !isHiddenNotification
-                    ? "text-white bg-purple-500"
-                    : "text-purple-500 hover:bg-slate-100",
-                ])}
-              />
-            </div>
-          }
-        >
-          <div className="p-2 w-[250px] max-h-[500px] xs:max-h-screen no-scrollbar">
-            {notifications && notificationLength > 0 ? (
-              <NotificationBar
-                notifications={notifications.QueryNotificationsForUser}
-                handleDelete={handleDeleteNotification}
-                handleAllDelete={handleDeleteAllNotifications}
-              />
-            ) : (
-              <p className="text-slate-400">現在通知は届いていません</p>
+        <Link href={`/myPage/${user?.QueryMe.id}/inbox`}>
+          <a className="block relative mr-4 w-8 xs:w-10">
+            {notificationLength !== 0 && (
+              <div className="flex absolute top-0 right-0 flex-col justify-center items-center w-3 h-3 text-white bg-purple-500 rounded-full"></div>
             )}
-          </div>
-        </Menu>
+
+            <BellIcon
+              className={cc([
+                "p-1 xs:p-2 w-8 h-8 xs:w-10 xs:h-10 text-purple-500 hover:bg-slate-100 duration-200 rounded-full",
+              ])}
+            />
+          </a>
+        </Link>
 
         <div className="group">
           <Menu

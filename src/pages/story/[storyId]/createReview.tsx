@@ -10,7 +10,11 @@ import { Alert } from "src/components/atoms/Alert"
 import { Button } from "src/components/atoms/Button"
 import { Input } from "src/components/atoms/Input"
 import { TextArea } from "src/components/atoms/TextArea"
-import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
+import type {
+  NexusGenArgTypes,
+  NexusGenFieldTypes,
+} from "src/generated/nexus-typegen"
+import type { UseUserObject } from "src/hooks/user/useUser"
 import { supabase } from "src/lib/supabase"
 import type { Star } from "src/tools/options"
 import { reviewStars } from "src/tools/options"
@@ -59,11 +63,15 @@ const NotificationCreate = gql`
   mutation CreateNotification(
     $accessToken: String!
     $receiverId: String!
+    $isRead: Boolean!
+    $notificationTitle: String!
     $reviewId: String
   ) {
     createNotification(
       accessToken: $accessToken
       receiverId: $receiverId
+      isRead: $isRead
+      notificationTitle: $notificationTitle
       reviewId: $reviewId
     ) {
       id
@@ -72,15 +80,24 @@ const NotificationCreate = gql`
 `
 
 type FormProps = {
-  userId: string
+  reviewer: UseUserObject
   isCreateReview: boolean
-  createrId: string
+  creater: {
+    created_at?: any
+    id?: string | null | undefined
+    image?: string | null | undefined
+    updated_at?: any
+    user_deal?: string | null | undefined
+    user_name?: string | null | undefined
+  } | null
+  story: NexusGenFieldTypes["Story"]
 }
 
 const CreateReviewFormComp: VFC<FormProps> = ({
-  createrId,
+  creater,
   isCreateReview,
-  userId,
+  reviewer,
+  story,
 }) => {
   const router = useRouter()
   const { storyId } = router.query
@@ -127,11 +144,13 @@ const CreateReviewFormComp: VFC<FormProps> = ({
     await createNotification({
       variables: {
         accessToken: accessToken,
-        receiverId: createrId,
+        receiverId: creater?.id,
         reviewId: id,
+        isRead: false,
+        notificationTitle: `${reviewer?.user_name}さんが${story.story_title}にレビューしました`,
       },
     }).catch(() => {
-      return 
+      return
     })
     if (id) {
       toast.custom(t => {
@@ -157,7 +176,9 @@ const CreateReviewFormComp: VFC<FormProps> = ({
     stars,
     accessToken,
     createNotification,
-    createrId,
+    creater?.id,
+    reviewer?.user_name,
+    story.story_title,
     router,
   ])
 
@@ -253,7 +274,7 @@ const CreateReviewFormComp: VFC<FormProps> = ({
         <div className="flex flex-col items-center w-full">
           <Button
             usage="base"
-            disabled={isLoading || isCreateReview || !userId}
+            disabled={isLoading || isCreateReview || !reviewer?.id}
             isLoading={isLoading}
             type="submit"
             text={isCreateReview ? "既にレビュー済み" : "レビュー作成"}

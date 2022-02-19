@@ -18,7 +18,7 @@ const Me = gql`
   }
 `
 
-type UseUserObject = NexusGenObjects["User"] | null
+export type UseUserObject = NexusGenObjects["User"] | null
 
 export const useUser = (): SwrHookResult<UseUserObject, QueryMe> => {
   const accessToken = useMemo(() => {
