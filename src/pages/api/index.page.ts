@@ -33,8 +33,10 @@ import {
 } from "src/pages/api/mutations/episode"
 import {
   createNotification,
-  deleteAllNotifications,
+  deleteManyNotifications,
   deleteNotification,
+  updateManyNotifications,
+  updateNotification,
 } from "src/pages/api/mutations/notification"
 import {
   createReview,
@@ -88,7 +90,10 @@ import {
   QueryMyFavoritesByUser,
 } from "src/pages/api/queries/favorite"
 import { QueryFollowers, QueryFollowing } from "src/pages/api/queries/follow"
-import { QueryNotificationsForUser } from "src/pages/api/queries/notification"
+import {
+  QueryNotificationsForUser,
+  QueryNotificationsForUserByIsRead,
+} from "src/pages/api/queries/notification"
 import {
   QueryMyObjectById,
   QueryMyObjects,
@@ -275,6 +280,7 @@ const Query = objectType({
 
     // 通知のクエリ
     QueryNotificationsForUser(t)
+    QueryNotificationsForUserByIsRead(t)
   },
 })
 
@@ -304,8 +310,10 @@ const Mutation = objectType({
 
     // 通知のミューテーション
     createNotification(t)
-    deleteAllNotifications(t)
+    deleteManyNotifications(t)
     deleteNotification(t)
+    updateManyNotifications(t)
+    updateNotification(t)
 
     // エピソードのミューテーション
     createEpisode(t)

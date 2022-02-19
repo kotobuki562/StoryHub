@@ -4,13 +4,15 @@ import prisma from "src/lib/prisma"
 export const Notification = objectType({
   name: "Notification",
   definition(t) {
-    t.id("id")
-    t.string("user_id")
-    t.string("receiver_id")
+    t.nonNull.id("id")
+    t.string("notification_title")
+    t.nonNull.boolean("is_read")
+    t.nonNull.string("user_id")
+    t.nonNull.string("receiver_id")
     t.string("review_id")
     t.string("favorite_id")
     t.string("follow_id")
-    t.date("created_at")
+    t.nonNull.date("created_at")
     t.field("user", {
       type: "User",
       resolve: async parent => {

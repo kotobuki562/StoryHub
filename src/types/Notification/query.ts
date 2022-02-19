@@ -5,3 +5,7 @@ import type { NexusGenFieldTypes } from "src/generated/nexus-typegen"
 export type QueryNotificationsForUser = {
   QueryNotificationsForUser: NexusGenFieldTypes["Notification"][]
 }
+
+export type QueryNotificationsForUserByIsRead = {
+  QueryNotificationsForUserByIsRead: NexusGenFieldTypes["Notification"][]
+}

@@ -25,9 +25,11 @@ const Review = objectType({
     t.field("story", {
       type: "Story",
       resolve: async parent => {
-        return await prisma.review.findUnique({
-          where: { id: parent.id || undefined },
-        })
+        return await prisma.review
+          .findUnique({
+            where: { id: parent.id || undefined },
+          })
+          .story()
       },
     })
     t.list.field("notifications", {

@@ -85,8 +85,8 @@ const QueryStoryById = (t: ObjectDefinitionBlock<"Query">) => {
     args: {
       id: nonNull(stringArg()),
     },
-    resolve: async (_parent, args, context) => {
-      return await context.prisma.story.findUnique({
+    resolve: async (_parent, args) => {
+      return await prisma.story.findUnique({
         where: { id: args.id },
       })
     },
@@ -101,9 +101,9 @@ const QueryMyStoryById = (t: ObjectDefinitionBlock<"Query">) => {
       userId: nonNull(stringArg()),
       accessToken: nonNull(stringArg()),
     },
-    resolve: async (_parent, args, context) => {
+    resolve: async (_parent, args) => {
       return isSafe(args.accessToken, args.userId)
-        ? await context.prisma.story.findUnique({
+        ? await prisma.story.findUnique({
             where: { id: args.id },
           })
         : null
@@ -114,8 +114,8 @@ const QueryMyStoryById = (t: ObjectDefinitionBlock<"Query">) => {
 const QueryStoriesCountByPublish = (t: ObjectDefinitionBlock<"Query">) => {
   return t.field("QueryStoriesCountByPublish", {
     type: "Int",
-    resolve: async (_parent, _args, context) => {
-      return await context.prisma.story.count({
+    resolve: async (_parent, _args) => {
+      return await prisma.story.count({
         where: {
           publish: true,
         },

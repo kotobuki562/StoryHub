@@ -70,13 +70,13 @@ type Follow {
 
 type Mutation {
   createEpisode(acessToken: String!, episodeImage: String, episodeSynopsis: String!, episodeTitle: String!, publish: Boolean!, seasonId: String!, userId: String!): Episode
-  createNotification(accessToken: String!, favoriteId: String, followId: String, receiverId: String!, reviewId: String): Notification
+  createNotification(accessToken: String!, favoriteId: String, followId: String, isRead: Boolean!, notificationTitle: String!, receiverId: String!, reviewId: String): Notification
   createReview(acessToken: String!, reviewBody: String!, reviewTitle: String!, stars: Int!, storyId: String!): Review
   createSeason(acessToken: String!, publish: Boolean!, seasonImage: String, seasonSynopsis: String!, seasonTitle: String!, storyId: String!): Season
   createStory(acessToken: String!, publish: Boolean!, storyCategories: [String!]!, storyImage: String, storySynopsis: String!, storyTitle: String!, viewingRestriction: String): Story
   createUser(accessToken: String!, image: String, userDeal: String!, userName: String!): User
-  deleteAllNotifications(accessToken: String!): Notification
   deleteEpisode(acessToken: String!, episodeId: String!, userId: String!): Episode
+  deleteManyNotifications(accessToken: String!, notificationIds: [String!]!): Notification
   deleteNotification(accessToken: String!, notificationId: String!, receiverId: String!): Notification
   deleteReview(acessToken: String!, reviewId: String!, userId: String!): Review
   deleteSeason(acessToken: String!, seasonId: String!, userId: String!): Season
@@ -84,6 +84,8 @@ type Mutation {
   deleteUser(accessToken: String!): User
   signupUser(email: String!, password: String!, userName: String): User
   updateEpisode(acessToken: String!, episodeId: String!, episodeImage: String, episodeSynopsis: String!, episodeTitle: String!, publish: Boolean!, userId: String!): Episode
+  updateManyNotifications(accessToken: String!, isRead: Boolean!, notificationIds: [String!]!, receiverId: String!): Notification
+  updateNotification(accessToken: String!, isRead: Boolean!, notificationId: String!, receiverId: String!): Notification
   updateReview(acessToken: String!, reviewBody: String!, reviewId: String!, reviewTitle: String!, stars: Int!, userId: String!): Review
   updateSeason(acessToken: String!, publish: Boolean!, seasonId: String!, seasonImage: String, seasonSynopsis: String!, seasonTitle: String!, storyId: String!, userId: String!): Season
   updateStory(acessToken: String!, publish: Boolean!, storyCategories: [String!]!, storyId: String!, storyImage: String, storySynopsis: String!, storyTitle: String!, userId: String!, viewingRestriction: String): Story
@@ -91,18 +93,20 @@ type Mutation {
 }
 
 type Notification {
-  created_at: DateTime
+  created_at: DateTime!
   favorite: Favorite
   favorite_id: String
   follow: Follow
   follow_id: String
-  id: ID
+  id: ID!
+  is_read: Boolean!
+  notification_title: String
   receiver: User
-  receiver_id: String
+  receiver_id: String!
   review: Review
   review_id: String
   user: User
-  user_id: String
+  user_id: String!
 }
 
 type Object {
@@ -168,6 +172,7 @@ type Query {
   QueryMyTerminologies(accessToken: String!, page: Int!, pageSize: Int!, searchTitle: String, serchSettingMaterialId: String, userId: String!): [Terminology]
   QueryMyTerminologyById(accessToken: String!, terminologyId: String!, userId: String!): Terminology
   QueryNotificationsForUser(accessToken: String!): [Notification]
+  QueryNotificationsForUserByIsRead(accessToken: String!): [Notification]
   QueryObjectById(objectId: String!): Object
   QueryObjects(searchTitle: String, serchSettingMaterialId: String): [Object]
   QueryObjectsCountByPublish: Int

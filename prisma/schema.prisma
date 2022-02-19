@@ -197,15 +197,18 @@ model Page {
 }
 
 model Notification {
-  id          String   @id @unique @default(uuid())
-  user_id     String
-  receiver_id String
-  review_id   String?
-  favorite_id String?
-  follow_id   String?
-  created_at  DateTime @default(now())
-  user        User?    @relation(fields: [receiver_id], references: [id])
+  id                 String    @id @unique @default(uuid())
+  notification_title String?
+  is_read            Boolean   @default(false) @db.Boolean
+  user_id            String
+  receiver_id        String
+  review_id          String?
+  favorite_id        String?
+  follow_id          String?
+  created_at         DateTime  @default(now())
+  updated_at         DateTime?
 
+  user     User?     @relation(fields: [receiver_id], references: [id])
   review   Review?   @relation(fields: [review_id], references: [id])
   favorite Favorite? @relation(fields: [favorite_id], references: [id])
   follow   Follow?   @relation(fields: [follow_id], references: [id])

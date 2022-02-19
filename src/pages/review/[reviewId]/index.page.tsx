@@ -27,16 +27,13 @@ const ReviewQuery = gql`
 const ReviewsQueryById = gql`
   query QueryReviewById($queryReviewByIdId: String!) {
     QueryReviewById(id: $queryReviewByIdId) {
+      id
       user_id
       story_id
       review_title
       review_body
       stars
       created_at
-      user {
-        user_name
-        image
-      }
       story {
         story_title
         story_synopsis
@@ -45,6 +42,10 @@ const ReviewsQueryById = gql`
         viewing_restriction
         story_categories
         created_at
+      }
+      user {
+        user_name
+        image
       }
     }
   }
@@ -87,6 +88,9 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
   })
 
   const story = data.QueryReviewById.story
+
+  // eslint-disable-next-line no-console
+  console.log(story)
 
   return {
     props: {

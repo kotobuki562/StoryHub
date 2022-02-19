@@ -47,15 +47,17 @@ const HomePage: NextPage = () => {
 
   useEffect(() => {
     if (errorInfo) {
-      toast.custom(t => {
-        return (
-          <Alert
-            t={t}
-            title="エラーが発生しました"
-            usage="error"
-            message={errorInfo?.message}
-          />
-        )
+      errorInfo.response.errors.forEach(error => {
+        return toast.custom(t => {
+          return (
+            <Alert
+              t={t}
+              title="エラーが発生しました"
+              usage="error"
+              message={error.message}
+            />
+          )
+        })
       })
     }
   }, [errorInfo])
@@ -70,7 +72,7 @@ const HomePage: NextPage = () => {
     )
   }
 
-  if (!isLoading && errorInfo) {
+  if (errorInfo) {
     return (
       <Layout>
         <div className="flex flex-col justify-center items-center p-8 w-full h-screen">

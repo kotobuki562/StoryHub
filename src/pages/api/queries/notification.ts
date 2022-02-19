@@ -24,4 +24,28 @@ const QueryNotificationsForUser = (t: ObjectDefinitionBlock<"Query">) => {
   })
 }
 
-export { QueryNotificationsForUser }
+const QueryNotificationsForUserByIsRead = (
+  t: ObjectDefinitionBlock<"Query">
+) => {
+  return t.list.field("QueryNotificationsForUserByIsRead", {
+    type: "Notification",
+    args: {
+      accessToken: nonNull(stringArg()),
+    },
+    resolve: async (_parent, args) => {
+      const notifications = await prisma.user
+        .findUnique({
+          where: {
+            id: decodeUserId(args.accessToken)?.toString() || undefined,
+          },
+        })
+        .notifications({
+          where: { is_read: false },
+          orderBy: { created_at: "asc" },
+        })
+      return notifications
+    },
+  })
+}
+
+export { QueryNotificationsForUser, QueryNotificationsForUserByIsRead }
