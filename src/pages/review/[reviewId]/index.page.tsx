@@ -89,9 +89,6 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 
   const story = data.QueryReviewById.story
 
-  // eslint-disable-next-line no-console
-  console.log(story)
-
   return {
     props: {
       review: data,

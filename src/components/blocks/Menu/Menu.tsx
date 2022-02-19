@@ -64,7 +64,7 @@ export const Menu: VFC<Props> = memo(
           {viewer}
         </button>
         {!isHidden && (
-          <div onClick={onClose} className="fixed inset-0 z-10 opacity-0" />
+          <div onClick={onClose} className="fixed inset-0 z-10 bg-black/0" />
         )}
 
         <div
@@ -75,7 +75,7 @@ export const Menu: VFC<Props> = memo(
           <div
             className="overflow-y-scroll absolute z-10 bg-white rounded-lg shadow-lg"
             style={{
-              top: "130%",
+              top: "120%",
               left: "50%",
               transform: `${
                 position ? `translateX(${position}%)` : "translateX(-50%)"
