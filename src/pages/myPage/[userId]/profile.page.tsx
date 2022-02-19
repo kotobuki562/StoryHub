@@ -207,26 +207,39 @@ const ProfilePage = () => {
 
   useEffect(() => {
     getAvatorImageUrl()
-  }, [userId])
+  }, [getAvatorImageUrl, userId])
 
   useEffect(() => {
-    if (error || errorUpdateUser || errorCreateUser) {
+    if (errorUpdateUser || errorCreateUser) {
       toast.custom(t => {
         return (
           <Alert
             t={t}
             title="エラーが発生しました"
             usage="error"
-            message={
-              errorUpdateUser?.message ||
-              errorCreateUser?.message ||
-              error?.message
-            }
+            message={errorUpdateUser?.message || errorCreateUser?.message}
           />
         )
       })
     }
-  }, [error, errorCreateUser, errorUpdateUser])
+  }, [errorCreateUser, errorUpdateUser])
+
+  useEffect(() => {
+    if (error) {
+      error.response.errors.map(error => {
+        toast.custom(t => {
+          return (
+            <Alert
+              t={t}
+              title="エラーが発生しました"
+              usage="error"
+              message={error.message}
+            />
+          )
+        })
+      })
+    }
+  }, [error])
 
   if (isLoading) {
     return (
