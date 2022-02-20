@@ -3,6 +3,7 @@ import { gql } from "@apollo/client"
 import { useMutation } from "@apollo/client"
 import {
   BookmarkIcon,
+  CheckIcon,
   DotsCircleHorizontalIcon,
   EyeIcon,
   EyeOffIcon,
@@ -12,8 +13,9 @@ import {
 } from "@heroicons/react/outline"
 import cc from "classcat"
 import { format } from "date-fns"
+import Link from "next/link"
 import type { VFC } from "react"
-import { memo, useCallback, useState } from "react"
+import { memo, useCallback, useMemo, useState } from "react"
 import toast from "react-hot-toast"
 import { Alert } from "src/components/atoms/Alert"
 import { Menu } from "src/components/blocks/Menu"
@@ -43,14 +45,24 @@ type Props = {
   notification: NexusGenFieldTypes["Notification"]
   accessToken: string
   mutate: KeyedMutator<QueryNotificationsForUser>
+  notificatonIds: string[]
+  onAdd: (id: string) => void
+  onRemove: (id: string) => void
 }
 
 const NotificationCardComp: VFC<Props> = ({
   accessToken,
   mutate,
   notification,
+  notificatonIds,
+  onAdd,
+  onRemove,
 }) => {
   const [isHidden, setIsHidden] = useState(true)
+  const isIncldued = useMemo(() => {
+    return notificatonIds.includes(notification.id)
+  }, [notification.id, notificatonIds])
+
   const handleToggle = useCallback(() => {
     setIsHidden(pre => {
       return !pre
@@ -161,10 +173,31 @@ const NotificationCardComp: VFC<Props> = ({
           </div>
         </Menu>
       </div>
-      <div className="mr-2 w-7 sx:w-8 text-purple-500">
-        {notification.review_id && <FireIcon className="w-7 sx:w-8" />}
-        {notification.favorite_id && <BookmarkIcon className="w-7 sx:w-8" />}
-        {notification.follow_id && <UserGroupIcon className="w-7 sx:w-8" />}
+      <div className="flex flex-col items-center px-2 xs:px-0 xs:mr-2">
+        <div className="mb-2 w-7 sx:w-8 text-purple-500">
+          {notification.review_id && <FireIcon className="w-7 sx:w-8" />}
+          {notification.favorite_id && <BookmarkIcon className="w-7 sx:w-8" />}
+          {notification.follow_id && <UserGroupIcon className="w-7 sx:w-8" />}
+        </div>
+        {isIncldued ? (
+          <button
+            className="bg-purple-500 rounded-md"
+            onClick={() => {
+              return onRemove(notification.id)
+            }}
+          >
+            <CheckIcon className="w-5 h-5 text-white" />
+          </button>
+        ) : (
+          <button
+            className="bg-white rounded-md ring-2 ring-purple-500"
+            onClick={() => {
+              return onAdd(notification.id)
+            }}
+          >
+            <div className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       <div>
@@ -186,14 +219,35 @@ const NotificationCardComp: VFC<Props> = ({
           <p>{notification.user?.user_name || "User"}</p>
         </div>
 
-        <p
-          className={cc([
-            "mb-2 text-sm group-hover:text-purple-500 break-all",
-            !notification.is_read && "text-purple-500 font-semibold",
-          ])}
-        >
-          {notification.notification_title}
-        </p>
+        {notification.review_id ? (
+          <Link
+            href={{
+              pathname: "/review/[id]",
+              query: {
+                id: notification.review_id,
+              },
+            }}
+          >
+            <a
+              className={cc([
+                "mb-2 text-sm block group-hover:text-purple-500 break-all",
+                !notification.is_read && "text-purple-500 font-semibold",
+              ])}
+            >
+              {notification.notification_title}
+            </a>
+          </Link>
+        ) : (
+          <p
+            className={cc([
+              "mb-2 text-sm group-hover:text-purple-500 break-all",
+              !notification.is_read && "text-purple-500 font-semibold",
+            ])}
+          >
+            {notification.notification_title}
+          </p>
+        )}
+
         {notification.created_at && (
           <p className="font-mono text-xs text-gray-500">
             {format(new Date(notification.created_at), "yyyy/MM/dd HH:mm")}
