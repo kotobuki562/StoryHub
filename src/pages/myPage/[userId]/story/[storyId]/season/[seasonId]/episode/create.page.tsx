@@ -6,7 +6,7 @@ import type { NextPage } from "next"
 import { useRouter } from "next/router"
 import { memo, useCallback, useState } from "react"
 import { useForm } from "react-hook-form"
-import toast, { Toaster } from "react-hot-toast"
+import toast from "react-hot-toast"
 import { Alert } from "src/components/atoms/Alert"
 import { Button } from "src/components/atoms/Button"
 import { Input } from "src/components/atoms/Input"
@@ -194,7 +194,6 @@ const CreateEpisode: NextPage = () => {
 
   return (
     <Layout>
-      <Toaster position="top-center" />
       <div className="flex justify-start">
         <BreadcrumbTrail
           separator=">"
@@ -218,6 +217,7 @@ const CreateEpisode: NextPage = () => {
           ]}
         />
       </div>
+
       <div className="p-8">
         <Tab
           color="purple"

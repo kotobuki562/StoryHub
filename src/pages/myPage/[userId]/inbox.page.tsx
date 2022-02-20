@@ -5,7 +5,7 @@ import { useMutation } from "@apollo/client"
 import { EyeIcon, EyeOffIcon, InboxInIcon } from "@heroicons/react/outline"
 import type { NextPage } from "next"
 import { useCallback, useMemo, useState } from "react"
-import { toast, Toaster } from "react-hot-toast"
+import { toast } from "react-hot-toast"
 import { Alert } from "src/components/atoms/Alert"
 import { Button } from "src/components/atoms/Button"
 import { Tab } from "src/components/blocks/Tab"
@@ -191,7 +191,6 @@ const InboxPage: NextPage = () => {
 
   return (
     <Layout>
-      <Toaster position="top-center" />
       <div className="flex items-center px-4 mb-4 text-3xl font-black text-purple-500">
         <InboxInIcon className="mr-2 w-8 h-8" />
         <h2 className="">Inbox</h2>

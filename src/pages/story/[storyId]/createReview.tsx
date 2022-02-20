@@ -5,7 +5,7 @@ import { useRouter } from "next/router"
 import type { VFC } from "react"
 import { memo, useCallback, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import toast, { Toaster } from "react-hot-toast"
+import toast from "react-hot-toast"
 import { Alert } from "src/components/atoms/Alert"
 import { Button } from "src/components/atoms/Button"
 import { Input } from "src/components/atoms/Input"
@@ -199,8 +199,6 @@ const CreateReviewFormComp: VFC<FormProps> = ({
 
   return (
     <div className="w-full">
-      <Toaster position="top-center" />
-
       <form className="p-4 sm:p-8" onSubmit={handleSubmit(handleSubmitData)}>
         <div className="flex flex-col justify-center items-center mb-4 w-full">
           <div className="flex gap-1 items-center mb-8">

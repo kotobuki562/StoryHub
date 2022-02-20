@@ -6,7 +6,6 @@ import "react-image-crop/dist/ReactCrop.css"
 import { XCircleIcon } from "@heroicons/react/solid"
 import { useRouter } from "next/router"
 import { memo, useCallback, useEffect, useMemo, useState } from "react"
-import { Toaster } from "react-hot-toast"
 import { Layout } from "src/components/Layout"
 import { useStorage } from "src/hooks/storage/useStorage"
 import { supabase } from "src/lib/supabase"
@@ -51,8 +50,6 @@ const ProfilePage = () => {
 
   return (
     <Layout>
-      <Toaster position="top-center" />
-
       {isMeState && (
         <div className="flex flex-col items-center p-8">
           <div className="flex flex-col justify-center items-center mb-8 w-full">
