@@ -7,7 +7,7 @@ import { gql } from "graphql-tag"
 import { useRouter } from "next/router"
 import { memo, useCallback, useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
-import { toast, Toaster } from "react-hot-toast"
+import { toast } from "react-hot-toast"
 import { Alert } from "src/components/atoms/Alert"
 import { Button } from "src/components/atoms/Button"
 import { Switch } from "src/components/atoms/Switch"
@@ -263,7 +263,6 @@ const ProfilePage = () => {
 
   return (
     <Layout>
-      <Toaster position="top-center" />
       <div className="p-8">
         {isMeState && (
           <>
@@ -391,6 +390,7 @@ const ProfilePage = () => {
 
                 <div className="flex flex-col items-center w-full">
                   <Button
+                    primary
                     usage="base"
                     disabled={isLoadingUpdateUser}
                     isLoading={isLoadingUpdateUser}
@@ -401,6 +401,7 @@ const ProfilePage = () => {
               </form>
             ) : (
               <Button
+                primary
                 usage="base"
                 onClick={onSubmit}
                 disabled={isLoadingCreateUser}
