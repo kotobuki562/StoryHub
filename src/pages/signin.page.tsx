@@ -147,8 +147,9 @@ const Signin = () => {
             />
           </div>
 
-          <Button type="submit" usage="base" text="ログイン" />
+          <Button primary type="submit" usage="base" text="ログイン" />
           <Button
+            primary
             type="button"
             usage="base"
             text="Google"

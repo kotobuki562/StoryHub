@@ -198,10 +198,15 @@ const InboxPage: NextPage = () => {
       </div>
       <div className="flex flex-wrap gap-3 items-center px-4">
         <div>
-          <Button onClick={handleAddAll} usage="base" text="全て選択" />
+          <Button primary onClick={handleAddAll} usage="base" text="全て選択" />
         </div>
         <div>
-          <Button onClick={handleRemoveAll} usage="base" text="全て解除" />
+          <Button
+            primary
+            onClick={handleRemoveAll}
+            usage="base"
+            text="全て解除"
+          />
         </div>
         {notificationIds.length > 0 && (
           <>

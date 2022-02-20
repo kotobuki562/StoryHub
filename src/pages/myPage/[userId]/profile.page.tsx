@@ -391,6 +391,7 @@ const ProfilePage = () => {
 
                 <div className="flex flex-col items-center w-full">
                   <Button
+                    primary
                     usage="base"
                     disabled={isLoadingUpdateUser}
                     isLoading={isLoadingUpdateUser}
@@ -401,6 +402,7 @@ const ProfilePage = () => {
               </form>
             ) : (
               <Button
+                primary
                 usage="base"
                 onClick={onSubmit}
                 disabled={isLoadingCreateUser}

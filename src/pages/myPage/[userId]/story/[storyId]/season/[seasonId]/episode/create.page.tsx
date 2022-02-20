@@ -144,16 +144,31 @@ const CreateEpisode: NextPage = () => {
     })
   })
 
-  if (seasonError || createEpisodeError) {
+  if (createEpisodeError) {
     toast.custom(t => {
       return (
         <Alert
           t={t}
           title="エラーが発生しました"
           usage="error"
-          message={seasonError?.message || createEpisodeError?.message}
+          message={createEpisodeError?.message}
         />
       )
+    })
+  }
+
+  if (seasonError) {
+    seasonError.response.errors.forEach(error => {
+      toast.custom(t => {
+        return (
+          <Alert
+            t={t}
+            title="エラーが発生しました"
+            usage="error"
+            message={error.message}
+          />
+        )
+      })
     })
   }
 
@@ -340,6 +355,7 @@ const CreateEpisode: NextPage = () => {
 
                   <div className="flex flex-col items-center w-full">
                     <Button
+                      primary
                       usage="base"
                       disabled={createEpisodeIsLoading}
                       isLoading={createEpisodeIsLoading}

@@ -169,6 +169,7 @@ const UploadStoryImageFormComp: VFC<UpdateImageFormProps> = ({ userId }) => {
       </div>
 
       <Button
+        primary
         usage="base"
         disabled={isLoadingFunction || !upImgUrl}
         isLoading={isLoadingFunction}

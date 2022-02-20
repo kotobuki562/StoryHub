@@ -45,7 +45,7 @@ const ButtonComp: VFC<ButtonProps> = ({
         isLoading && "cursor-move ",
       ])}
     >
-      <div className="flex items-center w-full">
+      <div className="flex justify-center items-center w-full">
         {isLoading ? (
           <div className="w-8 h-8 animate-spin">
             <img src="/img/Loading.svg" alt="loading" />

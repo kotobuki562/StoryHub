@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @next/next/no-img-element */
-import { gql, useMutation, useQuery } from "@apollo/client"
+import { gql, useMutation } from "@apollo/client"
 import { PlusIcon } from "@heroicons/react/solid"
 import cc from "classcat"
 import type { NextPage } from "next"
@@ -21,6 +21,7 @@ import { Layout } from "src/components/Layout"
 import { LoadingLogo } from "src/components/Loading"
 import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { useStorage } from "src/hooks/storage/useStorage"
+import { useSwrQuery } from "src/hooks/swr"
 import { supabase } from "src/lib/supabase"
 import type { QueryMySeasonById } from "src/types/Season/query"
 
@@ -99,18 +100,17 @@ const CreateSeason: NextPage = () => {
   const [isStorage, setIsStorage] = useState<boolean>(true)
   const [seasonImage, setSeasonImage] = useState<string>("")
   const accessToken = supabase.auth.session()?.access_token
+
   const {
     data: mySeason,
     error: mySeasonError,
-    loading: isMySeasonLoading,
-  } = useQuery<QueryMySeasonById>(MySeasonQuery, {
-    variables: {
-      queryMySeasonByIdId: seasonId as string,
-      userId: userId as string,
-      accessToken: accessToken ? accessToken : null,
-      episodeUserId: userId as string,
-      episodeAccessToken: accessToken ? accessToken : null,
-    },
+    isLoading: isMySeasonLoading,
+  } = useSwrQuery<QueryMySeasonById>(MySeasonQuery, {
+    queryMySeasonByIdId: seasonId as string,
+    userId: userId as string,
+    accessToken: accessToken ? accessToken : null,
+    episodeUserId: userId as string,
+    episodeAccessToken: accessToken ? accessToken : null,
   })
 
   const {
@@ -234,19 +234,36 @@ const CreateSeason: NextPage = () => {
   ])
 
   useEffect(() => {
-    if (errorUpdateSeason || mySeasonError) {
+    if (errorUpdateSeason) {
       toast.custom(t => {
         return (
           <Alert
             t={t}
             title="エラーが発生しました"
             usage="error"
-            message={errorUpdateSeason?.message || mySeasonError?.message}
+            message={errorUpdateSeason?.message}
           />
         )
       })
     }
-  }, [errorUpdateSeason, mySeasonError])
+  }, [errorUpdateSeason])
+
+  useEffect(() => {
+    if (mySeasonError) {
+      mySeasonError.response.errors.map(error => {
+        toast.custom(t => {
+          return (
+            <Alert
+              t={t}
+              title="エラーが発生しました"
+              usage="error"
+              message={error.message}
+            />
+          )
+        })
+      })
+    }
+  }, [mySeasonError])
 
   if (isMySeasonLoading || !userId || isLoadingUpdateSeason) {
     return (
@@ -439,6 +456,7 @@ const CreateSeason: NextPage = () => {
 
                   <div className="flex flex-col items-center w-full">
                     <Button
+                      primary
                       usage="base"
                       disabled={isLoadingUpdateSeason}
                       isLoading={isLoadingUpdateSeason}

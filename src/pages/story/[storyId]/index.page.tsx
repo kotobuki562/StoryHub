@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable import/no-default-export */
-import { useQuery } from "@apollo/client"
 import { PencilAltIcon, XCircleIcon } from "@heroicons/react/solid"
 import { format } from "date-fns"
 import gql from "graphql-tag"
@@ -12,6 +11,7 @@ import { SeasonCard } from "src/components/blocks/Card/Season"
 import { Modal } from "src/components/blocks/Modal"
 import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout"
+import { useSwrQuery } from "src/hooks/swr"
 import { useUser } from "src/hooks/user/useUser"
 import { client } from "src/lib/apollo"
 import { supabase } from "src/lib/supabase"
@@ -156,12 +156,11 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
     QueryReviewsByStoryId["QueryReviewsByStoryId"]
   >([])
   const [page, setPage] = useState(1)
-  const { data: reviewCountData } = useQuery<{
+
+  const { data: reviewCountData } = useSwrQuery<{
     QueryReviewsCountByStoryId: number
   }>(ReviewCountQueryByStoryId, {
-    variables: {
-      storyId: story.QueryStoryById.id,
-    },
+    storyId: story.QueryStoryById.id,
   })
 
   const getPageReviewData = useCallback(async () => {

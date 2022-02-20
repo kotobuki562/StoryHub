@@ -273,6 +273,7 @@ const CreateReviewFormComp: VFC<FormProps> = ({
 
         <div className="flex flex-col items-center w-full">
           <Button
+            primary
             usage="base"
             disabled={isLoading || isCreateReview || !reviewer?.id}
             isLoading={isLoading}
