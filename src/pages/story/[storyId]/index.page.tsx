@@ -333,7 +333,7 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
                     {story.QueryStoryById.seasons &&
                     story.QueryStoryById.seasons.length > 0 ? (
                       <div className="flex flex-wrap gap-5 justify-center items-center w-full">
-                        {story.QueryStoryById.seasons?.map((season, index) => {
+                        {story.QueryStoryById.seasons?.map(season => {
                           return (
                             <SeasonCard
                               characters={null}
@@ -351,7 +351,6 @@ const StoryPage: NextPage<StoryPageProps> = ({ story }) => {
                               updated_at={undefined}
                               key={season?.id}
                               {...season}
-                              seasonNumber={index + 1}
                             />
                           )
                         })}

@@ -4,6 +4,7 @@ import { gql } from "@apollo/client"
 import { useMutation } from "@apollo/client"
 import { EyeIcon, EyeOffIcon, InboxInIcon } from "@heroicons/react/outline"
 import type { NextPage } from "next"
+import router from "next/router"
 import { useCallback, useMemo, useState } from "react"
 import { toast } from "react-hot-toast"
 import { Alert } from "src/components/atoms/Alert"
@@ -11,7 +12,6 @@ import { Button } from "src/components/atoms/Button"
 import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout"
 import { useSwrQuery } from "src/hooks/swr"
-import { useUser } from "src/hooks/user/useUser"
 import { supabase } from "src/lib/supabase"
 import type { QueryNotificationsForUser } from "src/types/Notification/query"
 
@@ -56,6 +56,7 @@ const NotificationUpdate = gql`
 `
 
 const InboxPage: NextPage = () => {
+  const { userId } = router.query
   const [notificationIds, setNotificationIds] = useState<string[]>([])
   const accessToken = supabase.auth.session()?.access_token
   const { data, mutate } = useSwrQuery<QueryNotificationsForUser>(
@@ -64,7 +65,6 @@ const InboxPage: NextPage = () => {
       accessToken,
     }
   )
-  const { data: user } = useUser()
 
   const [
     updateManyNotifications,
@@ -155,7 +155,7 @@ const InboxPage: NextPage = () => {
           accessToken,
           notificationIds,
           isRead: isRead,
-          receiverId: user?.id,
+          receiverId: userId as string,
         },
       })
         .then(() => {
@@ -186,7 +186,7 @@ const InboxPage: NextPage = () => {
           })
         })
     },
-    [notificationIds, updateManyNotifications, accessToken, user?.id, mutate]
+    [notificationIds, updateManyNotifications, accessToken, userId, mutate]
   )
 
   return (
@@ -195,7 +195,7 @@ const InboxPage: NextPage = () => {
         <InboxInIcon className="mr-2 w-8 h-8" />
         <h2 className="">Inbox</h2>
       </div>
-      <div className="flex flex-wrap gap-3 items-center px-4">
+      <div className="flex flex-wrap gap-3 items-center px-4 mb-4">
         <div>
           <Button primary onClick={handleAddAll} usage="base" text="全て選択" />
         </div>

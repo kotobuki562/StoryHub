@@ -7,17 +7,9 @@ import type { NexusGenFieldTypes } from "src/generated/nexus-typegen"
 
 const SeasonCardComp: VFC<
   NexusGenFieldTypes["Season"] & {
-    seasonNumber: number
     isCurrentSeason?: boolean
   }
-> = ({
-  id,
-  isCurrentSeason,
-  season_image,
-  season_title,
-  seasonNumber,
-  story_id,
-}) => {
+> = ({ id, isCurrentSeason, season_image, season_title, story_id }) => {
   return (
     <article
       className="group overflow-hidden relative w-[300px] h-[200px] bg-center bg-cover rounded-lg shadow-lg hover:shadow-2xl transition duration-300 ease-in-out"
@@ -30,7 +22,6 @@ const SeasonCardComp: VFC<
     >
       <div className="absolute inset-0 bg-black/50 group-hover:opacity-75 transition duration-300 ease-in-out"></div>
       <div className="flex relative flex-col justify-between p-2 w-full h-full">
-        <div className="font-semibold text-white">シーズン {seasonNumber}</div>
         <div>
           <h3 className="text-left">
             <Link

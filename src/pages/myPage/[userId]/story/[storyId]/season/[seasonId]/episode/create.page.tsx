@@ -293,14 +293,14 @@ const CreateEpisode: NextPage = () => {
                                 handleSelectSeasonImage(url)
                               }}
                               className={cc([
-                                "min-w-[297px]",
+                                "min-w-[210px]",
                                 seasonImage === url &&
                                   "border-4 border-yellow-500",
                               ])}
                               key={url}
                             >
                               <img
-                                className="w-[297px] h-[210px]"
+                                className="w-[210px] h-[297px]"
                                 src={url}
                                 alt="エピソード画像"
                               />

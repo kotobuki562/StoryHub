@@ -136,7 +136,7 @@ const ProfilePage = () => {
             <div className="flex overflow-x-scroll gap-8 items-center w-[300px] xs:w-[500px] md:w-[700px]">
               {episodeImageUrls.map(url => {
                 return (
-                  <div className="relative min-w-[297px]" key={url}>
+                  <div className="relative min-w-[210px]" key={url}>
                     <button
                       className="absolute top-1 right-1"
                       onClick={() => {
@@ -147,7 +147,7 @@ const ProfilePage = () => {
                     </button>
                     <img
                       key={url}
-                      className="w-[297px] h-[210px]"
+                      className="w-[210px] h-[297px]"
                       src={url}
                       alt=""
                     />
