@@ -28,12 +28,12 @@
     "migrate": "npx prisma migrate dev"
   },
   "dependencies": {
-    "@apollo/client": "3.5.8",
+    "@apollo/client": "3.5.10",
     "@heroicons/react": "^1.0.5",
     "@prisma/client": "3.9.1",
     "@react-pdf/renderer": "^2.0.21",
     "@supabase/supabase-js": "1.29.4",
-    "apollo-server-micro": "3.6.3",
+    "apollo-server-micro": "3.6.7",
     "axios": "^0.25.0",
     "classcat": "^5.0.3",
     "date-fns": "^2.28.0",
