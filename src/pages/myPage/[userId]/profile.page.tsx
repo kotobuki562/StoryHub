@@ -7,7 +7,7 @@ import { gql } from "graphql-tag"
 import { useRouter } from "next/router"
 import { memo, useCallback, useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
-import { toast, Toaster } from "react-hot-toast"
+import { toast } from "react-hot-toast"
 import { Alert } from "src/components/atoms/Alert"
 import { Button } from "src/components/atoms/Button"
 import { Switch } from "src/components/atoms/Switch"
@@ -207,26 +207,39 @@ const ProfilePage = () => {
 
   useEffect(() => {
     getAvatorImageUrl()
-  }, [userId])
+  }, [getAvatorImageUrl, userId])
 
   useEffect(() => {
-    if (error || errorUpdateUser || errorCreateUser) {
+    if (errorUpdateUser || errorCreateUser) {
       toast.custom(t => {
         return (
           <Alert
             t={t}
             title="エラーが発生しました"
             usage="error"
-            message={
-              errorUpdateUser?.message ||
-              errorCreateUser?.message ||
-              error?.message
-            }
+            message={errorUpdateUser?.message || errorCreateUser?.message}
           />
         )
       })
     }
-  }, [error, errorCreateUser, errorUpdateUser])
+  }, [errorCreateUser, errorUpdateUser])
+
+  useEffect(() => {
+    if (error) {
+      error.response.errors.map(error => {
+        toast.custom(t => {
+          return (
+            <Alert
+              t={t}
+              title="エラーが発生しました"
+              usage="error"
+              message={error.message}
+            />
+          )
+        })
+      })
+    }
+  }, [error])
 
   if (isLoading) {
     return (
@@ -250,7 +263,6 @@ const ProfilePage = () => {
 
   return (
     <Layout>
-      <Toaster position="top-center" />
       <div className="p-8">
         {isMeState && (
           <>
@@ -378,6 +390,7 @@ const ProfilePage = () => {
 
                 <div className="flex flex-col items-center w-full">
                   <Button
+                    primary
                     usage="base"
                     disabled={isLoadingUpdateUser}
                     isLoading={isLoadingUpdateUser}
@@ -388,6 +401,7 @@ const ProfilePage = () => {
               </form>
             ) : (
               <Button
+                primary
                 usage="base"
                 onClick={onSubmit}
                 disabled={isLoadingCreateUser}

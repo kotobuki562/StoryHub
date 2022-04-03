@@ -19,7 +19,9 @@ const QueryStories = (t: ObjectDefinitionBlock<"Query">) => {
     resolve: async (_parent, args) => {
       const { page, pageSize } = args
       const skip = pageSize * (Number(page) - 1)
-      const users = await prisma.user.findMany()
+      const users = await prisma.user.findMany({
+        select: { id: true },
+      })
       const userIds = users.map(user => {
         return user.id
       })

@@ -6,7 +6,7 @@ import type { NextPage } from "next"
 import { useRouter } from "next/router"
 import { memo, useCallback, useState } from "react"
 import { useForm } from "react-hook-form"
-import toast, { Toaster } from "react-hot-toast"
+import toast from "react-hot-toast"
 import { Alert } from "src/components/atoms/Alert"
 import { Button } from "src/components/atoms/Button"
 import { Input } from "src/components/atoms/Input"
@@ -144,16 +144,31 @@ const CreateEpisode: NextPage = () => {
     })
   })
 
-  if (seasonError || createEpisodeError) {
+  if (createEpisodeError) {
     toast.custom(t => {
       return (
         <Alert
           t={t}
           title="エラーが発生しました"
           usage="error"
-          message={seasonError?.message || createEpisodeError?.message}
+          message={createEpisodeError?.message}
         />
       )
+    })
+  }
+
+  if (seasonError) {
+    seasonError.response.errors.forEach(error => {
+      toast.custom(t => {
+        return (
+          <Alert
+            t={t}
+            title="エラーが発生しました"
+            usage="error"
+            message={error.message}
+          />
+        )
+      })
     })
   }
 
@@ -179,7 +194,6 @@ const CreateEpisode: NextPage = () => {
 
   return (
     <Layout>
-      <Toaster position="top-center" />
       <div className="flex justify-start">
         <BreadcrumbTrail
           separator=">"
@@ -203,6 +217,7 @@ const CreateEpisode: NextPage = () => {
           ]}
         />
       </div>
+
       <div className="p-8">
         <Tab
           color="purple"
@@ -278,14 +293,14 @@ const CreateEpisode: NextPage = () => {
                                 handleSelectSeasonImage(url)
                               }}
                               className={cc([
-                                "min-w-[297px]",
+                                "min-w-[210px]",
                                 seasonImage === url &&
                                   "border-4 border-yellow-500",
                               ])}
                               key={url}
                             >
                               <img
-                                className="w-[297px] h-[210px]"
+                                className="w-[210px] h-[297px]"
                                 src={url}
                                 alt="エピソード画像"
                               />
@@ -340,6 +355,7 @@ const CreateEpisode: NextPage = () => {
 
                   <div className="flex flex-col items-center w-full">
                     <Button
+                      primary
                       usage="base"
                       disabled={createEpisodeIsLoading}
                       isLoading={createEpisodeIsLoading}

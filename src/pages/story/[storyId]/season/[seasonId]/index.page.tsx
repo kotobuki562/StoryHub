@@ -6,8 +6,10 @@ import { format } from "date-fns"
 import gql from "graphql-tag"
 import type { GetStaticPropsContext, NextPage } from "next"
 import Link from "next/link"
+import { EpisodeCard } from "src/components/blocks/Card/Episode"
 import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout"
+import type { NexusGenFieldTypes } from "src/generated/nexus-typegen"
 import { client } from "src/lib/apollo"
 import { STORY_PAGE_SIZE } from "src/tools/page"
 import type { QuerySeasonById } from "src/types/Season/query"
@@ -58,6 +60,7 @@ const SeasonQueryById = gql`
 type StoryPageProps = {
   story: QueryStoryById["QueryStoryById"]
   season: QuerySeasonById["QuerySeasonById"]
+  episodes: NexusGenFieldTypes["Episode"][]
 }
 
 export const getStaticPaths = async () => {
@@ -101,14 +104,14 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
       props: {
         story: seasonData.QuerySeasonById.story,
         season: seasonData.QuerySeasonById,
-        seasonId: params?.seasonId,
+        episodes: seasonData.QuerySeasonById.episodes,
       },
       revalidate: 60,
     }
   }
 }
 
-const StoryPage: NextPage<StoryPageProps> = ({ season, story }) => {
+const StoryPage: NextPage<StoryPageProps> = ({ episodes, season, story }) => {
   return (
     <Layout
       meta={{
@@ -181,6 +184,38 @@ const StoryPage: NextPage<StoryPageProps> = ({ season, story }) => {
                         </p>
                       </div>
                     </div>
+                  </div>
+                ),
+              },
+              {
+                label: `${episodes.length}個のエピソード`,
+                children: (
+                  <div className="flex flex-col items-center py-4 w-full">
+                    {episodes.length > 0 ? (
+                      <div className="flex flex-wrap gap-5 justify-center items-center w-full">
+                        {episodes.map(season => {
+                          return (
+                            <EpisodeCard
+                              storyId={story.id as string}
+                              key={season?.id}
+                              {...season}
+                            />
+                          )
+                        })}
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center">
+                        <h3 className="text-xl font-bold text-purple-500">
+                          エピソードが存在しません
+                        </h3>
+                        <div
+                          className="overflow-hidden mb-8 w-[210px] h-[297px] bg-center bg-cover rounded-lg sm:w-[300.38px] sm:h-[425px] xl:w-[375px] xl:h-[530.57px]"
+                          style={{
+                            backgroundImage: `url("https://user-images.githubusercontent.com/67810971/149643400-9821f826-5f9c-45a2-a726-9ac1ea78fbe5.png")`,
+                          }}
+                        />
+                      </div>
+                    )}
                   </div>
                 ),
               },

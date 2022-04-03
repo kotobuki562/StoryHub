@@ -102,7 +102,7 @@ const LayoutComp: VFC<LayoutProps> = props => {
         <meta name="twitter:description" content={meta.description} />
         <meta name="twitter:image" content={meta.cardImage} />
       </Head>
-      <div className="text-slate-800">
+      <div className="min-h-screen text-slate-800">
         <Toaster position="top-center" />
         <Header />
         {isLoading ? (
@@ -110,7 +110,7 @@ const LayoutComp: VFC<LayoutProps> = props => {
             <LoadingLogo />
           </div>
         ) : (
-          <div>{props.children}</div>
+          props.children
         )}
       </div>
     </>

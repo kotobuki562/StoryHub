@@ -15,7 +15,6 @@ import { Input } from "src/components/atoms/Input"
 import { Switch } from "src/components/atoms/Switch"
 import { TextArea } from "src/components/atoms/TextArea"
 import { BreadcrumbTrail } from "src/components/blocks/BreadcrumbTrail"
-import { MyEpisodeCard } from "src/components/blocks/Card"
 import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout"
 import { LoadingLogo } from "src/components/Loading"
@@ -23,69 +22,57 @@ import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { useStorage } from "src/hooks/storage/useStorage"
 import { useSwrQuery } from "src/hooks/swr"
 import { supabase } from "src/lib/supabase"
-import type { QueryMySeasonById } from "src/types/Season/query"
+import type { QueryMyEpisodeById } from "src/types/Episode/query"
 
-const SeasonUpdate = gql`
-  mutation Mutation(
-    $seasonId: String!
-    $storyId: String!
-    $seasonTitle: String!
-    $seasonSynopsis: String!
+const EpisodeUpdate = gql`
+  mutation UpdateEpisode(
+    $episodeId: String!
+    $episodeTitle: String!
+    $episodeSynopsis: String!
     $publish: Boolean!
     $acessToken: String!
     $userId: String!
-    $seasonImage: String
+    $episodeImage: String
   ) {
-    updateSeason(
-      seasonId: $seasonId
-      storyId: $storyId
-      seasonTitle: $seasonTitle
-      seasonSynopsis: $seasonSynopsis
+    updateEpisode(
+      episodeId: $episodeId
+      episodeTitle: $episodeTitle
+      episodeSynopsis: $episodeSynopsis
       publish: $publish
       acessToken: $acessToken
       userId: $userId
-      seasonImage: $seasonImage
+      episodeImage: $episodeImage
     ) {
       id
     }
   }
 `
 
-const MySeasonQuery = gql`
-  query Query(
-    $queryMySeasonByIdId: String!
+const MyEpisodeQuery = gql`
+  query QueryMyEpisodeById(
+    $queryMyEpisodeByIdId: String!
     $userId: String!
     $accessToken: String!
-    $episodeUserId: String
-    $episodeAccessToken: String
+    $chapterAccessToken: String
+    $chapterUserId: String
   ) {
-    QueryMySeasonById(
-      id: $queryMySeasonByIdId
+    QueryMyEpisodeById(
+      id: $queryMyEpisodeByIdId
       userId: $userId
       accessToken: $accessToken
     ) {
-      story_id
-      season_title
-      season_image
-      season_synopsis
-      publish
-      created_at
-      updated_at
       id
-      story {
-        id
-        story_title
-        story_synopsis
-        story_image
-      }
-      episodes(
-        episodeUserId: $episodeUserId
-        episodeAccessToken: $episodeAccessToken
+      episode_image
+      episode_synopsis
+      episode_title
+      publish
+      chapters(
+        chapterAccessToken: $chapterAccessToken
+        chapterUserId: $chapterUserId
       ) {
         id
-        episode_title
-        episode_image
-        episode_synopsis
+        chapter_title
+        chapter_image
         publish
       }
     }
@@ -94,42 +81,41 @@ const MySeasonQuery = gql`
 
 const CreateSeason: NextPage = () => {
   const router = useRouter()
-  const { seasonId, storyId, userId } = router.query
-  const { imageUrls } = useStorage(userId as string, "season")
+  const { episodeId, seasonId, storyId, userId } = router.query
+  const { imageUrls } = useStorage(userId as string, "episode")
   const [isPublish, setIsPublish] = useState<boolean>(false)
   const [isStorage, setIsStorage] = useState<boolean>(true)
-  const [seasonImage, setSeasonImage] = useState<string>("")
+  const [episodeImage, setEpisodeImage] = useState<string>("")
   const accessToken = supabase.auth.session()?.access_token
 
   const {
-    data: mySeason,
+    data: myEpisode,
     error: mySeasonError,
     isLoading: isMySeasonLoading,
-  } = useSwrQuery<QueryMySeasonById>(MySeasonQuery, {
-    queryMySeasonByIdId: seasonId as string,
+  } = useSwrQuery<QueryMyEpisodeById>(MyEpisodeQuery, {
+    queryMyEpisodeByIdId: episodeId as string,
     userId: userId as string,
-    accessToken: accessToken ? accessToken : null,
-    episodeUserId: userId as string,
-    episodeAccessToken: accessToken ? accessToken : null,
+    accessToken: accessToken as string,
+    chapterAccessToken: accessToken as string,
+    chapterUserId: userId as string,
   })
 
   const {
-    episodes: myEpisodes,
+    chapters: myChapters,
+    episode_image,
+    episode_synopsis,
+    episode_title,
     publish,
-    season_image,
-    season_synopsis,
-    season_title,
-    story,
-  } = mySeason?.QueryMySeasonById || {}
+  } = myEpisode?.QueryMyEpisodeById || {}
 
-  const episodes = useMemo(() => {
-    return myEpisodes ? myEpisodes : []
-  }, [myEpisodes])
+  const chapters = useMemo(() => {
+    return myChapters ? myChapters : []
+  }, [myChapters])
 
   const [
-    updateSeason,
+    updateEpisode,
     { error: errorUpdateSeason, loading: isLoadingUpdateSeason },
-  ] = useMutation<NexusGenArgTypes["Mutation"]["updateSeason"]>(SeasonUpdate)
+  ] = useMutation<NexusGenArgTypes["Mutation"]["updateEpisode"]>(EpisodeUpdate)
 
   const handleTogglePublish = useCallback(() => {
     setIsPublish(pre => {
@@ -143,11 +129,11 @@ const CreateSeason: NextPage = () => {
     })
   }, [])
 
-  const handleSelectSeasonImage = useCallback(
+  const handleSelectEpisodeImage = useCallback(
     (url: string) => {
-      setSeasonImage(url)
+      setEpisodeImage(url)
     },
-    [setSeasonImage]
+    [setEpisodeImage]
   )
 
   const {
@@ -168,42 +154,43 @@ const CreateSeason: NextPage = () => {
   const { synopsis, title } = watch()
 
   useEffect(() => {
-    if (season_image) {
-      setSeasonImage(season_image)
+    if (episode_image) {
+      setEpisodeImage(episode_image)
     }
 
     if (publish) {
       setIsPublish(publish)
     }
 
-    if (season_synopsis) {
-      setValue("synopsis", season_synopsis)
+    if (episode_synopsis) {
+      setValue("synopsis", episode_synopsis)
     }
 
-    if (season_title) {
-      setValue("title", season_title)
+    if (episode_title) {
+      setValue("title", episode_title)
     }
-  }, [publish, season_image, season_synopsis, season_title, setValue])
+  }, [episode_image, episode_synopsis, episode_title, publish, setValue])
 
-  const handleSubmitData = useCallback(async () => {
-    await updateSeason({
+  const handleSubmitData = handleSubmit(async data => {
+    await updateEpisode({
       variables: {
-        seasonId: seasonId as string,
-        storyId: storyId as string,
+        episodeId: episodeId as string,
+        episodeTitle: data.title,
+        episodeSynopsis: data.synopsis,
         publish: isPublish,
-        userId: userId as string,
-        seasonTitle: getValues("title"),
-        seasonSynopsis: getValues("synopsis"),
-        seasonImage: isStorage ? seasonImage : getValues("imageUrl"),
         acessToken: accessToken ? accessToken : null,
+        userId: userId as string,
+        episodeImage: isStorage ? episodeImage : data.imageUrl,
       },
       refetchQueries: [
         {
-          query: MySeasonQuery,
+          query: MyEpisodeQuery,
           variables: {
-            queryMySeasonByIdId: seasonId as string,
+            queryMyEpisodeByIdId: episodeId as string,
             userId: userId as string,
-            accessToken: accessToken ? accessToken : null,
+            accessToken: accessToken as string,
+            chapterAccessToken: accessToken as string,
+            chapterUserId: userId as string,
           },
         },
       ],
@@ -212,26 +199,16 @@ const CreateSeason: NextPage = () => {
         return (
           <Alert
             t={t}
-            title={`${mySeason?.QueryMySeasonById.season_title}のシーズンを更新しました`}
+            title={`${episode_title}を更新しました`}
             usage="success"
           />
         )
       })
-      return router.push(`/myPage/${userId}/story/${storyId}`)
+      return router.push(
+        `/myPage/${userId}/story/${storyId}/season/${seasonId}/episode/${episodeId}`
+      )
     })
-  }, [
-    accessToken,
-    getValues,
-    isPublish,
-    isStorage,
-    mySeason?.QueryMySeasonById.season_title,
-    router,
-    seasonId,
-    seasonImage,
-    storyId,
-    updateSeason,
-    userId,
-  ])
+  })
 
   useEffect(() => {
     if (errorUpdateSeason) {
@@ -301,6 +278,10 @@ const CreateSeason: NextPage = () => {
             },
             {
               label: "シーズン詳細",
+              href: `/myPage/${userId}/story/${storyId}/season/${seasonId}`,
+            },
+            {
+              label: "ストーリーの詳細",
               href: router.asPath,
             },
           ]}
@@ -308,7 +289,7 @@ const CreateSeason: NextPage = () => {
       </div>
       <div className="p-8">
         <h2 className="mb-8 text-xl font-bold text-center text-purple-500 sm:text-4xl">
-          {mySeason?.QueryMySeasonById.season_title}の詳細
+          {episode_title}の詳細
         </h2>
         <Tab
           color="purple"
@@ -316,10 +297,7 @@ const CreateSeason: NextPage = () => {
             {
               label: "編集する",
               children: (
-                <form
-                  className="py-4"
-                  onSubmit={handleSubmit(handleSubmitData)}
-                >
+                <form className="py-4" onSubmit={handleSubmitData}>
                   <div className="flex flex-col mb-4 w-full">
                     <label className="flex justify-between items-center mb-1 text-sm font-bold text-left text-slate-500">
                       <p>{isPublish ? "公開する" : "公開しない"}</p>
@@ -383,19 +361,19 @@ const CreateSeason: NextPage = () => {
                             <button
                               type="button"
                               onClick={() => {
-                                handleSelectSeasonImage(url)
+                                handleSelectEpisodeImage(url)
                               }}
                               className={cc([
-                                "min-w-[297px]",
-                                seasonImage === url &&
+                                "min-w-[210px]",
+                                episodeImage === url &&
                                   "border-4 border-yellow-500",
                               ])}
                               key={url}
                             >
                               <img
-                                className="w-[297px] h-[210px]"
+                                className="w-[210px] h-[297px]"
                                 src={url}
-                                alt="シーズン画像"
+                                alt="エピソードの画像"
                               />
                             </button>
                           )
@@ -467,7 +445,7 @@ const CreateSeason: NextPage = () => {
               ),
             },
             {
-              label: `${mySeason?.QueryMySeasonById.episodes?.length}個のエピソード`,
+              label: `${chapters?.length}個のチャプター`,
               children: (
                 <div className="flex flex-col justify-center items-center py-4 w-full">
                   <Link
@@ -477,59 +455,9 @@ const CreateSeason: NextPage = () => {
                   >
                     <a className="flex items-center py-2 px-4 mb-4 text-lg font-bold text-purple-500 bg-yellow-100 hover:bg-yellow-300 rounded duration-200">
                       <PlusIcon className="mr-2 w-6 h-6" />
-                      エピソードの作成へ
+                      チャプターの作成へ
                     </a>
                   </Link>
-                  {episodes.length > 0 && (
-                    <div className="flex flex-wrap gap-5 justify-center items-center w-full">
-                      {episodes.map((episode, index) => {
-                        return (
-                          <MyEpisodeCard
-                            key={episode?.id}
-                            chapters={null}
-                            created_at={undefined}
-                            episode_image={null}
-                            episode_synopsis={null}
-                            episode_title={null}
-                            id={null}
-                            publish={null}
-                            season={null}
-                            season_id={null}
-                            updated_at={undefined}
-                            {...episode}
-                            episodeNumber={index + 1}
-                            href={`/myPage/${userId}/story/${storyId}/season/${seasonId}/episode/${episode?.id}`}
-                          />
-                        )
-                      })}
-                    </div>
-                  )}
-                </div>
-              ),
-            },
-            {
-              label: "ストーリー",
-              children: (
-                <div className="flex flex-col justify-center items-center py-4 w-full">
-                  <div className="flex flex-col items-center w-[300px] sm:w-[400px] xl:w-[600px]">
-                    <div
-                      className="overflow-hidden mb-8 w-[210px] h-[297px] bg-center bg-cover rounded-lg sm:w-[300.38px] sm:h-[425px] xl:w-[375px] xl:h-[530.57px]"
-                      style={{
-                        backgroundImage: `url(${
-                          story?.story_image ||
-                          "https://user-images.githubusercontent.com/67810971/149643400-9821f826-5f9c-45a2-a726-9ac1ea78fbe5.png"
-                        })`,
-                      }}
-                    />
-                    <div className="flex flex-col">
-                      <h2 className="mb-4 text-2xl font-black">
-                        {story?.story_title}
-                      </h2>
-                      <p className="text-slate-600 whitespace-pre-wrap">
-                        {story?.story_synopsis}
-                      </p>
-                    </div>
-                  </div>
                 </div>
               ),
             },

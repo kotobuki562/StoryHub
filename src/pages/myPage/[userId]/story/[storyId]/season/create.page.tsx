@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @next/next/no-img-element */
-import { gql, useMutation, useQuery } from "@apollo/client"
+import { gql, useMutation } from "@apollo/client"
 import cc from "classcat"
 import type { NextPage } from "next"
 import { useRouter } from "next/router"
 import { memo, useCallback, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
-import toast, { Toaster } from "react-hot-toast"
+import toast from "react-hot-toast"
 import { Alert } from "src/components/atoms/Alert"
 import { Button } from "src/components/atoms/Button"
 import { Input } from "src/components/atoms/Input"
@@ -18,6 +18,7 @@ import { Layout } from "src/components/Layout"
 import { LoadingLogo } from "src/components/Loading"
 import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { useStorage } from "src/hooks/storage/useStorage"
+import { useSwrQuery } from "src/hooks/swr"
 import { supabase } from "src/lib/supabase"
 import type { QueryMyStoryById } from "src/types/Story/query"
 
@@ -70,16 +71,15 @@ const CreateSeason: NextPage = () => {
   const [isStorage, setIsStorage] = useState<boolean>(true)
   const [seasonImage, setSeasonImage] = useState<string>("")
   const accessToken = supabase.auth.session()?.access_token
+
   const {
     data: myStoryData,
     error: myStoryError,
-    loading: isMyStoryLoading,
-  } = useQuery<QueryMyStoryById>(MyStoryQuery, {
-    variables: {
-      queryMyStoryByIdId: storyId as string,
-      userId: userId as string,
-      accessToken: `${accessToken}`,
-    },
+    isLoading: isMyStoryLoading,
+  } = useSwrQuery<QueryMyStoryById>(MyStoryQuery, {
+    queryMyStoryByIdId: storyId as string,
+    userId: userId as string,
+    accessToken: accessToken as string,
   })
 
   const [
@@ -180,7 +180,11 @@ const CreateSeason: NextPage = () => {
             t={t}
             title="エラーが発生しました"
             usage="error"
-            message={myStoryError?.message}
+            message={myStoryError.response.errors
+              .map(e => {
+                return e.message
+              })
+              .join("\n")}
           />
         )
       })
@@ -209,7 +213,6 @@ const CreateSeason: NextPage = () => {
 
   return (
     <Layout>
-      <Toaster position="top-center" />
       <div className="flex justify-start">
         <BreadcrumbTrail
           separator=">"
@@ -375,6 +378,7 @@ const CreateSeason: NextPage = () => {
 
                   <div className="flex flex-col items-center w-full">
                     <Button
+                      primary
                       usage="base"
                       disabled={isLoadingCreateSeason}
                       isLoading={isLoadingCreateSeason}

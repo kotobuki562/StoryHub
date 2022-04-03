@@ -166,7 +166,12 @@ const SignUp = () => {
                         />
                       </div>
 
-                      <Button type="submit" usage="base" text="新規登録" />
+                      <Button
+                        primary
+                        type="submit"
+                        usage="base"
+                        text="新規登録"
+                      />
                     </form>
                   ),
                 },
@@ -176,6 +181,7 @@ const SignUp = () => {
                     <div className="py-4">
                       <div className="mb-8">
                         <Button
+                          primary
                           type="button"
                           usage="base"
                           text="Google"

@@ -2,6 +2,7 @@
 /* eslint-disable import/no-default-export */
 import gql from "graphql-tag"
 import type { NextPage } from "next"
+// import dynamic from "next/dynamic"
 import { ReviewCardOrigin, StoryCard } from "src/components/blocks/Card"
 import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout"
@@ -9,6 +10,15 @@ import { client } from "src/lib/apollo"
 import { REVIEW_PAGE_SIZE, STORY_PAGE_SIZE } from "src/tools/page"
 import type { QueryReviews } from "src/types/Review/query"
 import type { QueryStories } from "src/types/Story/query"
+
+// const Spline = dynamic(
+//   () => {
+//     return import("@splinetool/react-spline")
+//   },
+//   {
+//     ssr: false,
+//   }
+// )
 
 const StoriesQuery = gql`
   query QueryStories($page: Int!, $pageSize: Int!) {
@@ -84,6 +94,10 @@ const HomePage: NextPage<HomePageProps> = ({ reviews, stories }) => {
         cardImage: `/img/StoryHubLogo.png`,
       }}
     >
+      {/* <div className="max-w-[500px]">
+        <Spline scene="https://draft.spline.design/itQVMj9olMbtVoyc/scene.spline" />
+      </div> */}
+
       <div className="p-8 min-h-screen bg-purple-50">
         <Tab
           color="purple"

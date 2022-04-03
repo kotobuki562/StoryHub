@@ -26,14 +26,14 @@ const TabComp: VFC<Props> = ({ color, values }) => {
 
   return (
     <div className="flex justify-start items-center w-full">
-      <div className="flex flex-col w-full h-full">
-        <div className="flex flex-wrap gap-2 items-center p-2 rounded-lg">
+      <div className="flex flex-col w-full h-full xl:flex-row">
+        <div className="flex flex-wrap gap-2 items-center p-2 rounded-lg xl:flex-col xl:items-baseline xl:w-1/4">
           {values.map((item, index) => {
             return (
               <button
                 key={index}
                 className={cc([
-                  "flex justify-center items-center px-4 py-2 md:text-xl text-base font-semibold duration-200",
+                  "flex justify-center items-center px-3 xs:px-4 py-2 md:text-xl text-base font-semibold duration-200",
                   color === "purple" && "bg-purple-500 text-white rounded-full",
                   isActive !== index &&
                     color === "purple" &&

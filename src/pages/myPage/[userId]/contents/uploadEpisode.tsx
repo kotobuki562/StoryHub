@@ -32,9 +32,9 @@ const UploadEpisodeImageFormComp: VFC<UpdateImageFormProps> = ({ userId }) => {
     upImgUrl,
   } = useResize({
     // A4: 210mm x 297mmの比率
-    aspect: 297 / 210,
-    maxWidth: 427,
-    maxHeight: 301.8,
+    aspect: 210 / 297,
+    maxWidth: 301.8,
+    maxHeight: 427,
   })
 
   const handleUpdateUserProfileImage = useCallback(() => {
@@ -169,7 +169,8 @@ const UploadEpisodeImageFormComp: VFC<UpdateImageFormProps> = ({ userId }) => {
       </div>
 
       <Button
-      usage="base"
+        primary
+        usage="base"
         disabled={isLoadingFunction || !upImgUrl}
         isLoading={isLoadingFunction}
         onClick={handleUpdateUserProfileImage}

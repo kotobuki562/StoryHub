@@ -6,7 +6,6 @@ import "react-image-crop/dist/ReactCrop.css"
 import { XCircleIcon } from "@heroicons/react/solid"
 import { useRouter } from "next/router"
 import { memo, useCallback, useEffect, useMemo, useState } from "react"
-import { Toaster } from "react-hot-toast"
 import { Layout } from "src/components/Layout"
 import { useStorage } from "src/hooks/storage/useStorage"
 import { supabase } from "src/lib/supabase"
@@ -51,8 +50,6 @@ const ProfilePage = () => {
 
   return (
     <Layout>
-      <Toaster position="top-center" />
-
       {isMeState && (
         <div className="flex flex-col items-center p-8">
           <div className="flex flex-col justify-center items-center mb-8 w-full">
@@ -139,7 +136,7 @@ const ProfilePage = () => {
             <div className="flex overflow-x-scroll gap-8 items-center w-[300px] xs:w-[500px] md:w-[700px]">
               {episodeImageUrls.map(url => {
                 return (
-                  <div className="relative min-w-[297px]" key={url}>
+                  <div className="relative min-w-[210px]" key={url}>
                     <button
                       className="absolute top-1 right-1"
                       onClick={() => {
@@ -150,7 +147,7 @@ const ProfilePage = () => {
                     </button>
                     <img
                       key={url}
-                      className="w-[297px] h-[210px]"
+                      className="w-[210px] h-[297px]"
                       src={url}
                       alt=""
                     />

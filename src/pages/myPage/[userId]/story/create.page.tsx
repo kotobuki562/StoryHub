@@ -5,7 +5,7 @@ import type { NextPage } from "next"
 import { useRouter } from "next/router"
 import { memo, useCallback, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
-import toast, { Toaster } from "react-hot-toast"
+import toast from "react-hot-toast"
 import { Alert } from "src/components/atoms/Alert"
 import { Button } from "src/components/atoms/Button"
 import { Input } from "src/components/atoms/Input"
@@ -15,7 +15,7 @@ import { TextArea } from "src/components/atoms/TextArea"
 import { BreadcrumbTrail } from "src/components/blocks/BreadcrumbTrail"
 import { Menu } from "src/components/blocks/Menu"
 import { Layout } from "src/components/Layout"
-import { useStoryImage } from "src/hooks/storage/useStoryImage"
+import { useStorage } from "src/hooks/storage/useStorage"
 import { supabase } from "src/lib/supabase"
 import { ageCategories, categories } from "src/tools/options"
 
@@ -46,7 +46,7 @@ const CreateStory = gql`
 const CreateStoryPage: NextPage = () => {
   const router = useRouter()
   const { userId } = router.query
-  const { storyImageUrls } = useStoryImage(userId as string)
+  const { imageUrls: storyImageUrls } = useStorage(userId as string, "story")
   const [isPublish, setIsPublish] = useState<boolean>(false)
   const [isStorage, setIsStorage] = useState<boolean>(true)
   const [storyImage, setStoryImage] = useState<string>("")
@@ -175,7 +175,6 @@ const CreateStoryPage: NextPage = () => {
 
   return (
     <Layout>
-      <Toaster position="top-center" />
       <div className="flex justify-start">
         <BreadcrumbTrail
           separator=">"
@@ -417,6 +416,7 @@ const CreateStoryPage: NextPage = () => {
 
           <div className="flex flex-col items-center w-full">
             <Button
+              primary
               usage="base"
               disabled={isLoadingCreateStory}
               isLoading={isLoadingCreateStory}

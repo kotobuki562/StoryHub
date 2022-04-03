@@ -226,7 +226,7 @@ const HeaderComp = () => {
         <Link href={`/myPage/${user?.QueryMe.id}/inbox`}>
           <a className="block relative mr-4 w-8 xs:w-10">
             {notificationLength !== 0 && (
-              <div className="flex absolute top-0 right-0 flex-col justify-center items-center w-3 h-3 text-white bg-purple-500 rounded-full"></div>
+              <div className="flex absolute top-0 right-0 flex-col justify-center items-center w-2 h-2 text-white bg-purple-500 rounded-full xs:w-3 xs:h-3"></div>
             )}
 
             <BellIcon
