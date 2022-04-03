@@ -9,6 +9,9 @@ const EpisodeCardComp: VFC<
     storyId: string
   }
 > = ({ episode_image, episode_title, id, season_id, storyId }) => {
+  // eslint-disable-next-line no-console
+  console.log(episode_image)
+
   return (
     <article
       className="group overflow-hidden relative w-[210px] h-[297px] bg-center bg-cover rounded-lg shadow-lg hover:shadow-2xl transition duration-300 ease-in-out sm:w-[300.38px] sm:h-[425px]"

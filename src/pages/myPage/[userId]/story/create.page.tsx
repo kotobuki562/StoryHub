@@ -15,7 +15,7 @@ import { TextArea } from "src/components/atoms/TextArea"
 import { BreadcrumbTrail } from "src/components/blocks/BreadcrumbTrail"
 import { Menu } from "src/components/blocks/Menu"
 import { Layout } from "src/components/Layout"
-import { useStoryImage } from "src/hooks/storage/useStoryImage"
+import { useStorage } from "src/hooks/storage/useStorage"
 import { supabase } from "src/lib/supabase"
 import { ageCategories, categories } from "src/tools/options"
 
@@ -46,7 +46,7 @@ const CreateStory = gql`
 const CreateStoryPage: NextPage = () => {
   const router = useRouter()
   const { userId } = router.query
-  const { storyImageUrls } = useStoryImage(userId as string)
+  const { imageUrls: storyImageUrls } = useStorage(userId as string, "story")
   const [isPublish, setIsPublish] = useState<boolean>(false)
   const [isStorage, setIsStorage] = useState<boolean>(true)
   const [storyImage, setStoryImage] = useState<string>("")

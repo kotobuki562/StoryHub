@@ -195,18 +195,28 @@ const InboxPage: NextPage = () => {
         <InboxInIcon className="mr-2 w-8 h-8" />
         <h2 className="">Inbox</h2>
       </div>
+
       <div className="flex flex-wrap gap-3 items-center px-4 mb-4">
-        <div>
-          <Button primary onClick={handleAddAll} usage="base" text="全て選択" />
-        </div>
-        <div>
-          <Button
-            primary
-            onClick={handleRemoveAll}
-            usage="base"
-            text="全て解除"
-          />
-        </div>
+        {notificationIds.length > 0 ? (
+          <div>
+            <Button
+              primary
+              onClick={handleRemoveAll}
+              usage="base"
+              text="全て解除"
+            />
+          </div>
+        ) : (
+          <div>
+            <Button
+              primary
+              onClick={handleAddAll}
+              usage="base"
+              text="全て選択"
+            />
+          </div>
+        )}
+
         {notificationIds.length > 0 && (
           <>
             <div>
@@ -251,7 +261,7 @@ const InboxPage: NextPage = () => {
         color="purple"
         values={[
           {
-            label: "All",
+            label: `${notifications.length} All`,
             children:
               notifications.length > 0 ? (
                 <div className="grid grid-cols-1">
@@ -276,7 +286,7 @@ const InboxPage: NextPage = () => {
               ),
           },
           {
-            label: "Reviews",
+            label: `${notificationsByRebiew.length} Reviews`,
             children:
               notificationsByRebiew.length > 0 ? (
                 <div className="grid grid-cols-1">
@@ -303,7 +313,7 @@ const InboxPage: NextPage = () => {
               ),
           },
           {
-            label: "Bookmarks",
+            label: `${notificationsByFavorite.length} Bookmarks`,
             children:
               notificationsByFavorite.length > 0 ? (
                 <div className="grid grid-cols-1">
@@ -330,7 +340,7 @@ const InboxPage: NextPage = () => {
               ),
           },
           {
-            label: "Follows",
+            label: `${notificationsByFollow.length} Follows`,
             children:
               notificationsByFollow.length > 0 ? (
                 <div className="grid grid-cols-1">

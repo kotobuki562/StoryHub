@@ -508,6 +508,18 @@
   resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.0.0.tgz#8863915676f837d9dad7b76f50cb500c1e9422e9"
   integrity sha512-2pTGuibAXJswAPJjaKisthqS/NOK5ypG4LYT6tEAV0S/mxW0zOIvYvGK0V8w8+SHxAm6vRMSjqSalFXeBAqs+Q==
 
+"@splinetool/react-spline@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@splinetool/react-spline/-/react-spline-2.0.0.tgz#6ac56de3030ec4166d8f65588e6f82f505e05439"
+  integrity sha512-lfB18x1/o75v81Sw6aGP2x0amFb7iYN/J06aJ7k5tit8IfGQ2a+QFO18Bd3g/RjvBLQqRJhh8KTVwFGqTSIxqQ==
+
+"@splinetool/runtime@^0.9.17":
+  version "0.9.17"
+  resolved "https://registry.yarnpkg.com/@splinetool/runtime/-/runtime-0.9.17.tgz#784cc14d91e56960a01cd191dd7bc7ffaec57d38"
+  integrity sha512-Jn5YHeVYLDyW9xqGYd81be0oISM9cB52kquOdo8nl450hsJrQU5j/nPqBfftzmdInc0vwNPXKUPS2/wi0hy5Ww==
+  dependencies:
+    on-change "^4.0.0"
+
 "@supabase/gotrue-js@^1.22.0":
   version "1.22.0"
   resolved "https://registry.yarnpkg.com/@supabase/gotrue-js/-/gotrue-js-1.22.0.tgz#5c290890af2361099297efe25747321ff155142f"
@@ -3721,6 +3733,11 @@ object.values@^1.1.5:
     call-bind "^1.0.2"
     define-properties "^1.1.3"
     es-abstract "^1.19.1"
+
+on-change@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/on-change/-/on-change-4.0.0.tgz#26570babb7170f28be5ea0ba00a284a5a343a472"
+  integrity sha512-PTu7C9Jsz4b+sNMDpH0eZFTr7uxdOtoDWRnhaVNK50bgrrnW5nvbWI0jm5DG9qOoTnIhBzE9xoKVFPD9xgtbdg==
 
 on-finished@~2.3.0:
   version "2.3.0"

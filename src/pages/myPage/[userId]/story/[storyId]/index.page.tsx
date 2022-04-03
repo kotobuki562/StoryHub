@@ -23,7 +23,7 @@ import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout"
 import { LoadingLogo } from "src/components/Loading"
 import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
-import { useStoryImage } from "src/hooks/storage/useStoryImage"
+import { useStorage } from "src/hooks/storage/useStorage"
 import { useSwrQuery } from "src/hooks/swr"
 import { supabase } from "src/lib/supabase"
 import { ageCategories, categories } from "src/tools/options"
@@ -116,7 +116,7 @@ const ReviewsQueryByStoryId = gql`
 const EditStoryPage: NextPage = () => {
   const router = useRouter()
   const { storyId, userId } = router.query
-  const { storyImageUrls } = useStoryImage(userId as string)
+  const { imageUrls: storyImageUrls } = useStorage(userId as string, "story")
   const [isPublish, setIsPublish] = useState<boolean>(false)
   const [isStorage, setIsStorage] = useState<boolean>(true)
   const [storyImage, setStoryImage] = useState<string>("")
@@ -282,7 +282,7 @@ const EditStoryPage: NextPage = () => {
   }, [errorCreateStory])
 
   useEffect(() => {
-    if (myStoryError) {
+    if (myStoryError && myStoryError.response.errors?.length > 0) {
       myStoryError.response.errors.forEach((e, i) => {
         return toast.custom(t => {
           return (

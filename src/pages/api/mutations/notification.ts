@@ -65,8 +65,6 @@ const updateManyNotifications = (t: ObjectDefinitionBlock<"Mutation">) => {
       isRead: nonNull(booleanArg()),
       receiverId: nonNull(stringArg()),
     },
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     resolve: async (_parent, args) => {
       return isSafe(args.accessToken, args.receiverId)
         ? await prisma.notification.updateMany({
@@ -112,8 +110,6 @@ const deleteManyNotifications = (t: ObjectDefinitionBlock<"Mutation">) => {
       accessToken: nonNull(stringArg()),
       notificationIds: nonNull(list(nonNull(stringArg()))),
     },
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     resolve: async (_parent, args) => {
       const myNotificationIds = await prisma.user
         .findUnique({
