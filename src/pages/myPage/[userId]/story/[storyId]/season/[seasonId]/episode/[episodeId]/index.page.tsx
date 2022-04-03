@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @next/next/no-img-element */
 import { gql, useMutation } from "@apollo/client"
+import { PlusIcon } from "@heroicons/react/solid"
 import cc from "classcat"
 import type { NextPage } from "next"
+import Link from "next/link"
 import { useRouter } from "next/router"
-import { memo, useCallback, useState } from "react"
+import { memo, useCallback, useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { Alert } from "src/components/atoms/Alert"
@@ -16,77 +18,104 @@ import { BreadcrumbTrail } from "src/components/blocks/BreadcrumbTrail"
 import { Tab } from "src/components/blocks/Tab"
 import { Layout } from "src/components/Layout"
 import { LoadingLogo } from "src/components/Loading"
+import type { NexusGenArgTypes } from "src/generated/nexus-typegen"
 import { useStorage } from "src/hooks/storage/useStorage"
 import { useSwrQuery } from "src/hooks/swr"
 import { supabase } from "src/lib/supabase"
-import type { QueryMySeasonById } from "src/types/Season/query"
+import type { QueryMyEpisodeById } from "src/types/Episode/query"
 
-const EpisodeCreate = gql`
-  mutation Mutation(
+const EpisodeUpdate = gql`
+  mutation UpdateEpisode(
+    $episodeId: String!
     $episodeTitle: String!
     $episodeSynopsis: String!
     $publish: Boolean!
     $acessToken: String!
     $userId: String!
     $episodeImage: String
-    $seasonId: String!
   ) {
-    createEpisode(
+    updateEpisode(
+      episodeId: $episodeId
       episodeTitle: $episodeTitle
       episodeSynopsis: $episodeSynopsis
       publish: $publish
       acessToken: $acessToken
       userId: $userId
       episodeImage: $episodeImage
-      seasonId: $seasonId
     ) {
       id
     }
   }
 `
 
-const MySeasonQuery = gql`
-  query QuerySeasonById(
-    $queryMySeasonByIdId: String!
+const MyEpisodeQuery = gql`
+  query QueryMyEpisodeById(
+    $queryMyEpisodeByIdId: String!
     $userId: String!
     $accessToken: String!
+    $chapterAccessToken: String
+    $chapterUserId: String
   ) {
-    QueryMySeasonById(
-      id: $queryMySeasonByIdId
+    QueryMyEpisodeById(
+      id: $queryMyEpisodeByIdId
       userId: $userId
       accessToken: $accessToken
     ) {
       id
-      season_title
-      season_image
-      season_synopsis
+      episode_image
+      episode_synopsis
+      episode_title
+      publish
+      chapters(
+        chapterAccessToken: $chapterAccessToken
+        chapterUserId: $chapterUserId
+      ) {
+        id
+        chapter_title
+        chapter_image
+        publish
+      }
     }
   }
 `
 
-const CreateEpisode: NextPage = () => {
+const CreateSeason: NextPage = () => {
   const router = useRouter()
-  const { seasonId, storyId, userId } = router.query
+  const { episodeId, seasonId, storyId, userId } = router.query
   const { imageUrls } = useStorage(userId as string, "episode")
   const [isPublish, setIsPublish] = useState<boolean>(false)
   const [isStorage, setIsStorage] = useState<boolean>(true)
-  const [seasonImage, setSeasonImage] = useState<string>("")
+  const [episodeImage, setEpisodeImage] = useState<string>("")
   const accessToken = supabase.auth.session()?.access_token
 
   const {
-    data: season,
-    error: seasonError,
-    isLoading: seasonIsLoading,
-  } = useSwrQuery<QueryMySeasonById>(MySeasonQuery, {
-    queryMySeasonByIdId: seasonId as string,
+    data: myEpisode,
+    error: mySeasonError,
+    isLoading: isMySeasonLoading,
+  } = useSwrQuery<QueryMyEpisodeById>(MyEpisodeQuery, {
+    queryMyEpisodeByIdId: episodeId as string,
     userId: userId as string,
     accessToken: accessToken as string,
+    chapterAccessToken: accessToken as string,
+    chapterUserId: userId as string,
   })
 
+  const {
+    chapters: myChapters,
+    episode_image,
+    episode_synopsis,
+    episode_title,
+    publish,
+  } = myEpisode?.QueryMyEpisodeById || {}
+
+  const chapters = useMemo(() => {
+    return myChapters ? myChapters : []
+  }, [myChapters])
+
   const [
-    createEpisode,
-    { error: createEpisodeError, loading: createEpisodeIsLoading },
-  ] = useMutation(EpisodeCreate)
+    updateEpisode,
+    { error: errorUpdateSeason, loading: isLoadingUpdateSeason },
+  ] = useMutation<NexusGenArgTypes["Mutation"]["updateEpisode"]>(EpisodeUpdate)
 
   const handleTogglePublish = useCallback(() => {
     setIsPublish(pre => {
@@ -100,15 +129,20 @@ const CreateEpisode: NextPage = () => {
     })
   }, [])
 
-  const handleSelectSeasonImage = useCallback((url: string) => {
-    setSeasonImage(url)
-  }, [])
+  const handleSelectEpisodeImage = useCallback(
+    (url: string) => {
+      setEpisodeImage(url)
+    },
+    [setEpisodeImage]
+  )
 
   const {
     formState: { errors },
     getValues,
     handleSubmit,
     register,
+    setValue,
+    watch,
   } = useForm({
     defaultValues: {
       synopsis: "",
@@ -117,62 +151,98 @@ const CreateEpisode: NextPage = () => {
     },
   })
 
+  const { synopsis, title } = watch()
+
+  useEffect(() => {
+    if (episode_image) {
+      setEpisodeImage(episode_image)
+    }
+
+    if (publish) {
+      setIsPublish(publish)
+    }
+
+    if (episode_synopsis) {
+      setValue("synopsis", episode_synopsis)
+    }
+
+    if (episode_title) {
+      setValue("title", episode_title)
+    }
+  }, [episode_image, episode_synopsis, episode_title, publish, setValue])
+
   const handleSubmitData = handleSubmit(async data => {
-    await createEpisode({
+    await updateEpisode({
       variables: {
+        episodeId: episodeId as string,
         episodeTitle: data.title,
         episodeSynopsis: data.synopsis,
-        episodeImage: isStorage ? seasonImage : data.imageUrl,
-        seasonId: seasonId as string,
         publish: isPublish,
         acessToken: accessToken ? accessToken : null,
         userId: userId as string,
+        episodeImage: isStorage ? episodeImage : data.imageUrl,
       },
+      refetchQueries: [
+        {
+          query: MyEpisodeQuery,
+          variables: {
+            queryMyEpisodeByIdId: episodeId as string,
+            userId: userId as string,
+            accessToken: accessToken as string,
+            chapterAccessToken: accessToken as string,
+            chapterUserId: userId as string,
+          },
+        },
+      ],
     }).then(() => {
       toast.custom(t => {
         return (
           <Alert
             t={t}
-            title={`${season?.QueryMySeasonById?.season_title}のエピソードを作成しました`}
+            title={`${episode_title}を更新しました`}
             usage="success"
           />
         )
       })
       return router.push(
-        `/myPage/${userId}/story/${storyId}/season/${seasonId}`
+        `/myPage/${userId}/story/${storyId}/season/${seasonId}/episode/${episodeId}`
       )
     })
   })
 
-  if (createEpisodeError) {
-    toast.custom(t => {
-      return (
-        <Alert
-          t={t}
-          title="エラーが発生しました"
-          usage="error"
-          message={createEpisodeError?.message}
-        />
-      )
-    })
-  }
-
-  if (seasonError) {
-    seasonError.response.errors.forEach(error => {
+  useEffect(() => {
+    if (errorUpdateSeason) {
       toast.custom(t => {
         return (
           <Alert
             t={t}
             title="エラーが発生しました"
             usage="error"
-            message={error.message}
+            message={errorUpdateSeason?.message}
           />
         )
       })
-    })
-  }
+    }
+  }, [errorUpdateSeason])
 
-  if (seasonIsLoading || !userId) {
+  useEffect(() => {
+    if (mySeasonError) {
+      mySeasonError.response.errors.map(error => {
+        toast.custom(t => {
+          return (
+            <Alert
+              t={t}
+              title="エラーが発生しました"
+              usage="error"
+              message={error.message}
+            />
+          )
+        })
+      })
+    }
+  }, [mySeasonError])
+
+  if (isMySeasonLoading || !userId || isLoadingUpdateSeason) {
     return (
       <Layout>
         <div className="flex flex-col justify-center items-center p-8 w-full h-screen">
@@ -182,7 +252,7 @@ const CreateEpisode: NextPage = () => {
     )
   }
 
-  if (seasonError) {
+  if (!isMySeasonLoading && mySeasonError && !isLoadingUpdateSeason) {
     return (
       <Layout>
         <div className="flex flex-col justify-center items-center p-8 w-full h-screen">
@@ -211,19 +281,21 @@ const CreateEpisode: NextPage = () => {
               href: `/myPage/${userId}/story/${storyId}/season/${seasonId}`,
             },
             {
-              label: "エピソード作成",
+              label: "ストーリーの詳細",
               href: router.asPath,
             },
           ]}
         />
       </div>
-
       <div className="p-8">
+        <h2 className="mb-8 text-xl font-bold text-center text-purple-500 sm:text-4xl">
+          {episode_title}の詳細
+        </h2>
         <Tab
           color="purple"
           values={[
             {
-              label: "エピソード作成",
+              label: "編集する",
               children: (
                 <form className="py-4" onSubmit={handleSubmitData}>
                   <div className="flex flex-col mb-4 w-full">
@@ -238,15 +310,14 @@ const CreateEpisode: NextPage = () => {
                   </div>
 
                   <div className="flex flex-col mb-4 w-full">
+                    <p className={cc([title?.length > 50 && "text-red-500"])}>
+                      {title?.length}/50
+                    </p>
                     <Input
                       label="タイトル"
                       required={true}
-                      placeholder="エピソードのタイトルを入力してください"
+                      placeholder="シーズンのタイトルを入力してください"
                       type="text"
-                      error={{
-                        isError: !!errors.title,
-                        message: errors.title?.message as string,
-                      }}
                       {...register("title", {
                         required: true,
                         minLength: {
@@ -290,11 +361,11 @@ const CreateEpisode: NextPage = () => {
                             <button
                               type="button"
                               onClick={() => {
-                                handleSelectSeasonImage(url)
+                                handleSelectEpisodeImage(url)
                               }}
                               className={cc([
                                 "min-w-[210px]",
-                                seasonImage === url &&
+                                episodeImage === url &&
                                   "border-4 border-yellow-500",
                               ])}
                               key={url}
@@ -302,7 +373,7 @@ const CreateEpisode: NextPage = () => {
                               <img
                                 className="w-[210px] h-[297px]"
                                 src={url}
-                                alt="エピソード画像"
+                                alt="エピソードの画像"
                               />
                             </button>
                           )
@@ -335,6 +406,13 @@ const CreateEpisode: NextPage = () => {
                   </div>
 
                   <div className="flex flex-col mb-4 w-full">
+                    <p
+                      className={cc([
+                        synopsis?.length > 1000 && "text-red-500",
+                      ])}
+                    >
+                      {synopsis?.length}/1000
+                    </p>
                     <TextArea
                       label="あらすじ"
                       required={true}
@@ -357,45 +435,30 @@ const CreateEpisode: NextPage = () => {
                     <Button
                       primary
                       usage="base"
-                      disabled={createEpisodeIsLoading}
-                      isLoading={createEpisodeIsLoading}
+                      disabled={isLoadingUpdateSeason}
+                      isLoading={isLoadingUpdateSeason}
                       type="submit"
-                      text="作成"
+                      text="更新"
                     />
                   </div>
                 </form>
               ),
             },
             {
-              label: "シーズン",
+              label: `${chapters?.length}個のチャプター`,
               children: (
                 <div className="flex flex-col justify-center items-center py-4 w-full">
-                  <div className="flex flex-col items-center w-[300px] sm:w-[400px] xl:w-[600px]">
-                    <div
-                      className="overflow-hidden mb-8 w-[210px] h-[297px] bg-center bg-cover rounded-lg sm:w-[300.38px] sm:h-[425px] xl:w-[375px] xl:h-[530.57px]"
-                      style={{
-                        backgroundImage: `url(${
-                          season?.QueryMySeasonById?.season_image ||
-                          "https://user-images.githubusercontent.com/67810971/149643400-9821f826-5f9c-45a2-a726-9ac1ea78fbe5.png"
-                        })`,
-                      }}
-                    />
-                    <div className="flex flex-col">
-                      <h2 className="mb-4 text-2xl font-black">
-                        {season?.QueryMySeasonById?.season_title}
-                      </h2>
-                      <p className="text-slate-600 whitespace-pre-wrap">
-                        {season?.QueryMySeasonById?.season_synopsis}
-                      </p>
-                    </div>
-                  </div>
+                  <Link
+                    href={{
+                      pathname: `/myPage/${userId}/story/${storyId}/season/${seasonId}/episode/create`,
+                    }}
+                  >
+                    <a className="flex items-center py-2 px-4 mb-4 text-lg font-bold text-purple-500 bg-yellow-100 hover:bg-yellow-300 rounded duration-200">
+                      <PlusIcon className="mr-2 w-6 h-6" />
+                      チャプターの作成へ
+                    </a>
+                  </Link>
                 </div>
-              ),
-            },
-            {
-              label: "チャプター",
-              children: (
-                <div className="flex flex-col justify-center items-center py-4 w-full"></div>
               ),
             },
           ]}
@@ -406,4 +469,4 @@ const CreateEpisode: NextPage = () => {
 }
 
 // eslint-disable-next-line import/no-default-export
-export default memo(CreateEpisode)
+export default memo(CreateSeason)

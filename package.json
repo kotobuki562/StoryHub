@@ -23,7 +23,7 @@
     "seed": "npx prisma db seed",
     "prisma:format": "npx prisma format",
     "prisma:generate": "npx prisma generate",
-    "studio": "npx prisma studio --port 5555",
+    "studio": "npx prisma studio --port 5678",
     "migrate:init": "prisma migrate dev --name init",
     "migrate": "npx prisma migrate dev"
   },
@@ -32,6 +32,8 @@
     "@heroicons/react": "^1.0.5",
     "@prisma/client": "3.9.1",
     "@react-pdf/renderer": "^2.0.21",
+    "@splinetool/react-spline": "^2.0.0",
+    "@splinetool/runtime": "^0.9.17",
     "@supabase/supabase-js": "1.29.4",
     "apollo-server-micro": "3.6.3",
     "axios": "^0.25.0",

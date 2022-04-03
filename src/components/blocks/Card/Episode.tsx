@@ -1,19 +1,20 @@
 /* eslint-disable @next/next/no-img-element */
-import { EyeIcon, EyeOffIcon } from "@heroicons/react/solid"
 import Link from "next/link"
 import type { VFC } from "react"
 import { memo } from "react"
 import type { NexusGenFieldTypes } from "src/generated/nexus-typegen"
 
-const MyEpisodeCardComp: VFC<
+const EpisodeCardComp: VFC<
   NexusGenFieldTypes["Episode"] & {
-    episodeNumber: number
-    href: string
+    storyId: string
   }
-> = ({ episode_image, episode_title, episodeNumber, href, publish }) => {
+> = ({ episode_image, episode_title, id, season_id, storyId }) => {
+  // eslint-disable-next-line no-console
+  console.log(episode_image)
+
   return (
     <article
-      className="group overflow-hidden relative w-[200px] h-[300px] bg-center bg-cover rounded-lg shadow-lg hover:shadow-2xl transition duration-300 ease-in-out"
+      className="group overflow-hidden relative w-[210px] h-[297px] bg-center bg-cover rounded-lg shadow-lg hover:shadow-2xl transition duration-300 ease-in-out sm:w-[300.38px] sm:h-[425px]"
       style={{
         backgroundImage: `url(${
           episode_image ||
@@ -23,23 +24,15 @@ const MyEpisodeCardComp: VFC<
     >
       <div className="absolute inset-0 bg-black/50 group-hover:opacity-75 transition duration-300 ease-in-out"></div>
       <div className="flex relative flex-col justify-between p-2 w-full h-full">
-        <div className="flex justify-between items-center text-sm sm:text-base">
-          <div className="flex items-center py-1 px-2 text-purple-500 bg-yellow-300 rounded-xl">
-            {publish ? (
-              <EyeIcon className="mr-1 w-4 h-4" />
-            ) : (
-              <EyeOffIcon className="mr-1 w-4 h-4" />
-            )}
-            {publish ? "公開中" : "非公開"}
-          </div>
-          <div className="font-semibold text-white">
-            エピソード {episodeNumber}
-          </div>
-        </div>
-
         <div>
           <h3 className="text-left">
-            <Link href={href}>
+            <Link
+              href={{
+                pathname:
+                  "/story/[storyId]/season/[seasonId]/episode/[episodeId]",
+                query: { episodeId: id, seasonId: season_id, storyId: storyId },
+              }}
+            >
               <a className="font-bold text-center text-white sm:text-xl">
                 <span className="absolute inset-0"></span>
                 {episode_title && episode_title.length > 20
@@ -54,4 +47,4 @@ const MyEpisodeCardComp: VFC<
   )
 }
 
-export const MyEpisodeCard = memo(MyEpisodeCardComp)
+export const EpisodeCard = memo(EpisodeCardComp)
