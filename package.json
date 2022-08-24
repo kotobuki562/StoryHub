@@ -31,7 +31,7 @@
     "@apollo/client": "3.5.8",
     "@heroicons/react": "^1.0.5",
     "@prisma/client": "3.9.1",
-    "@react-pdf/renderer": "^2.0.21",
+    "@react-pdf/renderer": "2.3.0",
     "@splinetool/react-spline": "^2.0.0",
     "@splinetool/runtime": "^0.9.17",
     "@supabase/supabase-js": "1.29.4",
