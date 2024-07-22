@@ -36,7 +36,7 @@
     "@splinetool/runtime": "^0.9.17",
     "@supabase/supabase-js": "1.29.4",
     "apollo-server-micro": "3.6.3",
-    "axios": "^0.25.0",
+    "axios": "^0.28.0",
     "classcat": "^5.0.3",
     "date-fns": "^2.28.0",
     "express": "4.17.2",
