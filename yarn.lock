@@ -2073,14 +2073,13 @@ eslint-plugin-sort-destructure-keys@^1.4.0:
   dependencies:
     natural-compare-lite "^1.4.0"
 
-eslint-plugin-tailwindcss@3.4.3:
-  version "3.4.3"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-tailwindcss/-/eslint-plugin-tailwindcss-3.4.3.tgz#a409d47b92a6f0e721091eeb543be927f1490bc3"
-  integrity sha512-HagKvnHDBlVk3ErlPiiamVnNY3510DTXQTNc9h2KDVOuIdvgQc7X+08gLWvNAVQYPoKhbw/CzSHe/SSpMN8dig==
+eslint-plugin-tailwindcss@3.17.5:
+  version "3.17.5"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-tailwindcss/-/eslint-plugin-tailwindcss-3.17.5.tgz#6bf9403e77a5f3f930fb3444a3e22b29cd0fee07"
+  integrity sha512-8Mi7p7dm+mO1dHgRHHFdPu4RDTBk69Cn4P0B40vRQR+MrguUpwmKwhZy1kqYe3Km8/4nb+cyrCF+5SodOEmaow==
   dependencies:
     fast-glob "^3.2.5"
     postcss "^8.4.4"
-    tailwindcss "^3.0.7"
 
 eslint-plugin-testing-library@5.0.4:
   version "5.0.4"
@@ -4733,7 +4732,7 @@ symbol-observable@^4.0.0:
   resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-4.0.0.tgz#5b425f192279e87f2f9b937ac8540d1984b39205"
   integrity sha512-b19dMThMV4HVFynSAM1++gBHAbk2Tc/osgLIBZMKsyqh34jb2e8Os7T6ZW/Bt3pJFdBTd2JwAnAAEQV7rSNvcQ==
 
-tailwindcss@^3.0.7, tailwindcss@^3.0.8:
+tailwindcss@^3.0.8:
   version "3.0.8"
   resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-3.0.8.tgz#6c751c3d2ee8e1fa18b108303b73f44a5e868992"
   integrity sha512-Yww1eRYO1AxITJmW/KduZPxNvYdHuedeKwPju9Oakp7MdiixRi5xkpLhirsc81QCxHL0eoce6qKmxXwYGt4Cjw==
