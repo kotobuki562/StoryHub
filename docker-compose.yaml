@@ -2,7 +2,7 @@ version: "3.1"
 
 services:
   db:
-    image: postgres:13-alpine
+    image: postgres:17-alpine
     container_name: StoryHub-Postgres
     ports:
       - "5432:5432"
