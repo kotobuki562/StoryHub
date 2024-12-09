@@ -514,11 +514,12 @@
   integrity sha512-lfB18x1/o75v81Sw6aGP2x0amFb7iYN/J06aJ7k5tit8IfGQ2a+QFO18Bd3g/RjvBLQqRJhh8KTVwFGqTSIxqQ==
 
 "@splinetool/runtime@^0.9.17":
-  version "0.9.17"
-  resolved "https://registry.yarnpkg.com/@splinetool/runtime/-/runtime-0.9.17.tgz#784cc14d91e56960a01cd191dd7bc7ffaec57d38"
-  integrity sha512-Jn5YHeVYLDyW9xqGYd81be0oISM9cB52kquOdo8nl450hsJrQU5j/nPqBfftzmdInc0vwNPXKUPS2/wi0hy5Ww==
+  version "0.9.526"
+  resolved "https://registry.yarnpkg.com/@splinetool/runtime/-/runtime-0.9.526.tgz#36be96f0cd224d1a90fda67ade6c67fe6651b933"
+  integrity sha512-qznHbXA5aKwDbCgESAothCNm1IeEZcmNWG145p5aXj4w5uoqR1TZ9qkTHTKLTsUbHeitCwdhzmRqan1kxboLgQ==
   dependencies:
     on-change "^4.0.0"
+    semver-compare "^1.0.0"
 
 "@supabase/gotrue-js@^1.22.0":
   version "1.22.0"
@@ -3735,9 +3736,9 @@ object.values@^1.1.5:
     es-abstract "^1.19.1"
 
 on-change@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/on-change/-/on-change-4.0.0.tgz#26570babb7170f28be5ea0ba00a284a5a343a472"
-  integrity sha512-PTu7C9Jsz4b+sNMDpH0eZFTr7uxdOtoDWRnhaVNK50bgrrnW5nvbWI0jm5DG9qOoTnIhBzE9xoKVFPD9xgtbdg==
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/on-change/-/on-change-4.0.2.tgz#838129790f09dc2ed04284944bda6e82b92c10b8"
+  integrity sha512-cMtCyuJmTx/bg2HCpHo3ZLeF7FZnBOapLqZHr2AlLeJ5Ul0Zu2mUJJz051Fdwu/Et2YW04ZD+TtU+gVy0ACNCA==
 
 on-finished@~2.3.0:
   version "2.3.0"
@@ -4373,6 +4374,11 @@ scheduler@^0.20.2:
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
+
+semver-compare@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/semver-compare/-/semver-compare-1.0.0.tgz#0dee216a1c941ab37e9efb1788f6afc5ff5537fc"
+  integrity sha512-YM3/ITh2MJ5MtzaM429anh+x2jiLVjqILF4m4oyQB18W7Ggea7BfqdH/wGMK7dDiMghv/6WG7znWMwUDzJiXow==
 
 "semver@2 || 3 || 4 || 5", semver@^5.5.0, semver@^5.6.0:
   version "5.7.1"
